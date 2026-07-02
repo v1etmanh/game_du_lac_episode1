@@ -1,0 +1,415 @@
+{
+  "id": "beo-dat-may-troi",
+  "title": "BÈO DẠT MÂY TRÔI",
+  "sourceAudio": "uploaded-mp3-reference",
+  "duration": 41424,
+  "bpm": 117,
+  "backingTrack": "/audio/backing/beo-dat-may-troi-pad.mp3",
+  "mode": "easy",
+  "keyMap": {
+    "A": {
+      "noteName": "F4",
+      "file": "DanBau_F4.mp3"
+    },
+    "W": {
+      "noteName": "G4",
+      "file": "DanBau_G4.mp3"
+    },
+    "E": {
+      "noteName": "A4",
+      "file": "DanBau_A4.mp3"
+    },
+    "D": {
+      "noteName": "C5",
+      "file": "DanBau_C5.mp3"
+    },
+    "X": {
+      "noteName": "D5",
+      "file": "DanBau_D5.mp3"
+    },
+    "Z": {
+      "noteName": "F5",
+      "file": "DanBau_F5.mp3"
+    }
+  },
+  "notes": [
+    {
+      "time": 929,
+      "key": "A",
+      "noteName": "F4",
+      "type": "short",
+      "duration": 0.45,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 1416,
+      "key": "A",
+      "noteName": "F4",
+      "type": "short",
+      "duration": 0.45,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 1904,
+      "key": "A",
+      "noteName": "F4",
+      "type": "short",
+      "duration": 0.5,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 2438,
+      "key": "J",
+      "noteName": "C5",
+      "type": "short",
+      "duration": 0.45,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 2926,
+      "key": "D",
+      "noteName": "A4",
+      "type": "normal",
+      "duration": 0.6,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 4551,
+      "key": "K",
+      "noteName": "D5",
+      "type": "normal",
+      "duration": 0.85,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 5457,
+      "key": "J",
+      "noteName": "C5",
+      "type": "long",
+      "duration": 1.0,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 6525,
+      "key": "D",
+      "noteName": "A4",
+      "type": "short",
+      "duration": 0.5,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 7059,
+      "key": "D",
+      "noteName": "A4",
+      "type": "short",
+      "duration": 0.5,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 7593,
+      "key": "D",
+      "noteName": "A4",
+      "type": "short",
+      "duration": 0.52,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 8150,
+      "key": "D",
+      "noteName": "A4",
+      "type": "long",
+      "duration": 1.1,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 9311,
+      "key": "D",
+      "noteName": "A4",
+      "type": "normal",
+      "duration": 0.8,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 10147,
+      "key": "A",
+      "noteName": "F4",
+      "type": "normal",
+      "duration": 0.65,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 10844,
+      "key": "S",
+      "noteName": "G4",
+      "type": "normal",
+      "duration": 0.7,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 11610,
+      "key": "J",
+      "noteName": "C5",
+      "type": "long",
+      "duration": 1.9,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 13653,
+      "key": "J",
+      "noteName": "C5",
+      "type": "short",
+      "duration": 0.45,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 14141,
+      "key": "D",
+      "noteName": "A4",
+      "type": "short",
+      "duration": 0.45,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 14629,
+      "key": "D",
+      "noteName": "A4",
+      "type": "short",
+      "duration": 0.55,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 15209,
+      "key": "J",
+      "noteName": "C5",
+      "type": "short",
+      "duration": 0.48,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 15720,
+      "key": "J",
+      "noteName": "C5",
+      "type": "long",
+      "duration": 1.05,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 16858,
+      "key": "D",
+      "noteName": "A4",
+      "type": "normal",
+      "duration": 0.85,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 18831,
+      "key": "D",
+      "noteName": "A4",
+      "type": "normal",
+      "duration": 0.9,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 19783,
+      "key": "S",
+      "noteName": "G4",
+      "type": "normal",
+      "duration": 0.95,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 20782,
+      "key": "A",
+      "noteName": "F4",
+      "type": "normal",
+      "duration": 0.95,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 21804,
+      "key": "J",
+      "noteName": "C5",
+      "type": "long",
+      "duration": 1.9,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 23870,
+      "key": "K",
+      "noteName": "D5",
+      "type": "short",
+      "duration": 0.48,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 24381,
+      "key": "A",
+      "noteName": "F4",
+      "type": "short",
+      "duration": 0.45,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 24869,
+      "key": "A",
+      "noteName": "F4",
+      "type": "normal",
+      "duration": 0.74,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 25658,
+      "key": "S",
+      "noteName": "G4",
+      "type": "long",
+      "duration": 1.1,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 26842,
+      "key": "D",
+      "noteName": "A4",
+      "type": "normal",
+      "duration": 0.6,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 27492,
+      "key": "S",
+      "noteName": "G4",
+      "type": "short",
+      "duration": 0.43,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 27957,
+      "key": "D",
+      "noteName": "A4",
+      "type": "normal",
+      "duration": 0.95,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 29002,
+      "key": "D",
+      "noteName": "A4",
+      "type": "short",
+      "duration": 0.5,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 29536,
+      "key": "S",
+      "noteName": "G4",
+      "type": "long",
+      "duration": 1.35,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 30999,
+      "key": "D",
+      "noteName": "A4",
+      "type": "long",
+      "duration": 1.0,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 32067,
+      "key": "A",
+      "noteName": "F4",
+      "type": "short",
+      "duration": 0.43,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 33088,
+      "key": "J",
+      "noteName": "C5",
+      "type": "normal",
+      "duration": 0.9,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 34064,
+      "key": "J",
+      "noteName": "C5",
+      "type": "short",
+      "duration": 0.52,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 34621,
+      "key": "A",
+      "noteName": "F4",
+      "type": "short",
+      "duration": 0.48,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 37082,
+      "key": "A",
+      "noteName": "F4",
+      "type": "short",
+      "duration": 0.56,
+      "bend": true,
+      "vibrato": false
+    },
+    {
+      "time": 37686,
+      "key": "A",
+      "noteName": "F4",
+      "type": "long",
+      "duration": 1.7,
+      "bend": true,
+      "vibrato": true
+    },
+    {
+      "time": 39497,
+      "key": "A",
+      "noteName": "F4",
+      "type": "long",
+      "duration": 1.6,
+      "bend": true,
+      "vibrato": true
+    }
+  ]
+}

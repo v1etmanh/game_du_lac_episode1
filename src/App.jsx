@@ -7,6 +7,9 @@ import JournalWidget from './components/JournalWidget.jsx'
 import KiteFieldGame from './components/KiteFieldGame.jsx'
 import OAnQuanGame from './games/oanquan/OAnQuanGame.jsx'
 import LuaGaGame from './games/lua_ga/LuaGaGame.jsx'
+import HaiQuaGame from './games/hai_qua/HaiQuaGame.jsx'
+import BanHangGame from './games/ban_hang/BanHangGame.jsx'
+import DanBauGame from './games/dan_bau/DanBauGame.jsx'
 import './App.css'
 
 // Các màn hình: 'intro' -> 'map' -> 'dialog' -> 'minigame' (sắp xây)
@@ -49,7 +52,16 @@ export default function App() {
       {screen === 'minigame' && activeLocation?.id === 'nha_ba_ngan' && (
         <LuaGaGame onExit={() => setScreen('map')} />
       )}
-      {screen === 'minigame' && activeLocation?.id !== 'ruong' && activeLocation?.id !== 'den_lang' && activeLocation?.id !== 'nha_ba_ngan' && (
+      {screen === 'minigame' && activeLocation?.id === 'vuon_cay' && (
+        <HaiQuaGame onExit={() => setScreen('map')} />
+      )}
+      {screen === 'minigame' && activeLocation?.id === 'cho' && (
+        <BanHangGame onExit={() => setScreen('map')} />
+      )}
+      {screen === 'minigame' && activeLocation?.id === 'nha_ba_tu' && (
+        <DanBauGame onExit={() => setScreen('map')} />
+      )}
+      {screen === 'minigame' && activeLocation?.id !== 'ruong' && activeLocation?.id !== 'den_lang' && activeLocation?.id !== 'nha_ba_ngan' && activeLocation?.id !== 'vuon_cay' && activeLocation?.id !== 'cho' && activeLocation?.id !== 'nha_ba_tu' && (
         <div className="placeholder-screen">
           Đã trò chuyện xong tại "{activeLocation?.name}".
           <br />

@@ -1,0 +1,16 @@
+export const C = {
+  bgDeep:       '#0d0804',
+  woodDark:     '#2a1208',
+  woodBody:     '#5c2d0e',
+  woodSurface:  '#c4953a',
+  goldString:   '#f0d060',
+  goldDim:      '#c4953a',
+  paperOld:     '#d4bc80',
+  ceramicBlue:  '#4a6ea0',
+  textPrimary:  '#f0d060',
+  textSecond:   '#d4bc80',
+  textMuted:    '#8a7050',
+  flashPerfect: '#f0d060',
+  flashGood:    '#4a6ea0',
+  flashMiss:    'rgba(200,60,60,0.7)',
+};

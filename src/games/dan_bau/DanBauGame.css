@@ -1,0 +1,58 @@
+.dan-bau-wrap {
+  min-width: 320px;
+  min-height: 100vh;
+  background: #0d0804;
+  color: #d4bc80;
+  font-family: 'Merriweather', serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.dan-bau-wrap *,
+.dan-bau-wrap *::before,
+.dan-bau-wrap *::after {
+  box-sizing: border-box;
+}
+
+.dan-bau-topbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(10, 5, 2, 0.9);
+  border-bottom: 1px solid rgba(196, 149, 58, 0.2);
+}
+
+.dan-bau-topbar .secondaryButton {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(196, 149, 58, 0.4);
+  background: transparent;
+  color: #8a7050;
+  cursor: pointer;
+  font-family: 'Merriweather', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+}
+
+.dan-bau-topbar .secondaryButton:hover,
+.dan-bau-topbar .secondaryButton:focus-visible {
+  border-color: #c4953a;
+  color: #d4bc80;
+  outline: none;
+}
+
+.dan-bau-frame {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dan-bau-frame .app-root {
+  width: 100%;
+  height: calc(100vh - 60px);
+}

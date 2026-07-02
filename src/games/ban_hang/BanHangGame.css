@@ -1,0 +1,52 @@
+.ban-hang-wrap {
+  min-width: 320px;
+  min-height: 100vh;
+  background: #1b1b1b;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.ban-hang-wrap *,
+.ban-hang-wrap *::before,
+.ban-hang-wrap *::after {
+  box-sizing: border-box;
+}
+
+.ban-hang-topbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.ban-hang-topbar .secondaryButton {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+}
+
+.ban-hang-topbar .secondaryButton:hover,
+.ban-hang-topbar .secondaryButton:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  outline: none;
+}
+
+.ban-hang-frame {
+  flex: 1;
+  min-height: 0;
+}
+
+.ban-hang-frame .app-wrap {
+  min-height: calc(100vh - 72px);
+}
+
+.ban-hang-frame h1 {
+  color: #ffd479;
+}
