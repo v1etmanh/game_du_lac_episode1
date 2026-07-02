@@ -1,0 +1,101 @@
+.journal-fab {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(255, 247, 231, 0.35);
+  border-radius: 50%;
+  color: #fff7e7;
+  background: linear-gradient(145deg, #4e3343, #25362d);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.journal-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
+}
+
+.journal-fab-badge {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  min-width: 30px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 20, 20, 0.25);
+  background: #e0b84c;
+  color: #2c2823;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.journal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.journal-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 12, 12, 0.6);
+}
+
+.journal-modal {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  max-height: 92vh;
+  overflow: auto;
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+.journal-modal .journal-workspace {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.journal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 247, 231, 0.3);
+  border-radius: 50%;
+  color: #fff7e7;
+  background: rgba(14, 18, 18, 0.55);
+  cursor: pointer;
+}
+
+.journal-close:hover {
+  background: rgba(14, 18, 18, 0.75);
+}
+
+@media (max-width: 900px) {
+  .journal-fab {
+    top: 14px;
+    right: 14px;
+    width: 48px;
+    height: 48px;
+  }
+}

@@ -1,0 +1,88 @@
+.loc-card {
+  width: 158px;
+  flex: 0 0 auto;
+  background: linear-gradient(180deg, #f4ecd8 0%, #e8dcc0 100%);
+  border-radius: 6px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  position: relative;
+  transform: rotate(0deg);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  border: 3px solid transparent;
+}
+
+.loc-card:hover {
+  transform: translateY(-4px);
+}
+
+.loc-card.selected {
+  border-color: #e0b84c;
+  box-shadow: 0 0 0 2px rgba(224, 184, 76, 0.5), 0 8px 18px rgba(0, 0, 0, 0.5);
+  transform: translateY(-6px);
+}
+
+.loc-card.locked {
+  filter: grayscale(35%) brightness(0.65);
+}
+
+.loc-card.shaking {
+  animation: shake 0.35s ease;
+}
+
+.loc-card-chevron {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e0b84c;
+  font-size: 1.4rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.loc-card-image {
+  width: 100%;
+  height: 88px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 4px 4px 0 0;
+}
+
+.loc-card-body {
+  padding: 8px 10px 12px;
+  position: relative;
+}
+
+.loc-card-name {
+  font-size: 0.85rem;
+  color: #2c2416;
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+.loc-card-desc {
+  font-size: 0.68rem;
+  color: #5c5340;
+  line-height: 1.25;
+  min-height: 2.2em;
+}
+
+.loc-card-stars {
+  font-size: 0.72rem;
+  color: #a3801f;
+  font-weight: bold;
+}
+
+.loc-card-lock {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}

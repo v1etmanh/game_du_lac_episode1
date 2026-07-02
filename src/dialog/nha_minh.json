@@ -1,0 +1,38 @@
+{
+  "locationId": "nha_minh",
+  "locationName": "Nhà Minh",
+  "description": "Nơi bạn cũ của Tính đang chờ một câu chuyện cũ.",
+  "npcId": "minh",
+  "dialogues": [
+    {
+      "speaker": "minh",
+      "speakerName": "Minh",
+      "text": "Tính à, mày về rồi à?"
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Dạ... cháu không nhớ rõ, xin lỗi."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh ấy mất ký ức sau tai nạn, nên chúng cháu mới trở lại."
+    },
+    {
+      "speaker": "minh",
+      "speakerName": "Minh",
+      "text": "Thế thì phải cố gắng giúp nó nhớ lại."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Nếu mình từng là bạn của nhau, hãy kể cho mình nghe đi."
+    },
+    {
+      "speaker": "minh",
+      "speakerName": "Minh",
+      "text": "Được, nhưng chuyện này không thể kể nhanh được."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "locationId": "gieng_lang",
+  "locationName": "Giếng sau làng",
+  "description": "Nơi nước trong và câu chuyện về những người đã từng ở đây.",
+  "npcId": null,
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Giếng này sâu và yên, như có một lời kể đang chờ mình nghe."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Mình nhớ có lần đứng ở đây nhìn xuống mặt nước rất lâu."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh có cảm giác mình từng thuộc về nơi này không?"
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Có, chỉ là mình chưa thể gọi tên nó."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Đừng lo, mình sẽ cùng anh tìm ra câu trả lời."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Cảm ơn em, lời nói của em làm mình thấy nhẹ lòng."
+    }
+  ]
+}

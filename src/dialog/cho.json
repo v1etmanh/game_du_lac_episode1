@@ -1,0 +1,38 @@
+{
+  "locationId": "cho",
+  "locationName": "Chợ làng",
+  "description": "Nơi ồn ào, thân thiện và có nhiều câu chuyện lẫn lộn.",
+  "npcId": "bacnongdan",
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Chợ nhỏ này vừa ồn vừa ấm áp."
+    },
+    {
+      "speaker": "bacnongdan",
+      "speakerName": "Bác Nông Dân",
+      "text": "Mời khách bán hàng đi cháu, người ta đỡ thấy buồn."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Mùi khói bếp và tiếng người gọi nhau làm mình thấy quen."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Chúng ta hãy hỏi thêm ai đó về mẹ anh."
+    },
+    {
+      "speaker": "bacnongdan",
+      "speakerName": "Bác Nông Dân",
+      "text": "Bà Tư ở đây, chắc bà biết nhiều chuyện."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Nếu có thể, tôi muốn biết câu chuyện mình từng bỏ quên."
+    }
+  ]
+}

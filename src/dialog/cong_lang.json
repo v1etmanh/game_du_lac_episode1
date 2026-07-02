@@ -1,0 +1,38 @@
+{
+  "locationId": "cong_lang",
+  "locationName": "Cổng làng",
+  "description": "Nơi bắt đầu hành trình tìm lại ký ức.",
+  "npcId": "gialang",
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Cái cổng này thật đẹp, như đang chờ mình trở về."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Tôi có cảm giác gì đó rất quen, nhưng vẫn không nhớ."
+    },
+    {
+      "speaker": "gialang",
+      "speakerName": "Ông Trưởng Làng",
+      "text": "Đất làng không quên người của nó, cháu cứ đi và tìm."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh đừng lo, mình sẽ đi cùng nhau."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Nếu có thể, tôi muốn nhớ lại những ngày xưa."
+    },
+    {
+      "speaker": "gialang",
+      "speakerName": "Ông Trưởng Làng",
+      "text": "Đừng vội, hãy bắt đầu từ những nơi quen thuộc."
+    }
+  ]
+}

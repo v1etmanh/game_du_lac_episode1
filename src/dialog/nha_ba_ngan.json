@@ -1,0 +1,38 @@
+{
+  "locationId": "nha_ba_ngan",
+  "locationName": "Nhà bà ngần",
+  "description": "Nơi có những câu chuyện về người mẹ và những ký ức ấm áp.",
+  "npcId": "ba_ngan",
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Bà ngần ơi, cháu đến thăm bà."
+    },
+    {
+      "speaker": "ba_ngan",
+      "speakerName": "Bà Ngần",
+      "text": "Vào đi cháu, đừng ngại."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Bà có nhớ người con gái từng ở đây không?"
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh muốn biết thêm về người mẹ của mình."
+    },
+    {
+      "speaker": "ba_ngan",
+      "speakerName": "Bà Ngần",
+      "text": "Có những điều người ta giữ kín lâu hơn cả tuổi thơ."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Nếu bà biết, xin bà giúp cháu nhớ lại."
+    }
+  ]
+}

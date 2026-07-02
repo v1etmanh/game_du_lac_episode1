@@ -1,0 +1,38 @@
+{
+  "locationId": "ruong",
+  "locationName": "Ruộng lúa",
+  "description": "Đồng lúa vàng và gió thổi qua như lời chào cũ.",
+  "npcId": null,
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Đồng lúa vàng, gió thổi qua như một lời chào cũ."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Ở đây mình từng chạy, từng nghe tiếng diều và tiếng chim."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh có muốn đứng lại một lát không?"
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Có, lần này mình muốn thật chậm."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Những ký ức nhỏ thường đến từ những nơi bình yên."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Vậy thì hãy để nơi này gọi mình về."
+    }
+  ]
+}

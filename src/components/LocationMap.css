@@ -1,0 +1,68 @@
+.location-map-root {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.location-map-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 28px 0;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(20, 15, 5, 0.55);
+  color: #f4e9d8;
+  font-size: 1.2rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.location-map-header h1 {
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  color: #e9d9ad;
+  margin-bottom: 4px;
+}
+
+.location-map-header p {
+  font-size: 0.85rem;
+  color: #d7cdb4;
+  max-width: 420px;
+}
+
+.location-map-cards {
+  margin-top: auto;
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loc-row {
+  display: flex;
+  gap: 14px;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-top: 18px;
+}
+
+.loc-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.loc-row::-webkit-scrollbar-thumb {
+  background: rgba(244, 233, 216, 0.35);
+  border-radius: 4px;
+}

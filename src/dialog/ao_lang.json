@@ -1,0 +1,38 @@
+{
+  "locationId": "ao_lang",
+  "locationName": "Ao làng",
+  "description": "Nơi có những ký ức cũ và tiếng nước chạm vào bờ.",
+  "npcId": null,
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Ao phía trước thật rộng, có cảm giác như đang chờ một câu chuyện."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Mình từng đứng đây rất lâu, nhìn nước lăn tăn."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh có nhớ được gì thêm không?"
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Không nhiều, nhưng có một cảm giác rất quen."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Thế thì cứ để thời gian làm rõ nó."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Ừ, mình sẽ tiếp tục đi."
+    }
+  ]
+}

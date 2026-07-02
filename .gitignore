@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Production build
+dist/
+build/
+.dist/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.vs/
+
+# OS specific
+*.pem
+
+# Vite
+.vite/
+
+# Temporary files
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Misc
+.cache/
+*.tsbuildinfo
+
+# Sub-project builds
+src/nhat_ki/dist/
+src/tha_dieu/dist/
+src/o_an_quan/dist/
+
+# Testing
+.mocha-skipped
+.jest

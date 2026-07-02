@@ -1,0 +1,164 @@
+/* Ghi chú: các rule global gốc (:root, *, body) đã được thu hẹp vào .game-shell
+   để không đè style của toàn bộ game khi component này được nhúng vào App.jsx thật. */
+.game-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 320px;
+  min-height: 420px;
+  color: #132022;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #d8edf3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+.game-shell *,
+.game-shell *::before,
+.game-shell *::after {
+  box-sizing: border-box;
+}
+
+.game-shell button {
+  font: inherit;
+}
+
+.game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+.hud {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.hud-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(112px, auto));
+  gap: 8px;
+}
+
+.hud-panel {
+  min-height: 58px;
+  padding: 9px 12px;
+  border: 1px solid rgb(255 255 255 / 64%);
+  border-radius: 8px;
+  background: rgb(248 252 249 / 76%);
+  box-shadow: 0 12px 28px rgb(44 77 76 / 12%);
+  backdrop-filter: blur(9px);
+}
+
+.hud-panel.compact {
+  min-width: 92px;
+  text-align: right;
+}
+
+.hud-label {
+  color: #59706c;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.hud-value {
+  margin-top: 2px;
+  color: #152927;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.pause-backdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(19 32 34 / 34%);
+  backdrop-filter: blur(5px);
+}
+
+.pause-panel {
+  width: min(360px, 100%);
+  padding: 22px;
+  border: 1px solid rgb(255 255 255 / 64%);
+  border-radius: 8px;
+  background: rgb(250 253 249 / 92%);
+  box-shadow: 0 22px 55px rgb(16 38 38 / 18%);
+  text-align: center;
+}
+
+.pause-title {
+  margin: 0;
+  color: #132022;
+  font-size: 1.55rem;
+  line-height: 1.2;
+}
+
+.pause-distance {
+  margin: 8px 0 18px;
+  color: #49605c;
+  font-weight: 700;
+}
+
+.pause-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pause-button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 7px;
+  color: #f8fbf7;
+  background: #1f5654;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.pause-button.secondary {
+  color: #1f5654;
+  background: #d9eee5;
+}
+
+.pause-button:hover {
+  filter: brightness(1.04);
+}
+
+@media (max-width: 680px) {
+  .hud {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    flex-direction: column;
+  }
+
+  .hud-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hud-panel {
+    min-height: 52px;
+    padding: 8px 9px;
+  }
+
+  .hud-value {
+    font-size: 0.92rem;
+  }
+}

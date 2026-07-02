@@ -1,0 +1,38 @@
+{
+  "locationId": "den_lang",
+  "locationName": "Đền làng",
+  "description": "Nơi lễ hội và những câu chuyện được kể lại qua thời gian.",
+  "npcId": "gialang",
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Đền làng thật yên bình, như có điều gì đó đang chờ mình hiểu."
+    },
+    {
+      "speaker": "gialang",
+      "speakerName": "Ông Trưởng Làng",
+      "text": "Ở đây người ta vẫn nhớ về những người đã từng đi qua."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Có vẻ như mình đang bước lại trên con đường cũ."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh có thấy gì đó chưa?"
+    },
+    {
+      "speaker": "gialang",
+      "speakerName": "Ông Trưởng Làng",
+      "text": "Đôi khi ký ức không trở về một lần, mà từng chút một."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Vậy thì mình cứ tiếp tục đi."
+    }
+  ]
+}

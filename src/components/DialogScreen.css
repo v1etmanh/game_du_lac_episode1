@@ -1,0 +1,148 @@
+.dialog-screen {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.dialog-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.75) 100%);
+}
+
+.dialog-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: #1b2a1e;
+  color: #f4e9d8;
+  cursor: default;
+}
+
+.dialog-back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(20, 15, 5, 0.55);
+  color: #f4e9d8;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.dialog-back-btn.static {
+  position: static;
+}
+
+.dialog-location-tag {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(20, 15, 5, 0.55);
+  color: #e9d9ad;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  z-index: 5;
+}
+
+.dialog-portrait {
+  position: absolute;
+  bottom: 190px;
+  width: 220px;
+  height: 220px;
+  z-index: 4;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.55));
+  animation: portraitIn 0.25s ease;
+}
+
+.dialog-portrait.left {
+  left: 4%;
+}
+
+.dialog-portrait.right {
+  right: 4%;
+}
+
+.dialog-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.dialog-portrait-fallback {
+  width: 130px;
+  height: 130px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #e0b84c;
+  color: #2c2416;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  font-weight: bold;
+}
+
+.dialog-box {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  background: linear-gradient(180deg, rgba(30, 22, 12, 0.92) 0%, rgba(18, 13, 6, 0.96) 100%);
+  border-top: 2px solid rgba(224, 184, 76, 0.55);
+  padding: 18px 32px 22px;
+}
+
+.dialog-speaker-name {
+  color: #e0b84c;
+  font-size: 1.05rem;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.dialog-text {
+  color: #f4e9d8;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  min-height: 3.2em;
+  max-width: 900px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: #a8967a;
+}
+
+.dialog-next-hint {
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes portraitIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}

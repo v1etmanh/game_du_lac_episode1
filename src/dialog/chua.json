@@ -1,0 +1,38 @@
+{
+  "locationId": "chua",
+  "locationName": "Chùa",
+  "description": "Chốn thanh tịnh nơi những câu đố về đom đóm chờ được giải đáp.",
+  "npcId": "sucu",
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Chùa yên lặng, như đang cất giữ một lời nhắc nhớ."
+    },
+    {
+      "speaker": "sucu",
+      "speakerName": "Sư Cụ",
+      "text": "Đom đóm chỉ sáng khi bóng tối đến, giống như ký ức."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Cháu hiểu, có những thứ cần thời gian mới hiện ra."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh có cảm thấy mình đang được dẫn về đúng chỗ không?"
+    },
+    {
+      "speaker": "sucu",
+      "speakerName": "Sư Cụ",
+      "text": "Đôi khi con đường trở về không phải là nơi mình đã đi, mà là nơi mình đã quên."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Vậy thì mình sẽ tiếp tục đi cho đến khi thấy ánh sáng."
+    }
+  ]
+}

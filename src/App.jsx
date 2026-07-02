@@ -1,0 +1,61 @@
+import { useState } from 'react'
+import { GAME_CONFIG } from './config/gameConfig'
+import IntroSequence from './components/IntroSequence.jsx'
+import LocationMap from './components/LocationMap.jsx'
+import DialogScreen from './components/DialogScreen.jsx'
+import JournalWidget from './components/JournalWidget.jsx'
+import KiteFieldGame from './components/KiteFieldGame.jsx'
+import OAnQuanGame from './games/oanquan/OAnQuanGame.jsx'
+import './App.css'
+
+// Các màn hình: 'intro' -> 'map' -> 'dialog' -> 'minigame' (sắp xây)
+export default function App() {
+  const [screen, setScreen] = useState(GAME_CONFIG.SKIP_INTRO ? 'map' : 'intro')
+  const [activeLocation, setActiveLocation] = useState(null)
+
+  const handleEnterLocation = (location) => {
+    setActiveLocation(location)
+    // Mọi địa điểm đều có file hội thoại trong src/dialog -> luôn đi qua màn dialog trước.
+    setScreen('dialog')
+  }
+
+  return (
+    <div className="app-root">
+      <JournalWidget />
+      {screen === 'intro' && (
+        <IntroSequence onFinish={() => setScreen('map')} />
+      )}
+      {screen === 'map' && (
+        <LocationMap
+          onBack={() => setScreen('intro')}
+          onEnterLocation={handleEnterLocation}
+          unlockAll={GAME_CONFIG.UNLOCK_ALL_LOCATIONS}
+        />
+      )}
+      {screen === 'dialog' && activeLocation && (
+        <DialogScreen
+          locationId={activeLocation.id}
+          onBack={() => setScreen('map')}
+          onFinish={() => setScreen('minigame')}
+        />
+      )}
+      {screen === 'minigame' && activeLocation?.id === 'ruong' && (
+        <KiteFieldGame onExit={() => setScreen('map')} />
+      )}
+      {screen === 'minigame' && activeLocation?.id === 'den_lang' && (
+        <OAnQuanGame onExit={() => setScreen('map')} />
+      )}
+      {screen === 'minigame' && activeLocation?.id !== 'ruong' && activeLocation?.id !== 'den_lang' && (
+        <div className="placeholder-screen">
+          Đã trò chuyện xong tại "{activeLocation?.name}".
+          <br />
+          Màn minigame sẽ được xây ở bước tiếp theo.
+          <br />
+          <button className="back-to-map-btn" onClick={() => setScreen('map')}>
+            ← Quay lại bản đồ
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}

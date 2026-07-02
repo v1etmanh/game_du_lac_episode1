@@ -1,0 +1,38 @@
+{
+  "locationId": "nha_ba_tu",
+  "locationName": "Nhà bà tư",
+  "description": "Những câu chuyện cũ và những điều chưa từng được nói ra.",
+  "npcId": "ba_tu",
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Nhà bà thật yên tĩnh, có vẻ như đợi một cuộc trò chuyện."
+    },
+    {
+      "speaker": "ba_tu",
+      "speakerName": "Bà Tư",
+      "text": "Cậu về rồi à, trông quen lắm."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Dạ, cháu lớn lên ở đây, nhưng lâu rồi không về."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Bà có thể kể cho chúng cháu nghe về những năm tháng trước không?"
+    },
+    {
+      "speaker": "ba_tu",
+      "speakerName": "Bà Tư",
+      "text": "Có chuyện không phải ai cũng dám nói ra."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Nếu bà biết, xin bà nói cho cháu nghe."
+    }
+  ]
+}

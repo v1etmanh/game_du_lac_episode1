@@ -1,0 +1,38 @@
+{
+  "locationId": "nha_hung",
+  "locationName": "Nhà Hùng",
+  "description": "Nơi lưu giữ những ký ức tuổi thơ và lời kể về gia đình Tính.",
+  "npcId": "hung",
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Cháu đến thăm Hùng, nghe kể về những chuyện cũ."
+    },
+    {
+      "speaker": "hung",
+      "speakerName": "Hùng",
+      "text": "Tính hồi nhỏ từng là người rất thân thiết với mọi người."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Cháu không chắc mình có từng như thế không."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Hùng có thể kể thêm về gia đình anh không?"
+    },
+    {
+      "speaker": "hung",
+      "speakerName": "Hùng",
+      "text": "Có, nhưng có những chuyện chỉ có người trong này mới hiểu."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Cháu sẽ lắng nghe hết."
+    }
+  ]
+}
