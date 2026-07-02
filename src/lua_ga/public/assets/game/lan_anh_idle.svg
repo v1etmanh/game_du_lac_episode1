@@ -1,0 +1,82 @@
+<svg xmlns=http://www.w3.org/2000/svg width=192 height=48 viewBox=0 0 192 48>
+<g id=lan_anh_idle_0 transform=translate(0 0)>
+  <ellipse cx=24 cy=45 rx=10 ry=3 fill=#2a1800 opacity=.18/>
+  <rect x=17 y=28 width=6 height=14 fill=#3a6fa0 rx=1/>
+  <rect x=25 y=28 width=6 height=14 fill=#3a6fa0 rx=1/>
+  <rect x=15 y=40 width=9 height=5 fill=#2a1e12 rx=2/>
+  <rect x=24 y=40 width=9 height=5 fill=#2a1e12 rx=2/>
+  <rect x=14 y=16 width=20 height=14 fill=#e84040 rx=2/>
+  <rect x=9 y=18 width=6 height=9 fill=#f4b37e rx=2/>
+  <rect x=33 y=18 width=6 height=9 fill=#f4b37e rx=2/>
+  <rect x=18 y=12 width=16 height=15 fill=#f4b37e rx=4/>
+  <rect x=14 y=8 width=20 height=10 fill=#3d2314 rx=4/>
+  <circle cx=24 cy=7 r=5 fill=#3d2314/>
+  <rect x=14 y=14 width=8 height=3 fill=#3d2314/>
+  <rect x=30 y=14 width=8 height=3 fill=#3d2314/>
+  <rect x=19 y=19 width=3 height=3 fill=#1a1010 rx=1/>
+  <rect x=30 y=19 width=3 height=3 fill=#1a1010 rx=1 transform=translate(-2 0)/>
+  <circle cx=18 cy=22 r=2 fill=#f0a0a0 opacity=.55/>
+  <circle cx=30 cy=22 r=2 fill=#f0a0a0 opacity=.55/>
+  <path d=M21 24 Q24 26 27 24 stroke=#b06050 stroke-width=1 fill=none stroke-linecap=round/>
+</g>
+<g id=lan_anh_idle_1 transform=translate(48 0)>
+  <ellipse cx=24 cy=45 rx=10 ry=3 fill=#2a1800 opacity=.18/>
+  <rect x=17 y=28 width=6 height=14 fill=#3a6fa0 rx=1/>
+  <rect x=25 y=28 width=6 height=14 fill=#3a6fa0 rx=1/>
+  <rect x=15 y=40 width=9 height=5 fill=#2a1e12 rx=2/>
+  <rect x=24 y=40 width=9 height=5 fill=#2a1e12 rx=2/>
+  <rect x=14 y=16 width=20 height=14 fill=#e84040 rx=2/>
+  <rect x=9 y=18 width=6 height=9 fill=#f4b37e rx=2/>
+  <rect x=33 y=18 width=6 height=9 fill=#f4b37e rx=2/>
+  <rect x=18 y=12 width=16 height=15 fill=#f4b37e rx=4/>
+  <rect x=14 y=8 width=20 height=10 fill=#3d2314 rx=4/>
+  <circle cx=24 cy=7 r=5 fill=#3d2314/>
+  <rect x=14 y=14 width=8 height=3 fill=#3d2314/>
+  <rect x=30 y=14 width=8 height=3 fill=#3d2314/>
+  <path d=M19 18 Q21 21 23 18 stroke=#1a1010 stroke-width=1.5 fill=none stroke-linecap=round/>
+  <path d=M29 18 Q31 21 33 18 stroke=#1a1010 stroke-width=1.5 fill=none stroke-linecap=round/>
+  <circle cx=18 cy=22 r=2 fill=#f0a0a0 opacity=.55/>
+  <circle cx=30 cy=22 r=2 fill=#f0a0a0 opacity=.55/>
+  <path d=M21 24 Q24 26 27 24 stroke=#b06050 stroke-width=1 fill=none stroke-linecap=round/>
+</g>
+<g id=lan_anh_idle_2 transform=translate(96 0)>
+  <ellipse cx=24 cy=45 rx=10 ry=3 fill=#2a1800 opacity=.18/>
+  <rect x=17 y=28 width=6 height=14 fill=#3a6fa0 rx=1/>
+  <rect x=25 y=28 width=6 height=14 fill=#3a6fa0 rx=1/>
+  <rect x=15 y=40 width=9 height=5 fill=#2a1e12 rx=2/>
+  <rect x=24 y=40 width=9 height=5 fill=#2a1e12 rx=2/>
+  <rect x=14 y=15 width=20 height=14 fill=#e84040 rx=2/>
+  <rect x=9 y=17 width=6 height=9 fill=#f4b37e rx=2/>
+  <rect x=33 y=17 width=6 height=9 fill=#f4b37e rx=2/>
+  <rect x=18 y=11 width=16 height=15 fill=#f4b37e rx=4/>
+  <rect x=14 y=7 width=20 height=10 fill=#3d2314 rx=4/>
+  <circle cx=24 cy=6 r=5 fill=#3d2314/>
+  <rect x=14 y=13 width=8 height=3 fill=#3d2314/>
+  <rect x=30 y=13 width=8 height=3 fill=#3d2314/>
+  <rect x=19 y=18 width=3 height=3 fill=#1a1010 rx=1/>
+  <rect x=28 y=18 width=3 height=3 fill=#1a1010 rx=1/>
+  <circle cx=18 cy=21 r=2 fill=#f0a0a0 opacity=.55/>
+  <circle cx=30 cy=21 r=2 fill=#f0a0a0 opacity=.55/>
+  <path d=M21 23 Q24 25 27 23 stroke=#b06050 stroke-width=1 fill=none stroke-linecap=round/>
+</g>
+<g id=lan_anh_idle_3 transform=translate(144 0)>
+  <ellipse cx=24 cy=45 rx=10 ry=3 fill=#2a1800 opacity=.18/>
+  <rect x=17 y=28 width=6 height=14 fill=#3a6fa0 rx=1/>
+  <rect x=25 y=28 width=6 height=14 fill=#3a6fa0 rx=1/>
+  <rect x=15 y=40 width=9 height=5 fill=#2a1e12 rx=2/>
+  <rect x=24 y=40 width=9 height=5 fill=#2a1e12 rx=2/>
+  <rect x=14 y=16 width=20 height=14 fill=#e84040 rx=2/>
+  <rect x=9 y=18 width=6 height=9 fill=#f4b37e rx=2/>
+  <rect x=33 y=18 width=6 height=9 fill=#f4b37e rx=2/>
+  <rect x=18 y=12 width=16 height=15 fill=#f4b37e rx=4/>
+  <rect x=14 y=8 width=20 height=10 fill=#3d2314 rx=4/>
+  <circle cx=24 cy=7 r=5 fill=#3d2314/>
+  <rect x=14 y=14 width=8 height=3 fill=#3d2314/>
+  <rect x=30 y=14 width=8 height=3 fill=#3d2314/>
+  <rect x=19 y=19 width=3 height=3 fill=#1a1010 rx=1/>
+  <rect x=28 y=19 width=3 height=3 fill=#1a1010 rx=1/>
+  <circle cx=18 cy=22 r=2 fill=#f0a0a0 opacity=.55/>
+  <circle cx=30 cy=22 r=2 fill=#f0a0a0 opacity=.55/>
+  <path d=M21 24 Q24 26 27 24 stroke=#b06050 stroke-width=1 fill=none stroke-linecap=round/>
+</g>
+</svg>
