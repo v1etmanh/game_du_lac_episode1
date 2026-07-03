@@ -38,7 +38,7 @@ export class Game {
   private readonly birds: Bird[] = [];
   private readonly groundY = 430;
   private readonly maxLives = 3;
-  private readonly goalDistance = 800;
+  private readonly goalDistance = 2400;
   private lives = this.maxLives;
   private hitInvulnerableTimer = 0;
   private paused = false;
@@ -115,7 +115,7 @@ export class Game {
       this.hasStartedAudio = true;
     }
 
-    if (!this.paused && !this.crashed && !this.completed) {
+    if (!this.paused && !this.crashed) {
       this.update(deltaSeconds);
     }
 

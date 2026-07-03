@@ -17,7 +17,7 @@ const initialSnapshot: GameSnapshot = {
   completed: false,
   lives: 3,
   maxLives: 3,
-  goalDistance: 800,
+  goalDistance: 2400,
 };
 
 interface AppProps {

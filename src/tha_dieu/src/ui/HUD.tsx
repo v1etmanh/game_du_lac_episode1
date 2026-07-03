@@ -7,6 +7,7 @@ interface HUDProps {
 export function HUD({ snapshot }: HUDProps) {
   return (
     <aside className="hud" aria-live="polite">
+      {snapshot.completed && <div className="completion-banner">Bạn đã hoàn thành thử thách!</div>}
       <div className="hud-group">
         <Metric label="Wind" value={`${snapshot.windDirectionDegrees.toFixed(0)} deg`} />
         <Metric label="Strength" value={`${snapshot.windStrength.toFixed(2)}`} />

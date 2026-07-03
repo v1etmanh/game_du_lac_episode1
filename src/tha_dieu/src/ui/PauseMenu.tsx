@@ -9,11 +9,11 @@ interface PauseMenuProps {
 }
 
 export function PauseMenu({ paused, crashed, completed, distance, onResume, onRestart, onExit }: PauseMenuProps) {
-  if (!paused && !crashed && !completed) {
+  if (!paused && !crashed) {
     return null;
   }
 
-  const title = completed ? "Đã bay xong chặng đường!" : crashed ? "Flight Lost" : "Paused";
+  const title = crashed ? "Flight Lost" : "Paused";
 
   return (
     <section className="pause-backdrop" role="dialog" aria-modal="true">
