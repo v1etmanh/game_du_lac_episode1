@@ -11,7 +11,14 @@ import HaiQuaGame from './games/hai_qua/HaiQuaGame.jsx'
 import BanHangGame from './games/ban_hang/BanHangGame.jsx'
 import DanBauGame from './games/dan_bau/DanBauGame.jsx'
 import NhaCuQuest from './games/nha_cu/NhaCuQuest.jsx'
+import PhongSuGame from './games/phong_su/PhongSuGame.jsx'
 import './App.css'
+
+const INTERVIEW_BY_LOCATION = {
+  den_lang: 'ong_ba',
+  nha_hung: 'hung',
+  nha_ba_tu: 'ba_nam',
+}
 
 // Các màn hình: 'intro' -> 'map' -> 'dialog' -> 'minigame' (sắp xây)
 export default function App() {
@@ -40,6 +47,21 @@ export default function App() {
       {screen === 'dialog' && activeLocation && (
         <DialogScreen
           locationId={activeLocation.id}
+          onBack={() => setScreen('map')}
+          onFinish={() => setScreen(INTERVIEW_BY_LOCATION[activeLocation.id] ? 'interview' : 'minigame')}
+        />
+      )}
+      {screen === 'interview' && activeLocation && INTERVIEW_BY_LOCATION[activeLocation.id] && (
+        <PhongSuGame
+          npcId={INTERVIEW_BY_LOCATION[activeLocation.id]}
+          onExit={() => setScreen('map')}
+          onComplete={() => setScreen('postInterviewDialog')}
+        />
+      )}
+      {screen === 'postInterviewDialog' && activeLocation && (
+        <DialogScreen
+          locationId={activeLocation.id}
+          dialogueKey="afterInterviewDialogues"
           onBack={() => setScreen('map')}
           onFinish={() => setScreen('minigame')}
         />

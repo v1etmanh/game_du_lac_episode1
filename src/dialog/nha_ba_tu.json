@@ -1,38 +1,50 @@
 {
   "locationId": "nha_ba_tu",
-  "locationName": "Nhà bà tư",
-  "description": "Những câu chuyện cũ và những điều chưa từng được nói ra.",
+  "locationName": "Nhà bà Tư",
+  "description": "Những câu chuyện cũ, tiếng đàn và điều cần được ghi lại.",
   "npcId": "ba_tu",
   "dialogues": [
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Nhà bà thật yên tĩnh, có vẻ như đợi một cuộc trò chuyện."
+      "text": "Nhà bà yên tĩnh quá. Cháu cứ có cảm giác mỗi đồ vật ở đây đều giữ một câu chuyện."
     },
     {
       "speaker": "ba_tu",
       "speakerName": "Bà Tư",
-      "text": "Cậu về rồi à, trông quen lắm."
+      "text": "Nhà cũ mà cháu. Cái gì ở lâu cũng biết nghe, biết nhớ."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Dạ, cháu lớn lên ở đây, nhưng lâu rồi không về."
+      "text": "Bà ơi, tụi cháu muốn hiểu thêm về tiếng đàn bầu và những ký ức quanh nó."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Bà có thể kể cho chúng cháu nghe về những năm tháng trước không?"
+      "text": "Cháu muốn làm một bài phỏng vấn nhỏ, ghi lại nguồn gốc, cách chơi và ý nghĩa của đàn bầu. Bà cho tụi cháu hỏi chuyện được không ạ?"
     },
     {
       "speaker": "ba_tu",
       "speakerName": "Bà Tư",
-      "text": "Có chuyện không phải ai cũng dám nói ra."
+      "text": "Được chứ. Hỏi cho kỹ, ghi cho thật lòng. Một nét đẹp văn hóa mà không ai ghi lại thì mai này dễ phai lắm."
+    }
+  ],
+  "afterInterviewDialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Bài báo xong rồi bà ơi. Cháu đã ghi lại cả tiếng đàn, cách chơi và những ký ức của bà."
+    },
+    {
+      "speaker": "ba_tu",
+      "speakerName": "Bà Tư",
+      "text": "Tốt lắm. Ghi được rồi thì phải nghe thử, phải chạm vào nhịp của nó nữa."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Nếu bà biết, xin bà nói cho cháu nghe."
+      "text": "Vậy tụi cháu sẽ thử chơi đàn bầu, để hiểu điều bà kể bằng chính đôi tai của mình."
     }
   ]
 }

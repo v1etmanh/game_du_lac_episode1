@@ -17,11 +17,12 @@ function loadDialogData(locationId) {
 
 // Màn hình hội thoại: nền = ảnh landscape của địa điểm, hộp thoại kiểu giấy cũ phía dưới,
 // chân dung nhân vật đang nói nổi bên trái (Lan Anh/Tính) hoặc bên phải (NPC).
-export default function DialogScreen({ locationId, onFinish, onBack }) {
+export default function DialogScreen({ locationId, onFinish, onBack, dialogueKey = 'dialogues' }) {
   const data = loadDialogData(locationId)
   const [lineIndex, setLineIndex] = useState(0)
+  const dialogues = data?.[dialogueKey] || data?.dialogues || []
 
-  if (!data || !data.dialogues?.length) {
+  if (!data || !dialogues.length) {
     return (
       <div className="dialog-screen dialog-empty">
         <p>Chưa có hội thoại cho địa điểm này.</p>
@@ -30,10 +31,10 @@ export default function DialogScreen({ locationId, onFinish, onBack }) {
     )
   }
 
-  const line = data.dialogues[lineIndex]
+  const line = dialogues[lineIndex]
   const character = CHARACTERS[line.speaker] || { name: line.speakerName, avatar: null }
   const isPlayerSide = line.speaker === 'lan_anh' || line.speaker === 'tinh'
-  const isLast = lineIndex === data.dialogues.length - 1
+  const isLast = lineIndex === dialogues.length - 1
   const bgImage = data.backgroundImage || `/landscape/${locationId}.png`
 
   const handleAdvance = () => {
@@ -75,7 +76,7 @@ export default function DialogScreen({ locationId, onFinish, onBack }) {
         <div className="dialog-speaker-name">{line.speakerName}</div>
         <div className="dialog-text">{line.text}</div>
         <div className="dialog-footer">
-          <span className="dialog-progress">{lineIndex + 1} / {data.dialogues.length}</span>
+          <span className="dialog-progress">{lineIndex + 1} / {dialogues.length}</span>
           <span className="dialog-next-hint">
             {isLast ? 'Nhấn để bắt đầu ▸' : 'Nhấn để tiếp ▸'}
           </span>

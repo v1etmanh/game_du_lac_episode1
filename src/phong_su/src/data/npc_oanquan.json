@@ -1,0 +1,81 @@
+{
+  "id": "ong_ba",
+  "name": "Ông Ba",
+  "age": 75,
+  "topic": "Ô Ăn Quan",
+  "tagline": "Người kể chuyện trò chơi dân gian",
+  "greeting": "Ồ, có khách đến thăm ông rồi! Cháu ngồi xuống đây đi. Cháu muốn hỏi ông điều gì vậy?",
+  "portrait": "ong_ba",
+  "responses": {
+    "origin": {
+      "keywords": ["nguồn gốc", "ra đời", "lịch sử", "history", "origin", "bắt đầu", "xuất hiện", "có từ bao giờ", "ngày xua", "thời xưa", "nguon goc", "ra doi", "lich su"],
+      "sampleQuestion": "Ô ăn quan có từ bao giờ vậy ông?",
+      "text": "Ô ăn quan xuất hiện từ hàng trăm năm trước, cháu ơi! Không ai biết chính xác ai là người đầu tiên nghĩ ra trò này. Người ta kể rằng các cụ ngày xưa nhìn vào những ô ruộng lúa ngăn cách bởi bờ đất mà nghĩ ra cách chơi. Đây là trò chơi dân gian thuần túy của người Việt mình, gắn liền với cuộc sống đồng quê từ bao đời nay. Có người nói trò này có từ thời Hùng Vương, nhưng ông không dám chắc. Chỉ biết rằng đời ông chơi, đời bố ông chơi, đời ông nội cũng chơi!",
+      "unlock": ["origin"]
+    },
+    "rules": {
+      "keywords": ["luật", "cách chơi", "chơi như thế nào", "rules", "đi như thế nào", "chơi thế nào", "chơi ra sao", "luat", "choi", "di chuyen", "hướng dẫn"],
+      "sampleQuestion": "Ông chỉ cháu cách chơi ô ăn quan được không?",
+      "text": "Cách chơi ô ăn quan không khó lắm đâu, cháu! Bàn chơi gồm 10 ô vuông nhỏ và 2 ô quan lớn ở hai đầu. Ban đầu mỗi ô nhỏ để 5 hòn sỏi nhỏ, hai ô quan mỗi ô để 1 viên đá to hơn gọi là quan. Hai người ngồi hai bên, mỗi người quản 5 ô của mình. Đến lượt thì bốc hết sỏi trong một ô rồi rải đều sang từng ô liền kề theo chiều đã chọn, mỗi ô một viên. Khi viên cuối rơi vào ô trống thì được ăn hết sỏi trong ô kế tiếp! Ai gom được nhiều sỏi hơn khi hết lượt là thắng. Đơn giản vậy thôi, nhưng muốn thắng phải nghĩ nhiều lắm đó!",
+      "unlock": ["rules"]
+    },
+    "materials": {
+      "keywords": ["vật liệu", "làm bằng gì", "đá", "sỏi", "cần gì", "bàn chơi", "dụng cụ", "bộ đồ chơi", "vat lieu", "lam bang gi", "can gi"],
+      "sampleQuestion": "Chơi ô ăn quan cần chuẩn bị những gì ạ?",
+      "text": "Ngày xưa chúng tôi chơi đơn giản lắm, cháu ơi! Chỉ cần một miếng đất phẳng và mấy hòn sỏi nhặt từ bờ sông về là đủ rồi. Kẻ ô bằng que trên đất, hoặc đôi khi đào lõm mỗi ô xuống một chút cho sỏi khỏi rơi ra. Sỏi trắng, sỏi đen, mảnh ngói vỡ... cái gì tròn tròn là dùng được! Viên quan to thì tìm hòn đá đẹp hơn một chút. Sau này người ta mới làm bàn gỗ đẹp hơn, có khắc ô sẵn. Nhưng cái hay nhất vẫn là chơi ngay trên đất, nghe tiếng sỏi lách cách khi bốc lên, thích lắm cháu ơi!",
+      "unlock": ["materials"]
+    },
+    "meaning": {
+      "keywords": ["ý nghĩa", "học được gì", "dạy gì", "giá trị", "tại sao chơi", "lợi ích", "y nghia", "hoc duoc gi", "day gi", "gia tri"],
+      "sampleQuestion": "Chơi ô ăn quan dạy cho mình điều gì vậy ông?",
+      "text": "Ô ăn quan không chỉ là trò chơi giải trí đâu, cháu ơi. Nó dạy cho trẻ con biết đếm số và tính toán trong đầu nhanh hơn rất nhiều — không cần bút toán gì hết, cứ nhìn vào ô là tính ra ngay! Rồi nó còn dạy tính kiên nhẫn, biết chờ đúng thời cơ mới ra tay. Dạy nhìn xa trông rộng, không chỉ nghĩ đến bước hiện tại mà phải tính đến mấy bước sau. Người lớn tuổi hay nói: đứa nào giỏi ô ăn quan thì lớn lên làm ăn cũng lanh lợi. Đó là trí tuệ dân gian của cha ông truyền lại qua trò chơi đó, cháu!",
+      "unlock": ["meaning"]
+    },
+    "memories": {
+      "keywords": ["kỷ niệm", "tuổi thơ", "nhớ", "ngày xưa", "hồi nhỏ", "trẻ em", "ký ức", "memory", "ky niem", "tuoi tho", "hoi nho"],
+      "sampleQuestion": "Ông có kỷ niệm tuổi thơ nào với ô ăn quan không?",
+      "text": "Ôi, mỗi lần nhớ lại những buổi chiều hè ngày xưa là lòng ông lại bâng khuâng lắm... Tụi nhỏ chúng tôi tụ tập dưới gốc cây đa đầu làng, mỗi đứa góp vài hòn sỏi, chơi suốt từ trưa đến tối mới chịu về ăn cơm. Bà nội hay ra kêu về mà không đứa nào chịu nghe! Tiếng cười vang cả xóm... Có lần ông thua một đứa con gái nhỏ hơn mình hai tuổi, xấu hổ cả tuần không dám ra đầu làng nữa! Haha! Những ngày đó thật đẹp, cháu ơi. Bây giờ nhìn mấy đứa cháu suốt ngày cúi đầu vào điện thoại, ông tiếc lắm.",
+      "unlock": ["memories"]
+    }
+  },
+  "fallback": [
+    "Haha, chuyện đó thì ông không rành lắm. Nhưng mà cứ nhắc đến làng xóm là ông lại nhớ đến những buổi chiều tụi nhỏ chơi Ô Ăn Quan dưới gốc đa, vui lắm cháu ơi!",
+    "Ờ... câu đó ông không biết trả lời sao cho đúng. Hồi trẻ ông cũng tò mò nhiều thứ, nhưng rồi đời người gắn với làng quê, gắn với mấy trò chơi con nít mà thành ký ức đẹp nhất. Cháu hỏi ông về Ô Ăn Quan thì ông kể cả ngày không hết đó!",
+    "Cái đó ông không biết. Nhưng ông nhớ hồi xưa, dù trời nóng hay mưa, tụi nhỏ vẫn kéo nhau ra chơi Ô Ăn Quan. Cái trò chơi đơn giản vậy mà gắn kết cả xóm làng lại với nhau."
+  ],
+  "notebook": {
+    "title": "Ô Ăn Quan",
+    "sections": [
+      {
+        "id": "origin",
+        "label": "Nguồn Gốc",
+        "icon": "📜",
+        "content": "Ô ăn quan xuất hiện từ hàng trăm năm trước, gắn liền với cuộc sống đồng quê Việt Nam. Được lấy cảm hứng từ hình ảnh những ô ruộng lúa. Trò chơi dân gian thuần Việt trải qua nhiều thế hệ — đời ông chơi, đời bố ông chơi, đời ông nội cũng chơi."
+      },
+      {
+        "id": "rules",
+        "label": "Luật Chơi",
+        "icon": "📋",
+        "content": "Bàn gồm 10 ô nhỏ + 2 ô quan lớn ở hai đầu. Mỗi ô nhỏ ban đầu có 5 hòn sỏi; ô quan có 1 viên đá lớn. Người chơi bốc sỏi từ một ô và rải đều từng ô liền kề. Khi sỏi cuối rơi vào ô trống → ăn hết sỏi trong ô kế tiếp. Ai gom được nhiều sỏi nhất thắng!"
+      },
+      {
+        "id": "materials",
+        "label": "Vật Liệu",
+        "icon": "🪨",
+        "content": "Ngày xưa chỉ cần đất phẳng và sỏi nhặt từ bờ sông. Kẻ ô bằng que, dùng sỏi đủ loại. Viên quan là hòn đá to hơn một chút. Sau này có bàn gỗ đẹp hơn — nhưng chơi trên đất mới có cảm giác thật nhất!"
+      },
+      {
+        "id": "meaning",
+        "label": "Ý Nghĩa",
+        "icon": "💡",
+        "content": "Dạy trẻ đếm số và tính toán nhanh trong đầu. Rèn luyện kiên nhẫn và biết chờ đúng thời cơ. Phát triển tư duy chiến lược nhìn xa trông rộng. Trí tuệ dân gian cha ông truyền lại qua trò chơi đơn giản."
+      },
+      {
+        "id": "memories",
+        "label": "Kỷ Niệm Tuổi Thơ",
+        "icon": "🌳",
+        "content": "Những buổi chiều hè dưới gốc cây đa đầu làng. Chơi từ trưa đến tối, bà nội kêu về không chịu nghe. Tiếng cười vang cả xóm. Một lần thua đứa nhỏ hơn, xấu hổ cả tuần! — Những ký ức bình dị mà đẹp nhất cuộc đời."
+      }
+    ]
+  }
+}
