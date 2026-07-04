@@ -66,7 +66,7 @@ export default function EditableRichText({
   const clearFormat = () => document.execCommand('removeFormat')
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className={`rt-field ${className}`} style={{ position: 'relative', ...style }}>
       {toolbarPos && (
         <div
           className="rt-toolbar"
@@ -88,8 +88,7 @@ export default function EditableRichText({
       )}
       <div
         ref={ref}
-        className={`rt-editable ${className}`}
-        style={style}
+        className="rt-editable"
         contentEditable
         suppressContentEditableWarning
         data-placeholder={placeholder}

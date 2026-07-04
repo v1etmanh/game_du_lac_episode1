@@ -53,7 +53,7 @@
   place-items: center;
 }
 
-.game-canvas {
+.oaq-root .game-canvas {
   width: min(100%, 1440px);
   max-height: calc(100vh - 20px);
   aspect-ratio: 25 / 19;
@@ -65,7 +65,7 @@
   background: #392315;
 }
 
-.game-canvas.locked {
+.oaq-root .game-canvas.locked {
   cursor: default;
 }
 
@@ -308,7 +308,7 @@
 }
 
 @media (max-width: 560px) {
-  .game-canvas {
+  .oaq-root .game-canvas {
     border-radius: 6px;
   }
 

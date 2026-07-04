@@ -8,3 +8,139 @@
 .phong-su-game button {
   font: inherit;
 }
+
+.phong-su-game,
+.phong-su-game * {
+  box-sizing: border-box;
+}
+
+.phong-su-game .np-editor {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.phong-su-game .np-workspace {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  gap: 14px;
+  overflow: hidden;
+}
+
+.phong-su-game .np-sidebar,
+.phong-su-game .np-paper-wrap {
+  min-width: 0;
+  min-height: 0;
+}
+
+.phong-su-game .np-paper-wrap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: auto;
+}
+
+.phong-su-game .np-paper {
+  width: min(100%, 860px);
+  min-width: 0;
+  flex: 0 0 auto;
+}
+
+.phong-su-game .np-paper-grid {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+}
+
+.phong-su-game .np-paper-grid > *,
+.phong-su-game .np-area-masthead,
+.phong-su-game .np-area-headline,
+.phong-su-game .np-area-byline,
+.phong-su-game .np-area-hero,
+.phong-su-game .np-area-col1,
+.phong-su-game .np-area-col2,
+.phong-su-game .np-area-quotebox,
+.phong-su-game .np-area-quoteimg,
+.phong-su-game .np-area-thumbs,
+.phong-su-game .np-area-footer {
+  width: 100%;
+  min-width: 0;
+}
+
+.phong-su-game .np-masthead-input,
+.phong-su-game .np-headline,
+.phong-su-game .np-byline,
+.phong-su-game .rt-editable {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.phong-su-game .layout-classic .np-paper-grid {
+  grid-template-columns: minmax(220px, 1.15fr) minmax(180px, 0.95fr) minmax(180px, 0.9fr);
+  grid-template-rows: auto auto auto auto 1fr auto auto;
+  gap: 16px;
+  grid-template-areas:
+    "masthead masthead masthead"
+    "headline headline headline"
+    "byline byline byline"
+    "hero col1 quotebox"
+    "hero col2 quoteimg"
+    "thumbs thumbs thumbs"
+    "footer footer footer";
+}
+
+.phong-su-game .layout-magazine .np-paper-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto auto auto auto auto;
+  gap: 14px;
+  grid-template-areas:
+    "masthead masthead"
+    "headline headline"
+    "byline byline"
+    "hero hero"
+    "col1 col2"
+    "quoteimg quotebox"
+    "thumbs thumbs"
+    "footer footer";
+}
+
+@media (max-width: 1100px) {
+  .phong-su-game .np-workspace {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+
+  .phong-su-game .np-sidebar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .phong-su-game .np-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .phong-su-game .layout-classic .np-paper-grid,
+  .phong-su-game .layout-magazine .np-paper-grid,
+  .phong-su-game .layout-grid .np-paper-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "masthead"
+      "headline"
+      "byline"
+      "hero"
+      "col1"
+      "col2"
+      "quoteimg"
+      "quotebox"
+      "thumbs"
+      "footer";
+  }
+}

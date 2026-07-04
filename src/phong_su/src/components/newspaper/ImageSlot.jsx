@@ -6,8 +6,10 @@
  * đây để đặt ảnh".
  */
 export default function ImageSlot({ src, caption, onCaptionChange, onClick, hasPendingPick, ratio = '4/3', label }) {
+  const cssRatio = ratio.includes('/') ? ratio.replace('/', ' / ') : ratio
+
   return (
-    <div className="np-imgslot" style={{ aspectRatio: ratio }}>
+    <div className="np-imgslot" style={{ '--slot-ratio': cssRatio }}>
       <button
         type="button"
         className={`np-imgslot-btn ${hasPendingPick ? 'np-imgslot-pending' : ''}`}
