@@ -1,0 +1,44 @@
+{
+  "locationId": "nha_cu",
+  "locationName": "Nhà cũ",
+  "description": "Ngôi nhà cũ của một gia đình bà con đã đi nước ngoài, lâu lâu mới về dọn dẹp và thăm quê.",
+  "backgroundImage": "/landscape/chua.png",
+  "npcId": null,
+  "dialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Nhà này vắng thật. Sao cổng vẫn mở vậy anh Tính?"
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Nhà của bà con anh. Cả nhà đi nước ngoài lâu rồi, nhưng thỉnh thoảng họ về dọn dẹp, thăm quê. Hồi nhỏ tụi anh hay được cho vào sân chơi."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Có phải đây là chỗ anh từng kể về đom đóm không?"
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Ừ. Hồi đó anh với lũ bạn cứ thắc mắc vì sao đom đóm chỉ xuất hiện vào vài buổi, còn những hôm khác tìm mãi không thấy."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Bọn anh từng để lại mấy câu đố trong nhà: nơi nào thấy ánh sáng nhỏ, khi nào nó xuất hiện, và phải ghi lại thế nào để lần sau tìm được."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Vậy mình phải giải hết trước đã. Nếu biết đúng thời điểm, mình có thể ra vườn chờ đom đóm."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Giải xong mấy mảnh ghi chú, mình sẽ sang vườn sau nhà hái ít quả, đợi trời tối rồi quan sát."
+    }
+  ]
+}

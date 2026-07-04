@@ -78,29 +78,14 @@ export const LOCATIONS = [
     unlocked: false,
   },
   {
-    id: 'chua',
-    name: 'Chùa',
+    id: 'nha_cu',
+    name: 'nhà cũ',
     description: 'Chốn thanh tịnh và những câu chuyện xưa.',
     image: '/landscape/chua.png',
     npc: null,
     unlocked: false,
   },
-  {
-    id: 'gieng_lang',
-    name: 'Giếng sau làng',
-    description: 'Giếng nước mát lành dưới bóng tre xanh.',
-    image: '/landscape/gieng_lang.png',
-    npc: null,
-    unlocked: false,
-  },
-  {
-    id: 'ao_lang',
-    name: 'Ao làng',
-    description: 'Ao làng rộng lớn với bao kỷ niệm.',
-    image: '/landscape/ao_lang.png',
-    npc: null,
-    unlocked: false,
-  },
+ 
 ]
 
 // Lấy thông tin 1 địa điểm theo id

@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700");
+
+.escape-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  padding: 14px clamp(18px, 4vw, 44px);
+  border-bottom: 1px solid rgba(201, 151, 78, 0.46);
+  background:
+    linear-gradient(90deg, rgba(8, 17, 18, 0.96), rgba(18, 42, 40, 0.96)),
+    #0d1718;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+.escape-nav-back,
+.escape-nav-exit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid rgba(230, 192, 126, 0.72);
+  color: #f3c66e;
+  background: rgba(10, 13, 14, 0.66);
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.escape-nav-back::before {
+  content: "<";
+  margin-right: 10px;
+  color: #7fc2b8;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 700;
+}
+
+.escape-nav-back:hover,
+.escape-nav-back:focus,
+.escape-nav-exit:hover,
+.escape-nav-exit:focus {
+  border-color: #7fc2b8;
+  color: #fff0c8;
+  background: rgba(25, 71, 66, 0.72);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.escape-nav-exit {
+  margin-left: 10px;
+}
+
+@media (max-width: 640px) {
+  .escape-nav {
+    min-height: 64px;
+    padding: 10px 14px;
+  }
+
+  .escape-nav-back,
+  .escape-nav-exit {
+    width: 100%;
+  }
+}

@@ -1,0 +1,20 @@
+.giai-do-embed-wrap {
+  min-height: 100vh;
+  color: #f0d7a5;
+  background: #0d1113;
+}
+
+.giai-do-embed-wrap .escape-room-embed {
+  min-height: 100vh;
+}
+
+.giai-do-embed-wrap .btn {
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid #d2a34e;
+  border-radius: 4px;
+  color: #1a1308;
+  background: #f0c46a;
+  cursor: pointer;
+  font-weight: 800;
+}

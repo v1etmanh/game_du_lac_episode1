@@ -1,0 +1,98 @@
+.result-page {
+    min-height: calc(100vh - 76px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 34px 18px;
+    background:
+        radial-gradient(circle at 20% 18%, rgba(120, 185, 173, 0.22), transparent 32%),
+        radial-gradient(circle at 80% 10%, rgba(191, 145, 78, 0.22), transparent 28%),
+        linear-gradient(135deg, #0d1113 0%, #171615 54%, #081615 100%);
+}
+
+.result-hero {
+    position: relative;
+    width: min(1120px, 96vw);
+    min-height: min(780px, calc(100vh - 140px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid rgba(171, 132, 83, 0.68);
+    background: #111;
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+}
+
+.result-begin-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: clamp(18px, 3vw, 34px);
+    background:
+        radial-gradient(circle at 50% 45%, rgba(82, 126, 124, 0.16), transparent 54%),
+        #101111;
+}
+
+.result-panel {
+    position: relative;
+    z-index: 1;
+    width: min(560px, 88vw);
+    margin-top: auto;
+    margin-bottom: clamp(28px, 5vw, 58px);
+    padding: 22px 24px;
+    border: 1px solid rgba(230, 192, 126, 0.72);
+    background: rgba(10, 13, 14, 0.78);
+    color: #ead8b0;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), inset 0 0 28px rgba(127, 194, 184, 0.08);
+}
+
+.result-kicker {
+    display: block;
+    margin-bottom: 8px;
+    color: #7fc2b8;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.result-panel h1 {
+    margin: 0 0 10px;
+    color: #f3c66e;
+    font-family: "Courier New", Courier, monospace;
+    font-size: clamp(30px, 5vw, 52px);
+    font-weight: 700;
+}
+
+.result-panel p {
+    margin: 0;
+    color: #d3bf98;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(15px, 2.4vw, 18px);
+    line-height: 1.65;
+}
+
+@media (max-width: 640px) {
+    .result-page {
+        min-height: calc(100vh - 64px);
+        padding: 14px;
+    }
+
+    .result-hero {
+        min-height: calc(100vh - 96px);
+    }
+
+    .result-begin-image {
+        object-fit: cover;
+        padding: 0;
+    }
+
+    .result-panel {
+        width: calc(100% - 24px);
+        margin-bottom: 18px;
+        padding: 18px 16px;
+    }
+}

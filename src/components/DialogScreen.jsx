@@ -34,7 +34,7 @@ export default function DialogScreen({ locationId, onFinish, onBack }) {
   const character = CHARACTERS[line.speaker] || { name: line.speakerName, avatar: null }
   const isPlayerSide = line.speaker === 'lan_anh' || line.speaker === 'tinh'
   const isLast = lineIndex === data.dialogues.length - 1
-  const bgImage = `/landscape/${locationId}.png`
+  const bgImage = data.backgroundImage || `/landscape/${locationId}.png`
 
   const handleAdvance = () => {
     if (isLast) {
