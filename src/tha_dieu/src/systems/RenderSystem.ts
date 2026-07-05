@@ -498,43 +498,26 @@ export class RenderSystem {
 
   private drawWindGust(context: CanvasRenderingContext2D, gust: WindGust): void {
     const windImage = AssetLoader.get("windGust");
-    const start = gust.getStart();
+    const center = gust.getCenter();
     const alpha = gust.alpha;
-    const segmentCount = 5;
-    const segmentSpacing = gust.length / segmentCount;
+    const bob = Math.sin(performance.now() * 0.006 + gust.age * 4) * 4;
+    const breathe = 0.94 + Math.sin(performance.now() * 0.008 + gust.age * 5) * 0.08;
 
     context.save();
     context.globalAlpha = alpha;
-    context.translate(start.x, start.y);
+    context.translate(center.x, center.y + bob);
     context.rotate(gust.angleRadians);
 
     if (windImage) {
-      const drawHeight = 46;
+      const drawHeight = 42 * breathe;
       const drawWidth = drawHeight * (windImage.naturalWidth / windImage.naturalHeight);
-      for (let index = 0; index < segmentCount; index += 1) {
-        const pulse = Math.sin(performance.now() * 0.007 + index * 1.15) * 10;
-        const drift = Math.cos(performance.now() * 0.004 + index * 0.9) * 7;
-        const scale = 0.82 + Math.sin(index * 1.7 + gust.age * 4) * 0.12;
-        context.globalAlpha = alpha * (0.45 + index * 0.1);
-        context.drawImage(
-          windImage,
-          index * segmentSpacing - drawWidth * 0.35 + drift,
-          -drawHeight / 2 + pulse,
-          drawWidth * scale,
-          drawHeight * scale,
-        );
-      }
+      context.drawImage(windImage, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
     } else {
       context.strokeStyle = "rgba(255, 255, 255, 0.52)";
       context.lineWidth = 3;
-      context.setLineDash([26, 20]);
-      for (let index = 0; index < 3; index += 1) {
-        const y = (index - 1) * 18;
-        context.beginPath();
-        context.moveTo(0, y);
-        context.quadraticCurveTo(gust.length * 0.45, y - 18, gust.length, y);
-        context.stroke();
-      }
+      context.beginPath();
+      context.arc(0, 0, 18, 0, Math.PI * 2);
+      context.stroke();
     }
     context.restore();
   }

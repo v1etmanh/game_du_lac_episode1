@@ -472,6 +472,10 @@ export class Renderer {
   drawPlayer(ctx, player) {
     const sprinting = player.sprintActiveTime > 0;
 
+    if (player.dashAiming) {
+      this.drawDashPreview(ctx, player);
+    }
+
     if (player.dashEffectRemaining > 0) {
       const alpha = Math.max(0, player.dashEffectRemaining / Math.max(0.001, player.dashEffectDuration));
       ctx.save();
@@ -502,6 +506,61 @@ export class Renderer {
     }
 
     this.drawPixelPlayer(ctx, player);
+  }
+
+  drawDashPreview(ctx, player) {
+    const endX = player.dashPreviewX;
+    const endY = player.dashPreviewY;
+    const pulse = 0.65 + Math.sin((typeof performance === "undefined" ? Date.now() : performance.now()) * 0.012) * 0.18;
+
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.strokeStyle = `rgba(255, 245, 180, ${0.42 + pulse * 0.2})`;
+    ctx.lineWidth = 7;
+    ctx.setLineDash([18, 12]);
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(58, 127, 213, 0.62)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 10]);
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    for (let index = 1; index <= 3; index += 1) {
+      const t = index / 4;
+      const ghost = {
+        ...player,
+        x: player.x + (endX - player.x) * t,
+        y: player.y + (endY - player.y) * t,
+        sprintActiveTime: 0
+      };
+      ctx.save();
+      ctx.globalAlpha = 0.12 + index * 0.06;
+      this.drawPixelPlayer(ctx, ghost);
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.globalAlpha = 0.46 + pulse * 0.18;
+    this.drawPixelPlayer(ctx, {
+      ...player,
+      x: endX,
+      y: endY,
+      sprintActiveTime: 0
+    });
+    ctx.strokeStyle = "rgba(255, 245, 180, 0.82)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(endX, endY, player.radius + 11, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
   }
 
   drawPixelPlayer(ctx, player) {

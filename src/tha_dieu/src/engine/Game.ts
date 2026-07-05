@@ -262,7 +262,7 @@ export class Game {
   private updateWindGusts(deltaSeconds: number): void {
     this.windGustSpawnTimer -= deltaSeconds;
 
-    if (this.windGustSpawnTimer <= 0) {
+    if (this.windGustSpawnTimer <= 0 && this.windGusts.length === 0) {
       this.spawnWindGust();
       this.windGustSpawnTimer += 5;
     }
@@ -279,8 +279,8 @@ export class Game {
 
   private spawnWindGust(): void {
     const x = this.player.position.x + this.renderer.width * 0.65 + 140 + Math.random() * 180;
-    const y = this.groundY - 215 - Math.random() * 105;
-    const length = Math.min(360, Math.max(260, this.renderer.width * 0.32));
+    const y = this.groundY - 235 - Math.random() * 90;
+    const length = 1;
     const angleRadians = ((-12 + Math.random() * 8) * Math.PI) / 180;
     this.windGusts.push(new WindGust(x, y, length, angleRadians));
   }

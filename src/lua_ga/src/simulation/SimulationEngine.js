@@ -117,17 +117,7 @@ export class SimulationEngine {
 
   updatePlayer(deltaTime) {
     const player = this.world.player;
-    let x = 0;
-    let y = 0;
-
-    if (this.input.isDown("a", "arrowleft")) x -= 1;
-    if (this.input.isDown("d", "arrowright")) x += 1;
-    if (this.input.isDown("w", "arrowup")) y -= 1;
-    if (this.input.isDown("s", "arrowdown")) y += 1;
-
-    const direction = normalize(x, y);
-    const isMoving = x !== 0 || y !== 0;
-    const wantsSprint = this.input.isDown("shift") && isMoving;
+    const mouse = this.input.getMousePosition();
 
     player.sprintActiveTime = Math.max(0, player.sprintActiveTime - deltaTime);
     player.dashCooldownRemaining = Math.max(0, player.dashCooldownRemaining - deltaTime);
@@ -135,6 +125,32 @@ export class SimulationEngine {
     if (player.sprintActiveTime <= 0) {
       player.sprintCooldownRemaining = Math.max(0, player.sprintCooldownRemaining - deltaTime);
     }
+
+    const previous = { x: player.x, y: player.y };
+    const dashReleased = this.input.consumeDashReleased();
+    const canAimDash = this.input.isDashHeld() && player.dashCooldownRemaining <= 0;
+
+    if (canAimDash) {
+      player.dashAiming = true;
+      this.updateDashPreview(player, mouse);
+    }
+
+    if (dashReleased) {
+      if (player.dashAiming && player.dashCooldownRemaining <= 0) {
+        this.performPlayerDash(player);
+      }
+      player.dashAiming = false;
+    } else if (!canAimDash) {
+      player.dashAiming = false;
+    }
+
+    const moveToMouse = mouse.inside && !player.dashAiming;
+    const targetOffsetX = mouse.x - player.x;
+    const targetOffsetY = mouse.y - player.y;
+    const targetDistance = Math.hypot(targetOffsetX, targetOffsetY);
+    const direction = normalize(targetOffsetX, targetOffsetY);
+    const isMoving = moveToMouse && targetDistance > player.radius * 0.45;
+    const wantsSprint = this.input.isDown("shift") && isMoving;
 
     if (wantsSprint && player.sprintActiveTime <= 0 && player.sprintCooldownRemaining <= 0) {
       player.sprintActiveTime = this.settings.playerSprintDuration;
@@ -144,31 +160,15 @@ export class SimulationEngine {
     const sprinting = player.sprintActiveTime > 0;
     const speed = sprinting ? this.settings.playerSpeed * this.settings.playerSprintMultiplier : this.settings.playerSpeed;
     player.speed = speed;
-    player.velocityX = isMoving ? direction.x * speed : 0;
-    player.velocityY = isMoving ? direction.y * speed : 0;
+    const followSpeed = isMoving ? Math.min(speed, targetDistance / Math.max(deltaTime, 0.001)) : 0;
+    player.velocityX = isMoving ? direction.x * followSpeed : 0;
+    player.velocityY = isMoving ? direction.y * followSpeed : 0;
     if (isMoving) {
       player.directionX = direction.x;
       player.directionY = direction.y;
     }
 
-    const previous = { x: player.x, y: player.y };
-
-    if (this.input.consumeDashPressed() && player.dashCooldownRemaining <= 0) {
-      player.dashStartX = player.x;
-      player.dashStartY = player.y;
-      player.x += player.directionX * this.settings.playerDashDistance;
-      player.y += player.directionY * this.settings.playerDashDistance;
-      player.dashEndX = player.x;
-      player.dashEndY = player.y;
-      player.dashEffectDuration = this.settings.playerDashEffectDuration;
-      player.dashEffectRemaining = this.settings.playerDashEffectDuration;
-      player.dashCooldownRemaining = this.settings.playerDashCooldown;
-      keepInsideWorld(player, this.settings);
-      resolveObstacleCollisions(player, this.world);
-      resolveCoopWallCollisions(player, this.world.coop);
-      player.dashEndX = player.x;
-      player.dashEndY = player.y;
-    }
+    this.input.consumeDashPressed();
 
     player.x += player.velocityX * deltaTime;
     player.y += player.velocityY * deltaTime;
@@ -177,6 +177,38 @@ export class SimulationEngine {
     resolveObstacleCollisions(player, this.world);
     resolveCoopWallCollisions(player, this.world.coop);
     this.world.stats.playerDistance += distance(previous, player);
+  }
+
+  updateDashPreview(player, mouse) {
+    const offsetX = mouse.inside ? mouse.x - player.x : player.directionX;
+    const offsetY = mouse.inside ? mouse.y - player.y : player.directionY;
+    const direction = Math.hypot(offsetX, offsetY) > 8
+      ? normalize(offsetX, offsetY)
+      : normalize(player.directionX, player.directionY);
+
+    player.dashAimDirectionX = direction.x;
+    player.dashAimDirectionY = direction.y;
+    player.directionX = direction.x;
+    player.directionY = direction.y;
+    player.dashPreviewX = player.x + direction.x * this.settings.playerDashDistance;
+    player.dashPreviewY = player.y + direction.y * this.settings.playerDashDistance;
+  }
+
+  performPlayerDash(player) {
+    player.dashStartX = player.x;
+    player.dashStartY = player.y;
+    player.x += player.dashAimDirectionX * this.settings.playerDashDistance;
+    player.y += player.dashAimDirectionY * this.settings.playerDashDistance;
+    player.dashEndX = player.x;
+    player.dashEndY = player.y;
+    player.dashEffectDuration = this.settings.playerDashEffectDuration;
+    player.dashEffectRemaining = this.settings.playerDashEffectDuration;
+    player.dashCooldownRemaining = this.settings.playerDashCooldown;
+    keepInsideWorld(player, this.settings);
+    resolveObstacleCollisions(player, this.world);
+    resolveCoopWallCollisions(player, this.world.coop);
+    player.dashEndX = player.x;
+    player.dashEndY = player.y;
   }
 
   emitSnapshot() {

@@ -4,8 +4,8 @@ import type { Bounds } from "../engine/types";
 export class WindGust {
   age = 0;
   used = false;
-  readonly captureRadius = 30;
-  readonly duration = 4.2;
+  readonly captureRadius = 18;
+  readonly duration = 3.6;
 
   constructor(
     public x: number,
@@ -16,8 +16,8 @@ export class WindGust {
 
   update(deltaSeconds: number): void {
     this.age += deltaSeconds;
-    this.x -= deltaSeconds * 54;
-    this.y += Math.sin(this.age * 4.2) * deltaSeconds * 6;
+    this.x -= deltaSeconds * 42;
+    this.y += Math.sin(this.age * 4.8) * deltaSeconds * 4;
   }
 
   get alpha(): number {
@@ -46,38 +46,25 @@ export class WindGust {
       return false;
     }
 
-    return distanceToSegment(point, this.getStart(), this.getEnd()) <= this.captureRadius;
+    return Vector2.distance(point, this.getCenter()) <= this.captureRadius;
   }
 
   getBounds(): Bounds {
-    const end = this.getEnd();
-    const minX = Math.min(this.x, end.x) - this.captureRadius;
-    const minY = Math.min(this.y, end.y) - this.captureRadius;
-    const maxX = Math.max(this.x, end.x) + this.captureRadius;
-    const maxY = Math.max(this.y, end.y) + this.captureRadius;
+    const center = this.getCenter();
+    const visualRadius = 34;
 
     return {
-      x: minX,
-      y: minY,
-      width: maxX - minX,
-      height: maxY - minY,
+      x: center.x - visualRadius,
+      y: center.y - visualRadius,
+      width: visualRadius * 2,
+      height: visualRadius * 2,
     };
   }
-}
 
-function distanceToSegment(point: Vector2, start: Vector2, end: Vector2): number {
-  const segmentX = end.x - start.x;
-  const segmentY = end.y - start.y;
-  const lengthSquared = segmentX * segmentX + segmentY * segmentY;
-
-  if (lengthSquared <= 0.0001) {
-    return Vector2.distance(point, start);
+  getCenter(): Vector2 {
+    return new Vector2(
+      this.x + Math.cos(this.angleRadians) * this.length * 0.5,
+      this.y + Math.sin(this.angleRadians) * this.length * 0.5,
+    );
   }
-
-  const projection = ((point.x - start.x) * segmentX + (point.y - start.y) * segmentY) / lengthSquared;
-  const t = Math.max(0, Math.min(1, projection));
-  const closestX = start.x + segmentX * t;
-  const closestY = start.y + segmentY * t;
-
-  return Math.hypot(point.x - closestX, point.y - closestY);
 }

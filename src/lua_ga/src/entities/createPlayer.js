@@ -16,6 +16,11 @@ export function createPlayer(settings) {
     dashStartX: 150,
     dashStartY: 320,
     dashEndX: 150,
-    dashEndY: 320
+    dashEndY: 320,
+    dashAiming: false,
+    dashAimDirectionX: 0,
+    dashAimDirectionY: 1,
+    dashPreviewX: 150,
+    dashPreviewY: 320
   };
 }
