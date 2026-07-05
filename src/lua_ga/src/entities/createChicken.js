@@ -6,7 +6,10 @@ const START_POSITIONS = [
   { x: 390, y: 410 },
   { x: 610, y: 390 },
   { x: 315, y: 290 },
-  { x: 560, y: 145 }
+  { x: 560, y: 145 },
+  { x: 470, y: 375 },
+  { x: 575, y: 535 },
+  { x: 675, y: 230 }
 ];
 
 export function createChicken(index, type, settings) {
@@ -43,6 +46,13 @@ export function createChicken(index, type, settings) {
     escapeDistanceRemaining: 0,
     directionLockRemaining: 0,
     lastEscapeBase: { x: direction.x, y: direction.y },
+    attackTelegraphRemaining: 0,
+    attackDistanceRemaining: 0,
+    attackRecoverRemaining: 0,
+    attackTargetX: position.x,
+    attackTargetY: position.y,
+    attackStarted: false,
+    nextAttackAt: Infinity,
 
     targetFoodId: null,
     eatTimer: 0,

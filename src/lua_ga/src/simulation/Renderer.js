@@ -1,6 +1,11 @@
 import { GAME_ASSETS } from "../assets/gameAssetManifest.js";
 
-const FLYING_STATES = new Set(["ESCAPE", "PANIC", "CLAP_PANIC"]);
+const FLYING_STATES = new Set(["ESCAPE", "PANIC", "CLAP_PANIC", "ROOSTER_CHARGE"]);
+const ROOSTER_ATTACK_STATES = new Set(["ROOSTER_AIM", "ROOSTER_CHARGE", "ROOSTER_RECOVER"]);
+
+function isRagingRooster(chicken) {
+  return chicken.type === "rooster" && ROOSTER_ATTACK_STATES.has(chicken.state);
+}
 
 export class Renderer {
   constructor(canvas, settings) {
@@ -30,10 +35,15 @@ export class Renderer {
     this.drawObstacles(ctx, world.obstacles);
 
     for (const chicken of world.chickens) {
+      this.drawRoosterAttackCue(ctx, chicken, world.player);
+    }
+
+    for (const chicken of world.chickens) {
       this.drawChicken(ctx, chicken, world.player);
     }
 
     this.drawPlayer(ctx, world.player);
+    this.drawChallengeHud(ctx, world);
   }
 
   loadAssets() {
@@ -318,6 +328,18 @@ export class Renderer {
 
     const hasChickenSprite = Boolean(this.getImage(chicken.type === "rooster" ? "rooster" : "hen"));
 
+    if (isRagingRooster(chicken)) {
+      ctx.save();
+      ctx.fillStyle = chicken.state === "ROOSTER_AIM" ? "rgba(215, 25, 32, 0.26)" : "rgba(215, 25, 32, 0.38)";
+      ctx.strokeStyle = "rgba(120, 0, 0, 0.8)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(chicken.x, chicken.y, chicken.radius + 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
     if (settings.debugShowDirection && !hasChickenSprite) {
       ctx.save();
       ctx.strokeStyle = "#1d2630";
@@ -333,7 +355,13 @@ export class Renderer {
 
     if (!renderedSprite) {
       ctx.save();
-      ctx.fillStyle = chicken.secured ? "#9bd67b" : chicken.type === "rooster" ? "#c83232" : "#44b65a";
+      ctx.fillStyle = chicken.secured
+        ? "#9bd67b"
+        : isRagingRooster(chicken)
+          ? "#ff1e1e"
+          : chicken.type === "rooster"
+            ? "#c83232"
+            : "#44b65a";
       ctx.strokeStyle = "#142117";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -417,6 +445,17 @@ export class Renderer {
       size,
       size
     );
+    if (isRagingRooster(chicken)) {
+      ctx.globalCompositeOperation = "source-atop";
+      ctx.fillStyle = chicken.state === "ROOSTER_AIM" ? "rgba(255, 0, 0, 0.68)" : "rgba(255, 0, 0, 0.78)";
+      ctx.fillRect(chicken.x - size / 2, chicken.y - size / 2, size, size);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = "rgba(125, 0, 0, 0.92)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(chicken.x, chicken.y, size * 0.42, 0, Math.PI * 2);
+      ctx.stroke();
+    }
     ctx.restore();
 
     return true;
@@ -432,6 +471,25 @@ export class Renderer {
 
   drawPlayer(ctx, player) {
     const sprinting = player.sprintActiveTime > 0;
+
+    if (player.dashEffectRemaining > 0) {
+      const alpha = Math.max(0, player.dashEffectRemaining / Math.max(0.001, player.dashEffectDuration));
+      ctx.save();
+      ctx.strokeStyle = `rgba(255, 245, 180, ${0.78 * alpha})`;
+      ctx.lineWidth = 8;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(player.dashStartX, player.dashStartY);
+      ctx.lineTo(player.dashEndX, player.dashEndY);
+      ctx.stroke();
+      ctx.strokeStyle = `rgba(58, 127, 213, ${0.55 * alpha})`;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(player.dashStartX, player.dashStartY);
+      ctx.lineTo(player.dashEndX, player.dashEndY);
+      ctx.stroke();
+      ctx.restore();
+    }
 
     if (sprinting) {
       ctx.save();
@@ -594,5 +652,55 @@ export class Renderer {
     }
 
     return player.directionY < 0 ? "up" : "down";
+  }
+
+  drawChallengeHud(ctx, world) {
+    const remaining = Math.max(0, this.settings.challengeDuration - world.stats.elapsedTime);
+    const minutes = Math.floor(remaining / 60);
+    const seconds = Math.floor(remaining % 60);
+    const time = `${minutes}:${String(seconds).padStart(2, "0")}`;
+
+    ctx.save();
+    ctx.fillStyle = "rgba(250, 248, 238, 0.86)";
+    ctx.strokeStyle = "rgba(31, 38, 31, 0.22)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(18, 18, 178, 76, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.font = "700 15px Inter, sans-serif";
+    ctx.fillStyle = "#172018";
+    ctx.fillText(`Lives: ${world.playerLives}/${this.settings.playerLives}`, 34, 46);
+    ctx.fillText(`Time: ${time}`, 34, 74);
+    ctx.restore();
+  }
+
+  drawRoosterAttackCue(ctx, chicken, player) {
+    if (!isRagingRooster(chicken)) {
+      return;
+    }
+
+    ctx.save();
+    if (chicken.state === "ROOSTER_AIM") {
+      const progress = 1 - Math.max(0, chicken.attackTelegraphRemaining) / Math.max(0.001, this.settings.roosterAttackTelegraphTime);
+      ctx.strokeStyle = `rgba(220, 20, 28, ${0.45 + progress * 0.45})`;
+      ctx.lineWidth = 3 + progress * 4;
+      ctx.setLineDash([12, 8]);
+      ctx.beginPath();
+      ctx.moveTo(chicken.x, chicken.y);
+      ctx.lineTo(player.x, player.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    } else if (chicken.state === "ROOSTER_CHARGE") {
+      ctx.strokeStyle = "rgba(220, 20, 28, 0.32)";
+      ctx.lineWidth = 14;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(chicken.x - chicken.directionX * 44, chicken.y - chicken.directionY * 44);
+      ctx.lineTo(chicken.x, chicken.y);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 }

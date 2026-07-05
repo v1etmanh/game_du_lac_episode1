@@ -7,18 +7,36 @@ function formatTime(seconds = 0) {
 }
 
 export default function CompletionModal({ snapshot, onReset }) {
-  if (!snapshot?.completed) {
+  if (!snapshot?.completed && !snapshot?.failed) {
     return null;
   }
+
+  const failed = snapshot.failed;
+  const title = failed
+    ? "Thử thách thất bại"
+    : "All chickens are secured";
+  const reason = snapshot.failureReason === "time"
+    ? "Hết 8 phút mà chưa đưa toàn bộ gà vào chuồng"
+    : "Người chơi đã mất hết 5 mạng";
 
   return (
     <div className="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="completion-title">
       <div className="completionModal">
-        <p className="eyebrow">Complete</p>
-        <h2 id="completion-title">All chickens are secured</h2>
+        <p className="eyebrow">{failed ? "Failed" : "Complete"}</p>
+        <h2 id="completion-title">{title}</h2>
+        {failed && (
+          <div className="summaryLine">
+            <span>Lý do</span>
+            <strong>{reason}</strong>
+          </div>
+        )}
         <div className="summaryLine">
           <span>Time</span>
           <strong>{formatTime(snapshot.elapsedTime)}</strong>
+        </div>
+        <div className="summaryLine">
+          <span>Lives</span>
+          <strong>{snapshot.playerLives}/{snapshot.maxPlayerLives}</strong>
         </div>
         <div className="summaryLine">
           <span>Grain drops</span>
@@ -29,7 +47,7 @@ export default function CompletionModal({ snapshot, onReset }) {
           <strong>{snapshot.stats.panicCount}</strong>
         </div>
         <button type="button" onClick={onReset}>
-          Run again
+          Try again
         </button>
       </div>
     </div>

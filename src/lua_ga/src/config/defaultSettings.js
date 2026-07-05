@@ -1,11 +1,16 @@
 export const DEFAULT_SETTINGS = {
   worldWidth: 1000,
   worldHeight: 650,
+  challengeDuration: 480,
 
   playerSpeed: 100,
+  playerLives: 5,
   playerSprintMultiplier: 2.2,
   playerSprintDuration: 3,
-  playerSprintCooldown: 3,
+  playerSprintCooldown: 1.2,
+  playerDashDistance: 110,
+  playerDashCooldown: 1.1,
+  playerDashEffectDuration: 0.18,
 
   chickenAlertRadius: 150,
   chickenPressureRadius: 95,
@@ -18,6 +23,12 @@ export const DEFAULT_SETTINGS = {
   chickenPanicBurstMultiplier: 4.8,
   roosterEscapeSpeed: 90,
   roosterPanicSpeed: 135,
+  roosterAttackTelegraphTime: 3,
+  roosterAttackSpeed: 560,
+  roosterAttackDistance: 430,
+  roosterAttackRecoverTime: 1.1,
+  roosterAttackMinInterval: 12,
+  roosterAttackMaxInterval: 12,
 
   escapeConeAngle: 90,
   escapeDistribution: "center",

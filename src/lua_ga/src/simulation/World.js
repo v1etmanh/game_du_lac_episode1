@@ -10,8 +10,17 @@ export function createWorld(settings) {
     createChicken(2, "hen", settings),
     createChicken(3, "hen", settings),
     createChicken(4, "hen", settings),
-    createChicken(5, "rooster", settings)
+    createChicken(5, "hen", settings),
+    createChicken(6, "hen", settings),
+    createChicken(7, "rooster", settings),
+    createChicken(8, "rooster", settings)
   ];
+
+  for (const chicken of chickens) {
+    if (chicken.type === "rooster") {
+      chicken.nextAttackAt = 12;
+    }
+  }
 
   return {
     player: createPlayer(settings),
@@ -43,11 +52,15 @@ export function createWorld(settings) {
       obstacleCollisions: 0,
       stuckRecoveries: 0,
       coopBailed: 0,
+      roosterHits: 0,
       playerDistance: 0,
       averageChickenDistance: 0
     },
     completed: false,
+    failed: false,
+    failureReason: null,
     paused: false,
+    playerLives: settings.playerLives,
     grainCharges: settings.grainDropCount,
     grainRechargeTimer: 0,
     grainSequence: 0,
@@ -69,7 +82,13 @@ export function snapshotWorld(world, settings) {
     securedCount,
     chickenCount: world.chickens.length,
     completed: world.completed,
+    failed: world.failed,
+    failureReason: world.failureReason,
     paused: world.paused,
+    playerLives: world.playerLives,
+    maxPlayerLives: settings.playerLives,
+    challengeDuration: settings.challengeDuration,
+    timeRemaining: Math.max(0, settings.challengeDuration - world.stats.elapsedTime),
     coopClosed: world.coop.closed,
     activeClapWaves: world.clapWaves.length,
     playerSprint: {

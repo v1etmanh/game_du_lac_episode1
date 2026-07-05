@@ -3,6 +3,8 @@ import { keepInsideWorld, resolveObstacleCollisions } from "./CollisionSystem.js
 import { distance, normalize, rotate } from "../math/vector.js";
 import { randomBetween, randomDirection, randomEscapeAngle } from "../math/random.js";
 
+const ROOSTER_ATTACK_STATES = new Set(["ROOSTER_AIM", "ROOSTER_CHARGE", "ROOSTER_RECOVER"]);
+
 function setState(chicken, state) {
   chicken.previousState = chicken.state;
   chicken.state = state;
@@ -111,6 +113,12 @@ function updateChickenIntent(chicken, world, settings, deltaTime) {
   chicken.panicSpeed = chicken.type === "rooster" ? settings.roosterPanicSpeed : settings.chickenPanicSpeed;
   chicken.directionLockRemaining = Math.max(0, chicken.directionLockRemaining - deltaTime);
 
+  if (chicken.type === "rooster") {
+    if (updateRoosterAttack(chicken, world, settings, deltaTime)) {
+      return;
+    }
+  }
+
   const playerDistance = distance(chicken, world.player);
   const canContinueEscape =
     ["ESCAPE", "PANIC", "CLAP_PANIC"].includes(chicken.state) &&
@@ -145,7 +153,7 @@ function updateChickenIntent(chicken, world, settings, deltaTime) {
     return;
   }
 
-  const food = findAvailableFood(chicken, world);
+  const food = chicken.type === "rooster" ? null : findAvailableFood(chicken, world);
   if (food) {
     chicken.targetFoodId = food.id;
     const foodDistance = distance(chicken, food);
@@ -169,6 +177,110 @@ function updateChickenIntent(chicken, world, settings, deltaTime) {
   updateWanderAndPeck(chicken, settings, deltaTime);
 }
 
+function scheduleNextRoosterAttack(chicken, world, settings) {
+  chicken.nextAttackAt = world.stats.elapsedTime + randomBetween(settings.roosterAttackMinInterval, settings.roosterAttackMaxInterval);
+}
+
+function isPlayerInRoosterAttackRange(chicken, world) {
+  return distance(chicken, world.player) <= chicken.alertRadius;
+}
+
+function startRoosterAttack(chicken, world, settings) {
+  const direction = normalize(world.player.x - chicken.x, world.player.y - chicken.y);
+
+  chicken.attackStarted = true;
+  chicken.attackTelegraphRemaining = settings.roosterAttackTelegraphTime;
+  chicken.attackDistanceRemaining = settings.roosterAttackDistance;
+  chicken.attackRecoverRemaining = 0;
+  chicken.attackTargetX = world.player.x;
+  chicken.attackTargetY = world.player.y;
+  chicken.directionX = direction.x;
+  chicken.directionY = direction.y;
+  chicken.speed = 0;
+  setState(chicken, "ROOSTER_AIM");
+}
+
+function cancelRoosterAttack(chicken, world, settings) {
+  chicken.attackStarted = false;
+  chicken.attackTelegraphRemaining = 0;
+  chicken.attackDistanceRemaining = 0;
+  chicken.attackRecoverRemaining = 0;
+  chicken.speed = 0;
+  scheduleNextRoosterAttack(chicken, world, settings);
+  setState(chicken, "WANDER");
+  chicken.wanderTimer = randomBetween(0.7, 1.8);
+}
+
+function updateRoosterAttack(chicken, world, settings, deltaTime) {
+  if (!chicken.attackStarted && world.stats.elapsedTime >= chicken.nextAttackAt) {
+    if (isPlayerInRoosterAttackRange(chicken, world)) {
+      startRoosterAttack(chicken, world, settings);
+    } else {
+      scheduleNextRoosterAttack(chicken, world, settings);
+    }
+  }
+
+  if (chicken.state === "ROOSTER_AIM") {
+    if (!isPlayerInRoosterAttackRange(chicken, world)) {
+      cancelRoosterAttack(chicken, world, settings);
+      return false;
+    }
+
+    const direction = normalize(world.player.x - chicken.x, world.player.y - chicken.y);
+    chicken.attackTargetX = world.player.x;
+    chicken.attackTargetY = world.player.y;
+    chicken.directionX = direction.x;
+    chicken.directionY = direction.y;
+    chicken.attackTelegraphRemaining -= deltaTime;
+    chicken.speed = 0;
+
+    if (chicken.attackTelegraphRemaining <= 0) {
+      setState(chicken, "ROOSTER_CHARGE");
+      chicken.speed = settings.roosterAttackSpeed;
+    }
+
+    return true;
+  }
+
+  if (chicken.state === "ROOSTER_CHARGE") {
+    chicken.speed = settings.roosterAttackSpeed;
+    return true;
+  }
+
+  if (chicken.state === "ROOSTER_RECOVER") {
+    chicken.attackRecoverRemaining -= deltaTime;
+    chicken.speed = 0;
+
+    if (chicken.attackRecoverRemaining <= 0) {
+      chicken.attackStarted = false;
+      scheduleNextRoosterAttack(chicken, world, settings);
+      setState(chicken, "WANDER");
+      chicken.wanderTimer = randomBetween(0.7, 1.8);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+function knockPlayerFromRooster(chicken, world, settings) {
+  const player = world.player;
+
+  world.playerLives = Math.max(0, world.playerLives - 1);
+  if (world.playerLives <= 0) {
+    world.failed = true;
+    world.failureReason = "lives";
+    world.paused = true;
+  }
+
+  player.x += chicken.directionX * 70;
+  player.y += chicken.directionY * 70;
+  keepInsideWorld(player, settings);
+  resolveObstacleCollisions(player, world);
+  world.stats.roosterHits += 1;
+}
+
 function moveChicken(chicken, world, settings, deltaTime) {
   if (chicken.speed <= 0 || (chicken.secured && world.coop.closed)) {
     return;
@@ -185,15 +297,32 @@ function moveChicken(chicken, world, settings, deltaTime) {
     chicken.escapeDistanceRemaining -= movement;
   }
 
+  if (chicken.state === "ROOSTER_CHARGE") {
+    chicken.attackDistanceRemaining -= movement;
+
+    if (distance(chicken, world.player) <= chicken.radius + world.player.radius + 4) {
+      knockPlayerFromRooster(chicken, world, settings);
+      chicken.attackDistanceRemaining = 0;
+    }
+  }
+
   const hitBounds = keepInsideWorld(chicken, settings);
   const hitObstacle = resolveObstacleCollisions(chicken, world, "obstacleCollisions");
 
-  if (hitBounds || hitObstacle) {
-    chicken.escapeDistanceRemaining = 0;
-    chicken.directionLockRemaining = 0;
+  if (chicken.state === "ROOSTER_CHARGE" && (chicken.attackDistanceRemaining <= 0 || hitBounds || hitObstacle)) {
+    setState(chicken, "ROOSTER_RECOVER");
+    chicken.speed = 0;
+    chicken.attackRecoverRemaining = settings.roosterAttackRecoverTime;
+  }
 
-    if (hitObstacle) {
-      chicken.wanderTimer = Math.min(chicken.wanderTimer, 0.25);
+  if (hitBounds || hitObstacle) {
+    if (!ROOSTER_ATTACK_STATES.has(chicken.state)) {
+      chicken.escapeDistanceRemaining = 0;
+      chicken.directionLockRemaining = 0;
+
+      if (hitObstacle) {
+        chicken.wanderTimer = Math.min(chicken.wanderTimer, 0.25);
+      }
     }
   }
 
@@ -205,6 +334,7 @@ export function updateChickens(world, settings, deltaTime) {
     if (chicken.secured && world.coop.closed) {
       chicken.state = "SECURED";
       chicken.speed = 0;
+      chicken.attackStarted = false;
       continue;
     }
 

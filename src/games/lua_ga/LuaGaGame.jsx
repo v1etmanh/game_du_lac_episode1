@@ -24,7 +24,7 @@ export default function LuaGaGame({ onExit }) {
 
       <CompletionModal snapshot={snapshot} onReset={() => simulationRef.current?.reset()} />
 
-      {snapshot?.completed && (
+      {(snapshot?.completed || snapshot?.failed) && (
         <div className="completionExitRow">
           <button type="button" onClick={onExit}>
             Quay lại bản đồ

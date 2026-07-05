@@ -6,6 +6,7 @@ export class InputManager {
     this.pausePressed = false;
     this.toggleCoopPressed = false;
     this.clapPressed = false;
+    this.dashPressed = false;
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -44,6 +45,10 @@ export class InputManager {
       this.clapPressed = true;
     }
 
+    if (key === "b" && !this.keys.has(key)) {
+      this.dashPressed = true;
+    }
+
     this.keys.add(key);
   }
 
@@ -76,6 +81,12 @@ export class InputManager {
   consumeClapPressed() {
     const wasPressed = this.clapPressed;
     this.clapPressed = false;
+    return wasPressed;
+  }
+
+  consumeDashPressed() {
+    const wasPressed = this.dashPressed;
+    this.dashPressed = false;
     return wasPressed;
   }
 }

@@ -50,7 +50,7 @@ export class SimulationEngine {
   }
 
   setPaused(paused) {
-    if (!this.world.completed) {
+    if (!this.world.completed && !this.world.failed) {
       this.world.paused = paused;
       this.emitSnapshot();
     }
@@ -68,13 +68,13 @@ export class SimulationEngine {
       this.togglePaused();
     }
 
-    if (this.input.consumeToggleCoopPressed()) {
+    if (this.input.consumeToggleCoopPressed() && !this.world.completed && !this.world.failed) {
       this.world.coop.closed = !this.world.coop.closed;
       this.world.stats.coopToggles += 1;
       this.emitSnapshot();
     }
 
-    if (!this.world.paused && !this.world.completed) {
+    if (!this.world.paused && !this.world.completed && !this.world.failed) {
       this.update(rawDelta);
     }
 
@@ -109,6 +109,10 @@ export class SimulationEngine {
       resolveCoopWallCollisions(chicken, this.world.coop);
     }
     updateCoop(this.world, this.settings, deltaTime);
+
+    if (!this.world.completed && this.world.stats.elapsedTime >= this.settings.challengeDuration) {
+      this.failChallenge("time");
+    }
   }
 
   updatePlayer(deltaTime) {
@@ -126,6 +130,8 @@ export class SimulationEngine {
     const wantsSprint = this.input.isDown("shift") && isMoving;
 
     player.sprintActiveTime = Math.max(0, player.sprintActiveTime - deltaTime);
+    player.dashCooldownRemaining = Math.max(0, player.dashCooldownRemaining - deltaTime);
+    player.dashEffectRemaining = Math.max(0, player.dashEffectRemaining - deltaTime);
     if (player.sprintActiveTime <= 0) {
       player.sprintCooldownRemaining = Math.max(0, player.sprintCooldownRemaining - deltaTime);
     }
@@ -146,6 +152,24 @@ export class SimulationEngine {
     }
 
     const previous = { x: player.x, y: player.y };
+
+    if (this.input.consumeDashPressed() && player.dashCooldownRemaining <= 0) {
+      player.dashStartX = player.x;
+      player.dashStartY = player.y;
+      player.x += player.directionX * this.settings.playerDashDistance;
+      player.y += player.directionY * this.settings.playerDashDistance;
+      player.dashEndX = player.x;
+      player.dashEndY = player.y;
+      player.dashEffectDuration = this.settings.playerDashEffectDuration;
+      player.dashEffectRemaining = this.settings.playerDashEffectDuration;
+      player.dashCooldownRemaining = this.settings.playerDashCooldown;
+      keepInsideWorld(player, this.settings);
+      resolveObstacleCollisions(player, this.world);
+      resolveCoopWallCollisions(player, this.world.coop);
+      player.dashEndX = player.x;
+      player.dashEndY = player.y;
+    }
+
     player.x += player.velocityX * deltaTime;
     player.y += player.velocityY * deltaTime;
 
@@ -157,5 +181,12 @@ export class SimulationEngine {
 
   emitSnapshot() {
     this.onSnapshot(snapshotWorld(this.world, this.settings));
+  }
+
+  failChallenge(reason) {
+    this.world.failed = true;
+    this.world.failureReason = reason;
+    this.world.paused = true;
+    this.emitSnapshot();
   }
 }
