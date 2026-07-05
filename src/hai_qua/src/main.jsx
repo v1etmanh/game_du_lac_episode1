@@ -1081,37 +1081,68 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="stage" aria-label="Vuon hai qua">
-        <div className="hud">
-          <div>
-            <span className="hud-label">Qua</span>
-            <strong>{stats.harvested}/{stats.target}</strong>
+      <div className="orchard-layout">
+        <section className="stage" aria-label="Vuon hai qua">
+          <div className="hud">
+            <div>
+              <span className="hud-label">Qua</span>
+              <strong>{stats.harvested}/{stats.target}</strong>
+            </div>
+            <div>
+              <span className="hud-label">Pha</span>
+              <strong>{stats.phase}</strong>
+            </div>
+            <div>
+              <span className="hud-label">Gio</span>
+              <strong>{Math.floor(stats.timeRemaining / 60)}:{String(stats.timeRemaining % 60).padStart(2, '0')}</strong>
+            </div>
+            <div>
+              <span className="hud-label">Gan nhat</span>
+              <strong>{lastFruit?.label ?? '-'}</strong>
+            </div>
           </div>
-          <div>
-            <span className="hud-label">Pha</span>
-            <strong>{stats.phase}</strong>
-          </div>
-          <div>
-            <span className="hud-label">Gio</span>
-            <strong>{Math.floor(stats.timeRemaining / 60)}:{String(stats.timeRemaining % 60).padStart(2, '0')}</strong>
-          </div>
-          <div>
-            <span className="hud-label">Gan nhat</span>
-            <strong>{lastFruit?.label ?? '-'}</strong>
-          </div>
-        </div>
 
-        <OrchardCanvas
-          ref={canvasRef}
-          command={command}
-          resetKey={resetKey}
-          onHarvest={handleHarvest}
-          onStatsChange={handleStatsChange}
-        />
+          <OrchardCanvas
+            ref={canvasRef}
+            command={command}
+            resetKey={resetKey}
+            onHarvest={handleHarvest}
+            onStatsChange={handleStatsChange}
+          />
+
+          <div className="actions">
+            <button type="button" onClick={() => {
+              setBasketGrid(Array(BASKET_SIZE).fill(null));
+              setResetKey((value) => value + 1);
+            }}>Reset</button>
+          </div>
+
+          <div className="pad" aria-label="Dieu khien">
+            <button type="button" className="pad-button up" onClick={() => trigger('up')} aria-label="Len">
+              ^
+            </button>
+            <button type="button" className="pad-button left" onClick={() => trigger('left')} aria-label="Trai">
+              &lt;
+            </button>
+            <button type="button" className="pad-button jump" onClick={() => trigger('jump')} aria-label="Nhay">
+              J
+            </button>
+            <button type="button" className="pad-button shake" onClick={() => trigger('shake')} aria-label="Rung cay">
+              Q
+            </button>
+            <button type="button" className="pad-button right" onClick={() => trigger('right')} aria-label="Phai">
+              &gt;
+            </button>
+            <button type="button" className="pad-button down" onClick={() => trigger('down')} aria-label="Xuong">
+              v
+            </button>
+          </div>
+        </section>
 
         <aside className="basket" aria-label="Gio trai cay">
+          <div className="basket-handle" aria-hidden="true" />
           <div className="basket-title">Gio qua</div>
-          <div className="basket-bowl" aria-hidden="true" />
+          <div className="basket-rim" aria-hidden="true" />
           <div className="basket-grid">
             {basketGrid.map((item, index) => (
               <div
@@ -1123,35 +1154,7 @@ function App() {
             ))}
           </div>
         </aside>
-
-        <div className="actions">
-          <button type="button" onClick={() => {
-            setBasketGrid(Array(BASKET_SIZE).fill(null));
-            setResetKey((value) => value + 1);
-          }}>Reset</button>
-        </div>
-
-        <div className="pad" aria-label="Dieu khien">
-          <button type="button" className="pad-button up" onClick={() => trigger('up')} aria-label="Len">
-            ^
-          </button>
-          <button type="button" className="pad-button left" onClick={() => trigger('left')} aria-label="Trai">
-            &lt;
-          </button>
-          <button type="button" className="pad-button jump" onClick={() => trigger('jump')} aria-label="Nhay">
-            J
-          </button>
-          <button type="button" className="pad-button shake" onClick={() => trigger('shake')} aria-label="Rung cay">
-            Q
-          </button>
-          <button type="button" className="pad-button right" onClick={() => trigger('right')} aria-label="Phai">
-            &gt;
-          </button>
-          <button type="button" className="pad-button down" onClick={() => trigger('down')} aria-label="Xuong">
-            v
-          </button>
-        </div>
-      </section>
+      </div>
     </main>
   );
 }
