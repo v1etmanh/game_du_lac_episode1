@@ -25,9 +25,27 @@ export class Input {
     }
   };
 
+  private readonly onMouseMove = (event: MouseEvent) => {
+    if ((event.buttons & 2) !== 0) {
+      event.preventDefault();
+      this.mouseShortenDown = true;
+    } else if (this.mouseShortenDown) {
+      this.mouseShortenDown = false;
+    }
+  };
+
+  private readonly onGlobalMouseDown = (event: MouseEvent) => {
+    if (event.button === 2) {
+      event.preventDefault();
+      this.mouseShortenDown = true;
+    }
+  };
+
   private readonly onMouseLeaveOrBlur = () => {
     this.mouseJumpDown = false;
     this.mouseShortenDown = false;
+    this.pressed.clear();
+    this.pressedThisFrame.clear();
   };
 
   private readonly onContextMenu = (event: Event) => {
@@ -63,7 +81,10 @@ export class Input {
     target.addEventListener("contextmenu", this.onContextMenu);
     // Bắt mouseup/mouseleave trên window để không bị "kẹt" trạng thái nhấn
     // nếu người chơi thả chuột ngoài canvas.
+    window.addEventListener("mousemove", this.onMouseMove as EventListener);
+    window.addEventListener("mousedown", this.onGlobalMouseDown as EventListener);
     window.addEventListener("mouseup", this.onMouseUp as EventListener);
+    window.addEventListener("contextmenu", this.onContextMenu);
     window.addEventListener("blur", this.onMouseLeaveOrBlur);
   }
 
@@ -74,7 +95,10 @@ export class Input {
     const target = this.mouseTarget ?? window;
     target.removeEventListener("mousedown", this.onMouseDown as EventListener);
     target.removeEventListener("contextmenu", this.onContextMenu);
+    window.removeEventListener("mousemove", this.onMouseMove as EventListener);
+    window.removeEventListener("mousedown", this.onGlobalMouseDown as EventListener);
     window.removeEventListener("mouseup", this.onMouseUp as EventListener);
+    window.removeEventListener("contextmenu", this.onContextMenu);
     window.removeEventListener("blur", this.onMouseLeaveOrBlur);
   }
 
@@ -95,7 +119,7 @@ export class Input {
   }
 
   isReleasePressed(): boolean {
-    return this.pressed.has("KeyE") || this.pressed.has("KeyS");
+    return this.pressed.has("KeyS");
   }
 
   wasRestartPressed(): boolean {
@@ -118,7 +142,6 @@ export class Input {
       "ArrowRight",
       "Space",
       "KeyQ",
-      "KeyE",
       "KeyS",
       "KeyR",
       "Escape",

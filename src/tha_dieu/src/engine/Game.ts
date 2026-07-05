@@ -83,6 +83,9 @@ export class Game {
     this.kite.reset(this.player.position.x, this.groundY);
     this.rope.length = 260;
     this.rope.tension = 0;
+    this.rope.reelDirection = 0;
+    this.rope.reelEffect = 0;
+    this.rope.reelPhase = 0;
     this.windSystem.reset();
     this.particleSystem.reset();
     this.obstacles.length = 0;
@@ -278,11 +281,19 @@ export class Game {
   }
 
   private spawnWindGust(): void {
-    const x = this.player.position.x + this.renderer.width * 0.65 + 140 + Math.random() * 180;
-    const y = this.groundY - 235 - Math.random() * 90;
+    const baseX = this.player.position.x + this.renderer.width * 0.58 + 100 + Math.random() * 90;
+    const baseY = this.groundY - 250 - Math.random() * 60;
     const length = 1;
-    const angleRadians = ((-12 + Math.random() * 8) * Math.PI) / 180;
-    this.windGusts.push(new WindGust(x, y, length, angleRadians));
+    const offsets = [
+      { x: 0, y: -44 },
+      { x: 70, y: 0 },
+      { x: 140, y: 44 },
+    ];
+
+    offsets.forEach((offset) => {
+      const angleRadians = ((-12 + Math.random() * 8) * Math.PI) / 180;
+      this.windGusts.push(new WindGust(baseX + offset.x, baseY + offset.y, length, angleRadians));
+    });
   }
 
   private handleWindGustCapture(): void {
@@ -298,9 +309,11 @@ export class Game {
   private triggerWindLift(): void {
     this.windLiftTimer = 3;
     this.player.grounded = false;
+    this.player.facingDirection = 1;
+    this.player.velocity.x = Math.max(this.player.velocity.x, 760);
     this.player.velocity.y = Math.min(this.player.velocity.y, -170);
     this.kite.velocity.y = Math.min(this.kite.velocity.y, -260);
-    this.kite.velocity.x += 90;
+    this.kite.velocity.x = Math.max(this.kite.velocity.x + 180, 520);
     this.rope.tension = 1;
   }
 

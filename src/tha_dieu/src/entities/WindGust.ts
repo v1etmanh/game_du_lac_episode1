@@ -4,8 +4,8 @@ import type { Bounds } from "../engine/types";
 export class WindGust {
   age = 0;
   used = false;
-  readonly captureRadius = 18;
-  readonly duration = 3.6;
+  readonly captureRadius = 26;
+  readonly duration = 4.8;
 
   constructor(
     public x: number,
@@ -16,7 +16,7 @@ export class WindGust {
 
   update(deltaSeconds: number): void {
     this.age += deltaSeconds;
-    this.x -= deltaSeconds * 42;
+    this.x -= deltaSeconds * 30;
     this.y += Math.sin(this.age * 4.8) * deltaSeconds * 4;
   }
 
@@ -51,7 +51,7 @@ export class WindGust {
 
   getBounds(): Bounds {
     const center = this.getCenter();
-    const visualRadius = 34;
+    const visualRadius = 48;
 
     return {
       x: center.x - visualRadius,

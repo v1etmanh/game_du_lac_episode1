@@ -16,23 +16,16 @@ const noAssist: KiteAssist = {
 export class Rope {
   length = 220;
   readonly minLength = 90;
-  // Giới hạn tuyệt đối (thiết kế gốc) — không bao giờ vượt quá mức này dù màn hình lớn cỡ nào.
   readonly absoluteMaxLength = 390;
-  // Giới hạn thực tế đang áp dụng, được co giãn theo chiều cao khung hình mỗi khung hình
-  // (xem updateMaxLengthForViewport) để dây không thể kéo diều vượt ra ngoài mép trên màn hình.
   maxLength = 390;
   tension = 0;
+  reelDirection = 0;
+  reelEffect = 0;
+  reelPhase = 0;
 
-  // Tính lại maxLength dựa trên chiều cao viewport thực tế.
-  // Camera chừa ra khoảng viewportHeight * 0.58 phía trên người chơi (xem Camera.update),
-  // nên dây phải ngắn hơn khoảng đó một khoảng đệm đủ để chứa thân diều + đuôi diều,
-  // nếu không diều sẽ bay vượt mép trên màn hình khi người chơi thả dây dài hết cỡ (phím S).
   updateMaxLengthForViewport(viewportHeight: number): void {
-    const visibleAboveAnchor = viewportHeight * 0.58;
-    const kiteSafetyMargin = 130; // thân diều (~57) + đuôi diều (~70) + đệm an toàn
-    const minAllowed = this.minLength + 20;
-    const dynamicMax = clamp(visibleAboveAnchor - kiteSafetyMargin, minAllowed, this.absoluteMaxLength);
-    this.maxLength = dynamicMax;
+    const playableRange = viewportHeight * 0.74 + 44;
+    this.maxLength = clamp(playableRange, 350, this.absoluteMaxLength);
   }
 
   getAnchor(player: Player): Vector2 {
@@ -63,8 +56,8 @@ export class Rope {
       speedLimitBonus: kiteAhead * 190,
       runSpeedMultiplier: 0.2 + Math.pow(lengthRatio, 1.35) * 1.12,
       speedLimitBase: 135 + Math.pow(lengthRatio, 1.22) * 485,
-      jumpBoost: highKite * engagement * 300 - lowKite * engagement * 150,
-      gravityRelief: highKite * engagement * 260,
+      jumpBoost: -lowKite * engagement * 90,
+      gravityRelief: highKite * engagement * 90,
       drag: kiteBehind * 0.07 + lowKite * engagement * 0.035 + shortRopeDrag,
     };
   }
@@ -79,9 +72,6 @@ export class Rope {
     const distance = offset.length();
 
     if (distance <= this.length) {
-      // Khi người chơi đang chủ động thu dây (giữ chuột phải), dây phải hiện rõ
-      // đang bị kéo căng và thẳng ra ngay lập tức, không chờ diều thật sự áp sát
-      // giới hạn chiều dài mới.
       this.tension = isShortening ? Math.min(1, this.tension + 0.22) : Math.max(0, this.tension - 0.05);
       return;
     }

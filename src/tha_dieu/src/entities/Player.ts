@@ -26,10 +26,11 @@ export class Player {
   // (chuột trái / Space) sẽ đạt độ cao lớn hơn — cần thiết để vượt qua các
   // chướng ngại vật cao như cối xay gió và cây cao.
   jumpChargeLevel = 0;
-  readonly maxJumpChargeVelocity = 250;
+  readonly baseJumpVelocity = 465;
+  readonly maxJumpChargeVelocity = 330;
   // Thêm một chút sức bật tức thời khi người chơi bấm nhảy ngay trong lúc vẫn
   // đang giữ chuột phải (thu dây) — cộng thêm vào lực tích lũy thông thường.
-  readonly comboHoldJumpBonus = 45;
+  readonly comboHoldJumpBonus = 80;
   lastJumpWasCharged = false;
 
   reset(groundY: number): void {
@@ -69,16 +70,28 @@ export class Player {
     const liftGravity = heightAboveGround < 170 ? -120 : heightAboveGround < 250 ? 40 : 260;
     const gravity = windLiftActive ? liftGravity : Math.max(760, 1120 - kiteAssist.gravityRelief);
 
-    this.acceleration.set(movement * acceleration * kiteAssist.runSpeedMultiplier + kiteAssist.horizontalAcceleration, gravity);
-    if (movement !== 0) {
+    const windBoostAcceleration = windLiftActive ? 5200 : 0;
+    this.acceleration.set(
+      movement * acceleration * kiteAssist.runSpeedMultiplier + kiteAssist.horizontalAcceleration + windBoostAcceleration,
+      gravity,
+    );
+    if (movement !== 0 || windLiftActive) {
       this.facingDirection = movement;
+      if (windLiftActive) {
+        this.facingDirection = 1;
+      }
     }
 
     this.velocity.x += this.acceleration.x * deltaSeconds;
     this.velocity.x *= Math.pow(friction, deltaSeconds * 60);
-    const maxForwardSpeed = kiteAssist.speedLimitBase + kiteAssist.speedLimitBonus + (windLiftActive ? 90 : 0);
+    const maxForwardSpeed = windLiftActive ? 920 : kiteAssist.speedLimitBase + kiteAssist.speedLimitBonus;
     const maxBackwardSpeed = Math.max(115, maxForwardSpeed * 0.7);
     this.velocity.x = Math.max(-maxBackwardSpeed, Math.min(maxForwardSpeed, this.velocity.x));
+    if (windLiftActive) {
+      const windCruiseSpeed = 760;
+      const windSmoothing = 1 - Math.exp(-deltaSeconds * 6.5);
+      this.velocity.x += (windCruiseSpeed - this.velocity.x) * windSmoothing;
+    }
 
     if (input.isJumpPressed() && this.grounded) {
       const chargeBoost = this.jumpChargeLevel * this.maxJumpChargeVelocity;
@@ -87,7 +100,7 @@ export class Player {
       const comboBonus = input.isShortenPressed() ? this.comboHoldJumpBonus : 0;
       // Giảm lực nhảy cơ bản: nhảy suông (không tích dây) không còn đủ cao để
       // vượt cây/cối xay gió — bắt buộc phải thu dây trước khi nhảy.
-      this.velocity.y = -370 - kiteAssist.jumpBoost - chargeBoost - comboBonus;
+      this.velocity.y = -this.baseJumpVelocity - kiteAssist.jumpBoost - chargeBoost - comboBonus;
       this.grounded = false;
       this.justJumped = true;
       this.lastJumpWasCharged = chargeBoost + comboBonus > this.maxJumpChargeVelocity * 0.5;
