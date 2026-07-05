@@ -13,12 +13,27 @@ export function HUD({ snapshot }: HUDProps) {
         <Metric label="Strength" value={`${snapshot.windStrength.toFixed(2)}`} />
         <Metric label="Rope" value={`${snapshot.ropeLength.toFixed(0)} m`} />
         <Metric label="Distance" value={`${Math.floor(snapshot.distance)} / ${snapshot.goalDistance} m`} />
+        <Metric label="Notes" value={`${snapshot.noteCount}`} />
+        <Metric label="Lift" value={snapshot.windLiftTimer > 0 ? `${snapshot.windLiftTimer.toFixed(1)} s` : "Ready"} />
         <Metric label="Lives" value={"🪁".repeat(snapshot.lives) + "·".repeat(snapshot.maxLives - snapshot.lives)} />
       </div>
       <div className="hud-panel compact">
         <div className="hud-label">FPS</div>
         <div className="hud-value">{Math.round(snapshot.fps)}</div>
       </div>
+      {snapshot.jumpChargeLevel > 0 && (
+        <div className={`jump-charge-panel${snapshot.readyForHighJump ? " ready" : ""}`}>
+          <div className="hud-label">
+            {snapshot.readyForHighJump ? "Sẵn sàng nhảy cao!" : "Giữ chuột phải để tích lực…"}
+          </div>
+          <div className="jump-charge-track">
+            <div
+              className="jump-charge-fill"
+              style={{ width: `${Math.round(snapshot.jumpChargeLevel * 100)}%` }}
+            />
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

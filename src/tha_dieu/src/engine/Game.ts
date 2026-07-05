@@ -5,8 +5,10 @@ import { Renderer } from "./Renderer";
 import type { GameSnapshot } from "./types";
 import { Bird } from "../entities/Bird";
 import { Kite } from "../entities/Kite";
+import { MusicNote } from "../entities/MusicNote";
 import { Obstacle } from "../entities/Obstacle";
 import { Player } from "../entities/Player";
+import { WindGust } from "../entities/WindGust";
 import { intersects, pointInBounds } from "../physics/Collision";
 import { Rope } from "../physics/Rope";
 import { Wind } from "../physics/Wind";
@@ -19,7 +21,7 @@ import { WindSystem } from "../systems/WindSystem";
 import { WorldGenerator } from "../systems/WorldGenerator";
 
 export class Game {
-  private readonly input = new Input();
+  private readonly input: Input;
   private readonly renderer: Renderer;
   private readonly loop: GameLoop;
   private readonly camera = new Camera();
@@ -36,6 +38,8 @@ export class Game {
   private readonly obstacles: Obstacle[] = [];
   private readonly birdSystem = new BirdSystem();
   private readonly birds: Bird[] = [];
+  private readonly windGusts: WindGust[] = [];
+  private readonly musicNotes: MusicNote[] = [];
   private readonly groundY = 430;
   private readonly maxLives = 3;
   private readonly goalDistance = 2400;
@@ -46,11 +50,16 @@ export class Game {
   private completed = false;
   private fps = 60;
   private hasStartedAudio = false;
+  private windGustSpawnTimer = 1.5;
+  private windLiftTimer = 0;
+  private nextMusicNoteX = 520;
+  private noteCount = 0;
 
   constructor(
     canvas: HTMLCanvasElement,
     private readonly onSnapshot: (snapshot: GameSnapshot) => void,
   ) {
+    this.input = new Input(canvas);
     this.renderer = new Renderer(canvas);
     this.loop = new GameLoop((deltaSeconds, fps) => this.tick(deltaSeconds, fps));
     this.restart();
@@ -80,6 +89,12 @@ export class Game {
     this.worldGenerator.reset();
     this.birds.length = 0;
     this.birdSystem.reset();
+    this.windGusts.length = 0;
+    this.musicNotes.length = 0;
+    this.windGustSpawnTimer = 1.5;
+    this.windLiftTimer = 0;
+    this.nextMusicNoteX = 520;
+    this.noteCount = 0;
     this.lives = this.maxLives;
     this.hitInvulnerableTimer = 0;
     this.paused = false;
@@ -126,15 +141,25 @@ export class Game {
 
   private update(deltaSeconds: number): void {
     this.windSystem.update(deltaSeconds);
-    this.ropeSystem.updateLength(this.input, deltaSeconds);
+    this.ropeSystem.updateLength(this.input, deltaSeconds, this.renderer.height);
+    this.windLiftTimer = Math.max(0, this.windLiftTimer - deltaSeconds);
+    this.updateWindGusts(deltaSeconds);
+    this.handleWindGustCapture();
     const kiteAssist = this.rope.getPlayerAssist(this.player, this.kite);
-    this.player.update(this.input, deltaSeconds, this.groundY, kiteAssist);
+    this.player.update(this.input, deltaSeconds, this.groundY, kiteAssist, this.windLiftTimer);
     if (this.player.justJumped) {
       this.audioSystem.playJump();
     }
     this.physicsSystem.prepareKite(this.kite, this.wind);
+    if (this.windLiftTimer > 0) {
+      this.kite.acceleration.y -= 380;
+      this.kite.acceleration.x += 70;
+    }
     this.ropeSystem.apply(this.player, this.kite);
     this.physicsSystem.integrateKite(this.kite, deltaSeconds, this.groundY);
+    this.handleWindGustCapture();
+    this.updateMusicNotes(deltaSeconds);
+    this.handleMusicNoteCollisions();
     this.updateObstacles(deltaSeconds);
     this.birdSystem.update(this.birds, deltaSeconds, this.player.position.x, this.renderer.width, this.groundY, this.distance);
     this.hitInvulnerableTimer = Math.max(0, this.hitInvulnerableTimer - deltaSeconds);
@@ -160,6 +185,8 @@ export class Game {
       wind: this.wind,
       obstacles: this.obstacles,
       birds: this.birds,
+      windGusts: this.windGusts,
+      musicNotes: this.musicNotes,
       particles: this.particleSystem.particles,
       distance: this.distance,
       groundY: this.groundY,
@@ -229,6 +256,89 @@ export class Game {
 
   private updateWorld(): void {
     this.worldGenerator.update(this.obstacles, this.player.position.x, this.renderer.width, this.groundY);
+    this.ensureMusicNotes();
+  }
+
+  private updateWindGusts(deltaSeconds: number): void {
+    this.windGustSpawnTimer -= deltaSeconds;
+
+    if (this.windGustSpawnTimer <= 0) {
+      this.spawnWindGust();
+      this.windGustSpawnTimer += 5;
+    }
+
+    for (let index = this.windGusts.length - 1; index >= 0; index -= 1) {
+      const gust = this.windGusts[index];
+      gust.update(deltaSeconds);
+
+      if (gust.expired || gust.getBounds().x + gust.getBounds().width < this.player.position.x - 260) {
+        this.windGusts.splice(index, 1);
+      }
+    }
+  }
+
+  private spawnWindGust(): void {
+    const x = this.player.position.x + this.renderer.width * 0.65 + 140 + Math.random() * 180;
+    const y = this.groundY - 215 - Math.random() * 105;
+    const length = Math.min(360, Math.max(260, this.renderer.width * 0.32));
+    const angleRadians = ((-12 + Math.random() * 8) * Math.PI) / 180;
+    this.windGusts.push(new WindGust(x, y, length, angleRadians));
+  }
+
+  private handleWindGustCapture(): void {
+    for (const gust of this.windGusts) {
+      if (gust.catches(this.kite.position)) {
+        gust.used = true;
+        this.triggerWindLift();
+        return;
+      }
+    }
+  }
+
+  private triggerWindLift(): void {
+    this.windLiftTimer = 3;
+    this.player.grounded = false;
+    this.player.velocity.y = Math.min(this.player.velocity.y, -170);
+    this.kite.velocity.y = Math.min(this.kite.velocity.y, -260);
+    this.kite.velocity.x += 90;
+    this.rope.tension = 1;
+  }
+
+  private updateMusicNotes(deltaSeconds: number): void {
+    this.musicNotes.forEach((note) => note.update(deltaSeconds));
+
+    for (let index = this.musicNotes.length - 1; index >= 0; index -= 1) {
+      if (this.musicNotes[index].position.x < this.player.position.x - 320) {
+        this.musicNotes.splice(index, 1);
+      }
+    }
+  }
+
+  private ensureMusicNotes(): void {
+    const spawnUntilX = this.player.position.x + this.renderer.width * 1.8;
+
+    while (this.nextMusicNoteX < spawnUntilX && this.nextMusicNoteX < this.goalDistance + 680) {
+      const clusterSize = Math.random() < 0.35 ? 2 : 1;
+
+      for (let index = 0; index < clusterSize; index += 1) {
+        const x = this.nextMusicNoteX + index * 58;
+        const y = this.groundY - 315 - Math.random() * 155 - index * 24;
+        this.musicNotes.push(new MusicNote(x, y));
+      }
+
+      this.nextMusicNoteX += 320 + Math.random() * 250;
+    }
+  }
+
+  private handleMusicNoteCollisions(): void {
+    const playerBounds = this.player.getBounds();
+
+    for (let index = this.musicNotes.length - 1; index >= 0; index -= 1) {
+      if (intersects(playerBounds, this.musicNotes[index].getBounds())) {
+        this.musicNotes.splice(index, 1);
+        this.noteCount += 1;
+      }
+    }
   }
 
   private getRollingRockProximity(): number {
@@ -272,6 +382,10 @@ export class Game {
       lives: this.lives,
       maxLives: this.maxLives,
       goalDistance: this.goalDistance,
+      jumpChargeLevel: this.player.jumpChargeLevel,
+      readyForHighJump: this.player.jumpChargeLevel >= 0.999,
+      windLiftTimer: this.windLiftTimer,
+      noteCount: this.noteCount,
     });
   }
 

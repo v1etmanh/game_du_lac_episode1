@@ -2,9 +2,11 @@ import { AssetLoader } from "../engine/AssetLoader";
 import { Camera } from "../engine/Camera";
 import { Bird } from "../entities/Bird";
 import { Kite } from "../entities/Kite";
+import { MusicNote } from "../entities/MusicNote";
 import { Obstacle } from "../entities/Obstacle";
 import { Particle } from "../entities/Particle";
 import { Player } from "../entities/Player";
+import { WindGust } from "../entities/WindGust";
 import { Rope } from "../physics/Rope";
 import { Wind } from "../physics/Wind";
 
@@ -16,6 +18,8 @@ export interface RenderFrame {
   wind: Wind;
   obstacles: Obstacle[];
   birds: Bird[];
+  windGusts: WindGust[];
+  musicNotes: MusicNote[];
   particles: Particle[];
   distance: number;
   groundY: number;
@@ -33,8 +37,11 @@ export class RenderSystem {
     this.drawMountains(context, width, height, frame.groundY - frame.camera.position.y+50, frame.camera.position.x * 0.7);
     this.withWorld(context, frame.camera, () => {
       this.drawGround(context, width, frame.groundY, frame.camera.position.x);
+      frame.windGusts.forEach((gust) => this.drawWindGust(context, gust));
+      frame.musicNotes.forEach((note) => this.drawMusicNote(context, note));
       frame.obstacles.forEach((obstacle) => this.drawObstacle(context, obstacle));
       this.drawPlayer(context, frame.player);
+      this.drawJumpChargeIndicator(context, frame.player);
       this.drawRope(context, frame.player, frame.kite, frame.rope);
       this.drawKite(context, frame.kite, frame.wind);
       frame.birds.forEach((bird) => this.drawBird(context, bird));
@@ -366,6 +373,30 @@ export class RenderSystem {
     context.stroke();
   }
 
+  private drawJumpChargeIndicator(context: CanvasRenderingContext2D, player: Player): void {
+    if (player.jumpChargeLevel <= 0) {
+      return;
+    }
+
+    const centerX = player.position.x + player.width / 2;
+    const barWidth = 40;
+    const barY = player.position.y - 16;
+    const ready = player.jumpChargeLevel >= 0.999;
+
+    context.fillStyle = "rgba(19, 32, 34, 0.35)";
+    context.fillRect(centerX - barWidth / 2, barY, barWidth, 5);
+
+    context.fillStyle = ready ? "#1f5654" : "#e2574c";
+    context.fillRect(centerX - barWidth / 2, barY, barWidth * player.jumpChargeLevel, 5);
+
+    if (ready) {
+      context.fillStyle = "rgba(31, 86, 84, 0.8)";
+      context.beginPath();
+      context.arc(centerX, barY - 8, 3.5, 0, Math.PI * 2);
+      context.fill();
+    }
+  }
+
   private drawPlayer(context: CanvasRenderingContext2D, player: Player): void {
     const spriteSheet = AssetLoader.get("character");
     if (spriteSheet) {
@@ -465,11 +496,88 @@ export class RenderSystem {
     context.fill();
   }
 
+  private drawWindGust(context: CanvasRenderingContext2D, gust: WindGust): void {
+    const windImage = AssetLoader.get("windGust");
+    const start = gust.getStart();
+    const alpha = gust.alpha;
+    const segmentCount = 5;
+    const segmentSpacing = gust.length / segmentCount;
+
+    context.save();
+    context.globalAlpha = alpha;
+    context.translate(start.x, start.y);
+    context.rotate(gust.angleRadians);
+
+    if (windImage) {
+      const drawHeight = 46;
+      const drawWidth = drawHeight * (windImage.naturalWidth / windImage.naturalHeight);
+      for (let index = 0; index < segmentCount; index += 1) {
+        const pulse = Math.sin(performance.now() * 0.007 + index * 1.15) * 10;
+        const drift = Math.cos(performance.now() * 0.004 + index * 0.9) * 7;
+        const scale = 0.82 + Math.sin(index * 1.7 + gust.age * 4) * 0.12;
+        context.globalAlpha = alpha * (0.45 + index * 0.1);
+        context.drawImage(
+          windImage,
+          index * segmentSpacing - drawWidth * 0.35 + drift,
+          -drawHeight / 2 + pulse,
+          drawWidth * scale,
+          drawHeight * scale,
+        );
+      }
+    } else {
+      context.strokeStyle = "rgba(255, 255, 255, 0.52)";
+      context.lineWidth = 3;
+      context.setLineDash([26, 20]);
+      for (let index = 0; index < 3; index += 1) {
+        const y = (index - 1) * 18;
+        context.beginPath();
+        context.moveTo(0, y);
+        context.quadraticCurveTo(gust.length * 0.45, y - 18, gust.length, y);
+        context.stroke();
+      }
+    }
+    context.restore();
+  }
+
+  private drawMusicNote(context: CanvasRenderingContext2D, note: MusicNote): void {
+    const x = note.position.x;
+    const y = note.position.y;
+    const glow = 0.55 + Math.sin(performance.now() * 0.006 + x * 0.02) * 0.18;
+
+    context.save();
+    context.translate(x, y);
+    context.shadowColor = "rgba(255, 229, 119, 0.75)";
+    context.shadowBlur = 10 + glow * 8;
+    context.strokeStyle = "#1f5654";
+    context.fillStyle = "#ffe577";
+    context.lineWidth = 4;
+    context.lineCap = "round";
+
+    context.beginPath();
+    context.ellipse(-5, 10, 9, 6, -0.45, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(4, 8);
+    context.lineTo(4, -22);
+    context.lineTo(20, -16);
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(5, -20);
+    context.quadraticCurveTo(13, -28, 23, -20);
+    context.stroke();
+    context.restore();
+  }
+
   private drawRope(context: CanvasRenderingContext2D, player: Player, kite: Kite, rope: Rope): void {
     const anchor = rope.getAnchor(player);
     const midpointX = (anchor.x + kite.position.x) * 0.5;
-    const sag = Math.max(20, 58 * (1 - rope.tension));
-    const vibration = Math.sin(performance.now() * 0.03) * rope.tension * 9;
+    // Dây càng căng thì càng thẳng: sag giảm phi tuyến về gần 0 khi tension tiến tới 1,
+    // thay vì bị chặn ở một mức sag tối thiểu như trước.
+    const sag = 56 * Math.pow(Math.max(0, 1 - rope.tension), 1.6);
+    const vibration = Math.sin(performance.now() * 0.03) * rope.tension * 4;
 
     context.strokeStyle = `rgba(93, 74, 48, ${0.45 + rope.tension * 0.35})`;
     context.lineWidth = 2 + rope.tension * 1.2;
@@ -477,6 +585,17 @@ export class RenderSystem {
     context.moveTo(anchor.x, anchor.y);
     context.bezierCurveTo(midpointX - 30, anchor.y + sag + vibration, midpointX + 30, kite.position.y + sag - vibration, kite.position.x, kite.position.y);
     context.stroke();
+
+    if (rope.tension > 0.82) {
+      // Lõi sáng mảnh chạy dọc dây để nhấn mạnh cảm giác dây đang bị kéo căng hết cỡ.
+      const highlight = clamp01((rope.tension - 0.82) / 0.18);
+      context.strokeStyle = `rgba(255, 244, 214, ${highlight * 0.55})`;
+      context.lineWidth = 1;
+      context.beginPath();
+      context.moveTo(anchor.x, anchor.y);
+      context.bezierCurveTo(midpointX - 30, anchor.y + sag + vibration, midpointX + 30, kite.position.y + sag - vibration, kite.position.x, kite.position.y);
+      context.stroke();
+    }
   }
 
   private drawKite(context: CanvasRenderingContext2D, kite: Kite, wind: Wind): void {
@@ -561,4 +680,8 @@ export class RenderSystem {
     context.fill();
     context.globalAlpha = 1;
   }
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
 }

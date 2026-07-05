@@ -6,6 +6,8 @@ import type { KiteAssist } from "../engine/types";
 const noAssist: KiteAssist = {
   horizontalAcceleration: 0,
   speedLimitBonus: 0,
+  runSpeedMultiplier: 1,
+  speedLimitBase: 520,
   jumpBoost: 0,
   gravityRelief: 0,
   drag: 0,
@@ -14,8 +16,24 @@ const noAssist: KiteAssist = {
 export class Rope {
   length = 220;
   readonly minLength = 90;
-  readonly maxLength = 390;
+  // Giới hạn tuyệt đối (thiết kế gốc) — không bao giờ vượt quá mức này dù màn hình lớn cỡ nào.
+  readonly absoluteMaxLength = 390;
+  // Giới hạn thực tế đang áp dụng, được co giãn theo chiều cao khung hình mỗi khung hình
+  // (xem updateMaxLengthForViewport) để dây không thể kéo diều vượt ra ngoài mép trên màn hình.
+  maxLength = 390;
   tension = 0;
+
+  // Tính lại maxLength dựa trên chiều cao viewport thực tế.
+  // Camera chừa ra khoảng viewportHeight * 0.58 phía trên người chơi (xem Camera.update),
+  // nên dây phải ngắn hơn khoảng đó một khoảng đệm đủ để chứa thân diều + đuôi diều,
+  // nếu không diều sẽ bay vượt mép trên màn hình khi người chơi thả dây dài hết cỡ (phím S).
+  updateMaxLengthForViewport(viewportHeight: number): void {
+    const visibleAboveAnchor = viewportHeight * 0.58;
+    const kiteSafetyMargin = 130; // thân diều (~57) + đuôi diều (~70) + đệm an toàn
+    const minAllowed = this.minLength + 20;
+    const dynamicMax = clamp(visibleAboveAnchor - kiteSafetyMargin, minAllowed, this.absoluteMaxLength);
+    this.maxLength = dynamicMax;
+  }
 
   getAnchor(player: Player): Vector2 {
     return new Vector2(player.position.x + player.width * 0.48, player.position.y + player.height * 0.2);
@@ -37,23 +55,34 @@ export class Rope {
     const horizontalPosition = clamp(offset.x / 300, -1, 1);
     const kiteAhead = Math.max(0, horizontalPosition) * engagement;
     const kiteBehind = Math.max(0, -horizontalPosition) * engagement;
+    const lengthRatio = this.getLengthRatio();
+    const shortRopeDrag = Math.pow(1 - lengthRatio, 2) * 0.12;
 
     return {
       horizontalAcceleration: kiteAhead * 1180 - kiteBehind * 760,
       speedLimitBonus: kiteAhead * 190,
+      runSpeedMultiplier: 0.2 + Math.pow(lengthRatio, 1.35) * 1.12,
+      speedLimitBase: 135 + Math.pow(lengthRatio, 1.22) * 485,
       jumpBoost: highKite * engagement * 300 - lowKite * engagement * 150,
       gravityRelief: highKite * engagement * 260,
-      drag: kiteBehind * 0.07 + lowKite * engagement * 0.035,
+      drag: kiteBehind * 0.07 + lowKite * engagement * 0.035 + shortRopeDrag,
     };
   }
 
-  applyTension(player: Player, kite: Kite): void {
+  getLengthRatio(): number {
+    return clamp((this.length - this.minLength) / Math.max(1, this.maxLength - this.minLength), 0, 1);
+  }
+
+  applyTension(player: Player, kite: Kite, isShortening = false): void {
     const anchor = this.getAnchor(player);
     const offset = Vector2.subtract(kite.position, anchor);
     const distance = offset.length();
 
     if (distance <= this.length) {
-      this.tension = Math.max(0, this.tension - 0.05);
+      // Khi người chơi đang chủ động thu dây (giữ chuột phải), dây phải hiện rõ
+      // đang bị kéo căng và thẳng ra ngay lập tức, không chờ diều thật sự áp sát
+      // giới hạn chiều dài mới.
+      this.tension = isShortening ? Math.min(1, this.tension + 0.22) : Math.max(0, this.tension - 0.05);
       return;
     }
 
@@ -62,7 +91,8 @@ export class Rope {
     const spring = Math.min(stretch * 13.5, 2450);
     const damping = (kite.velocity.x * direction.x + kite.velocity.y * direction.y) * 1.8;
     const force = Math.max(0, spring + damping);
-    const nextTension = Math.min(1, stretch / 130);
+    const computedTension = Math.min(1, stretch / 130);
+    const nextTension = isShortening ? Math.max(computedTension, 0.92) : computedTension;
 
     kite.acceleration.x -= direction.x * force;
     kite.acceleration.y -= direction.y * force;

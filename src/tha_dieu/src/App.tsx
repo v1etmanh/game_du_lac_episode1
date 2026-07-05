@@ -18,6 +18,10 @@ const initialSnapshot: GameSnapshot = {
   lives: 3,
   maxLives: 3,
   goalDistance: 2400,
+  jumpChargeLevel: 0,
+  readyForHighJump: false,
+  windLiftTimer: 0,
+  noteCount: 0,
 };
 
 interface AppProps {

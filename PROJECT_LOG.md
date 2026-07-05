@@ -70,3 +70,17 @@ Nhật ký hành động tự động (theo quy ước 3 giai đoạn: Truy vấ
   - `npm run build` — thành công, không lỗi (54 modules, 616ms).
 - **Tác động**: Trải nghiệm intro giờ bắt buộc người chơi xem hết mỗi video (video1 → video2 → video3) rồi mới click để qua video/màn tiếp theo; không còn bị loop hay skip sớm như trước.
 - **Ghi chú cho tương lai**: Logic này áp dụng cho cả video cuối (video3) — chiếu xong, dừng, chờ click mới chuyển sang màn chữ "EPISODE 1". Nếu sau này muốn cho phép "tua nhanh/bỏ qua toàn bộ intro", cần thêm 1 nút skip riêng vì hiện tại không có cách nào bỏ qua giữa chừng.
+
+---
+
+## [2026-07-05] - Giới hạn chiều dài dây diều theo màn hình thực tế (src/tha_dieu)
+- **Hành động**: Truy vấn ngữ cảnh thật trước khi sửa (không đoán mò): đọc `Rope.ts`, `RopeSystem.ts`, `Game.ts`, `Camera.ts`, `Input.ts`, `Renderer.ts`, `RenderSystem.ts`. Xác định nguyên nhân: `Rope.maxLength` là hằng số cố định 390, không liên quan tới chiều cao canvas thực tế (`Renderer.height` tối thiểu chỉ 420px) và vùng nhìn thấy phía trên người chơi chỉ bằng `viewportHeight * 0.58` (xem `Camera.update`) — nên khi người chơi giữ phím S/E (hoặc chuột phải nhả dây) kéo dây tới max 390, diều dư sức bay vượt mép trên màn hình ở các màn hình nhỏ/vừa.
+  - Sửa `src/tha_dieu/src/physics/Rope.ts`: đổi `maxLength` từ hằng số cố định thành thuộc tính có thể thay đổi, thêm `absoluteMaxLength = 390` (trần tuyệt đối) và hàm `updateMaxLengthForViewport(viewportHeight)` tính `maxLength` động = `clamp(viewportHeight * 0.58 - 130, minLength + 20, absoluteMaxLength)` (130 = khoảng đệm an toàn cho thân + đuôi diều).
+  - Sửa `src/tha_dieu/src/systems/RopeSystem.ts`: `updateLength()` nhận thêm tham số `viewportHeight`, gọi `rope.updateMaxLengthForViewport(viewportHeight)` mỗi khung hình trước khi clamp `rope.length`.
+  - Sửa `src/tha_dieu/src/engine/Game.ts`: truyền `this.renderer.height` thật vào `this.ropeSystem.updateLength(...)`.
+  - Chạy `npx tsc --noEmit -p tsconfig.json` trong `src/tha_dieu` — biên dịch sạch, exit code 0, không lỗi type.
+- **Tác động**: Dây diều giờ không thể kéo dài vượt quá mức an toàn tương ứng với chiều cao màn hình thực tế của người chơi (co giãn tự động theo `resize`), nên diều không còn bay vượt mép trên màn hình khi giữ phím S để nhả dây dài hết cỡ. Với màn hình lớn, giới hạn vẫn có thể tiệm cận 390 (thiết kế gốc); với màn hình nhỏ, giới hạn tự giảm xuống mức an toàn (tối thiểu `minLength + 20 = 110`).
+- **Ghi chú cho tương lai**:
+  - HUD (`ui/HUD.tsx`) hiển thị `snapshot.maxRopeLength` — do lấy trực tiếp từ `rope.maxLength` nên sẽ tự phản ánh đúng giới hạn động, không cần sửa gì thêm.
+  - Hệ số đệm an toàn (130px) và tỉ lệ `0.58` đang giả định thân diều bán kính ~22 + đuôi diều dài ~70; nếu sau này đổi asset diều lớn/nhỏ hơn đáng kể, nên rà lại hằng số `kiteSafetyMargin` trong `Rope.updateMaxLengthForViewport`.
+  - Chưa kiểm thử thủ công bằng cách chạy `npm run dev` và bấm phím S thực tế trên trình duyệt (chỉ mới xác nhận qua `tsc --noEmit`) — nên người dùng nên tự trải nghiệm lại minigame thả diều để xác nhận cảm giác chơi (max length mới có thể khiến dây thả không được dài như trước ở màn hình nhỏ).
