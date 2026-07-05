@@ -33,6 +33,15 @@ export default function DialogScreen({ locationId, onFinish, onBack, dialogueKey
 
   const line = dialogues[lineIndex]
   const character = CHARACTERS[line.speaker] || { name: line.speakerName, avatar: null }
+  const portrait = character.portrait || {}
+  const portraitStyle = {
+    '--portrait-scale': portrait.scale ?? 1,
+    '--portrait-x': portrait.x ?? '0px',
+    '--portrait-y': portrait.y ?? '0px',
+    '--portrait-mobile-scale': portrait.mobileScale ?? portrait.scale ?? 1,
+    '--portrait-mobile-x': portrait.mobileX ?? portrait.x ?? '0px',
+    '--portrait-mobile-y': portrait.mobileY ?? portrait.y ?? '0px',
+  }
   const isPlayerSide = line.speaker === 'lan_anh' || line.speaker === 'tinh'
   const isLast = lineIndex === dialogues.length - 1
   const bgImage = data.backgroundImage || `/landscape/${locationId}.png`
@@ -47,7 +56,7 @@ export default function DialogScreen({ locationId, onFinish, onBack, dialogueKey
 
   return (
     <div
-      className="dialog-screen"
+      className={`dialog-screen ${isPlayerSide ? 'speaker-left' : 'speaker-right'}`}
       style={{ backgroundImage: `url(${bgImage})` }}
       onClick={handleAdvance}
     >
@@ -64,7 +73,10 @@ export default function DialogScreen({ locationId, onFinish, onBack, dialogueKey
 
       <div className="dialog-location-tag">{data.locationName}</div>
 
-      <div className={`dialog-portrait ${isPlayerSide ? 'left' : 'right'}`}>
+      <div
+        className={`dialog-portrait ${isPlayerSide ? 'left' : 'right'}`}
+        style={portraitStyle}
+      >
         {character.avatar ? (
           <img src={character.avatar} alt={character.name} />
         ) : (
