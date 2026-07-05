@@ -55,6 +55,14 @@ const ASSETS = {
   },
 };
 
+const SOUND_ASSETS = {
+  background: '/sound/nhac_nen.mp3',
+  magnet: '/sound/nam_cham_sound.wav',
+  prize: '/sound/prize.wav',
+  fruitCollision: '/sound/fruit_collision.wav',
+  manyFruitCollision: '/sound/many_fruit_collison.wav',
+};
+
 const LAN_ANH_SPRITES = {
   run: { cols: 2, rows: 2, frameWidth: 150, frameHeight: 150 },
   right: { cols: 4, rows: 1, frameWidth: 184, frameHeight: 132 },
@@ -613,6 +621,7 @@ function updatePlayer(state, pressed, delta) {
 
     if (progress >= 1) {
       lanAnh.isJumping = false;
+      resolveBlockedPosition(lanAnh);
       window.setTimeout(() => {
         lanAnh.canJump = true;
       }, 350);
@@ -645,6 +654,7 @@ function updatePlayer(state, pressed, delta) {
 
   const nextX = clamp(lanAnh.x + (dx / length) * speed * delta, 68, WORLD.width - 68);
   const nextY = clamp(lanAnh.y + (dy / length) * speed * delta, 112, WORLD.height - 68);
+  resolveBlockedPosition(lanAnh);
   moveWithRauLangCollision(lanAnh, nextX, nextY);
 }
 
@@ -677,6 +687,8 @@ function updateCollectEffects(state, delta) {
 }
 
 function moveWithRauLangCollision(lanAnh, nextX, nextY) {
+  resolveBlockedPosition(lanAnh);
+
   const current = { x: lanAnh.x, y: lanAnh.y };
   const horizontal = { x: nextX, y: current.y };
   const vertical = { x: lanAnh.x, y: nextY };
@@ -694,15 +706,48 @@ function moveWithRauLangCollision(lanAnh, nextX, nextY) {
   }
 }
 
+function resolveBlockedPosition(lanAnh) {
+  const current = { x: lanAnh.x, y: lanAnh.y };
+  if (!isBlocked(current)) return;
+
+  for (const row of RAU_LANG_ROWS) {
+    if (!pointInRect(current, row)) continue;
+
+    const topExit = row.y - 3;
+    const bottomExit = row.y + row.height + 3;
+    const topDistance = Math.abs(current.y - topExit);
+    const bottomDistance = Math.abs(bottomExit - current.y);
+    lanAnh.y = clamp(topDistance <= bottomDistance ? topExit : bottomExit, 112, WORLD.height - 68);
+    return;
+  }
+}
+
+function findSafeJumpTarget(start, rawTarget) {
+  if (!isBlocked(rawTarget)) return rawTarget;
+
+  for (let step = 9; step >= 1; step -= 1) {
+    const ratio = step / 10;
+    const candidate = {
+      x: start.x + (rawTarget.x - start.x) * ratio,
+      y: start.y + (rawTarget.y - start.y) * ratio,
+    };
+    if (!isBlocked(candidate)) return candidate;
+  }
+
+  return start;
+}
+
 function startJump(lanAnh) {
+  resolveBlockedPosition(lanAnh);
   lanAnh.canJump = false;
   lanAnh.isJumping = true;
   lanAnh.jumpElapsed = 0;
   lanAnh.jumpStart = { x: lanAnh.x, y: lanAnh.y };
-  lanAnh.jumpTarget = {
+  const rawTarget = {
     x: clamp(lanAnh.x + lanAnh.lastVector.x * JUMP_DISTANCE, 68, WORLD.width - 68),
     y: clamp(lanAnh.y + lanAnh.lastVector.y * JUMP_DISTANCE, 112, WORLD.height - 68),
   };
+  lanAnh.jumpTarget = findSafeJumpTarget(lanAnh.jumpStart, rawTarget);
 }
 
 function shakeNearestTree(state) {
@@ -1256,12 +1301,75 @@ function App() {
   const resolvingPowerRef = useRef(false);
   const powerTimersRef = useRef([]);
   const powerCooldownUntilRef = useRef(0);
+  const audioRef = useRef({
+    ready: false,
+    background: null,
+    effects: {},
+    lastFruitHitAt: 0,
+    fruitHitStreak: 0,
+    lastManyHitAt: 0,
+  });
 
   const handleStatsChange = useCallback((nextStats) => {
     setStats(nextStats);
   }, []);
 
+  const ensureAudioStarted = useCallback(() => {
+    if (typeof Audio === 'undefined') return;
+
+    const audio = audioRef.current;
+    if (!audio.ready) {
+      audio.background = new Audio(SOUND_ASSETS.background);
+      audio.background.loop = true;
+      audio.background.volume = 0.32;
+      audio.effects = {
+        magnet: { src: SOUND_ASSETS.magnet, volume: 0.8 },
+        prize: { src: SOUND_ASSETS.prize, volume: 0.78 },
+        fruitCollision: { src: SOUND_ASSETS.fruitCollision, volume: 0.52 },
+        manyFruitCollision: { src: SOUND_ASSETS.manyFruitCollision, volume: 0.74 },
+      };
+      audio.ready = true;
+    }
+
+    if (audio.background?.paused) {
+      audio.background.play().catch(() => {});
+    }
+  }, []);
+
+  const playSound = useCallback((name) => {
+    ensureAudioStarted();
+
+    const effect = audioRef.current.effects[name];
+    if (!effect) return;
+
+    const audio = new Audio(effect.src);
+    audio.volume = effect.volume;
+    audio.play().catch(() => {});
+  }, [ensureAudioStarted]);
+
+  const playFruitCollisionSound = useCallback(() => {
+    const now = performance.now();
+    const audio = audioRef.current;
+
+    if (now - audio.lastFruitHitAt < 180) {
+      audio.fruitHitStreak += 1;
+    } else {
+      audio.fruitHitStreak = 1;
+    }
+    audio.lastFruitHitAt = now;
+
+    if (audio.fruitHitStreak >= 3 && now - audio.lastManyHitAt > 700) {
+      audio.lastManyHitAt = now;
+      audio.fruitHitStreak = 0;
+      playSound('manyFruitCollision');
+      return;
+    }
+
+    playSound('fruitCollision');
+  }, [playSound]);
+
   const handleHarvest = useCallback((fruit) => {
+    playFruitCollisionSound();
     setLastFruit(fruit);
     setBasketGrid((grid) => {
       const newItem = {
@@ -1288,14 +1396,26 @@ function App() {
       // Ro day: day o cu nhat ra, don sang de nhuong cho qua moi.
       return [...grid.slice(1), newItem];
     });
-  }, []);
+  }, [playFruitCollisionSound]);
 
   useEffect(() => {
     return () => {
       powerTimersRef.current.forEach((timer) => window.clearTimeout(timer));
       powerTimersRef.current = [];
+      audioRef.current.background?.pause();
     };
   }, []);
+
+  useEffect(() => {
+    const startAudio = () => ensureAudioStarted();
+    window.addEventListener('pointerdown', startAudio, { once: true });
+    window.addEventListener('keydown', startAudio, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', startAudio);
+      window.removeEventListener('keydown', startAudio);
+    };
+  }, [ensureAudioStarted]);
 
   useEffect(() => {
     if (resolvingPowerRef.current) return;
@@ -1328,6 +1448,7 @@ function App() {
     }
 
     setPowerWheel({ status: 'spinning', result: null, id: spinId });
+    playSound('prize');
 
     const spinTimer = window.setTimeout(() => {
       const power = POWER_TYPES[Math.floor(Math.random() * POWER_TYPES.length)];
@@ -1335,6 +1456,7 @@ function App() {
       powerCooldownUntilRef.current = Date.now() + POWER_COOLDOWN_MS;
 
       if (power.id === 'magnet') {
+        playSound('magnet');
         canvasRef.current?.activateMagnet();
       } else {
         canvasRef.current?.triggerTimeStopRain();
@@ -1349,9 +1471,10 @@ function App() {
     }, POWER_SPIN_MS);
 
     powerTimersRef.current.push(spinTimer);
-  }, [basketGrid]);
+  }, [basketGrid, playSound]);
 
   const trigger = (name) => {
+    ensureAudioStarted();
     setCommand({ name, id: Date.now() });
   };
 
@@ -1388,6 +1511,7 @@ function App() {
 
           <div className="actions">
             <button type="button" onClick={() => {
+              ensureAudioStarted();
               powerTimersRef.current.forEach((timer) => window.clearTimeout(timer));
               powerTimersRef.current = [];
               resolvingPowerRef.current = false;
