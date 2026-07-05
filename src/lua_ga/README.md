@@ -3,10 +3,11 @@
 ## Coop and Clap Controls
 
 - `Shift` + movement: sprint for 3 seconds, then wait for cooldown before sprinting again.
-- `Space`: drop grain. Grain charges recover over time; the default recharge is 1 drop every 10 seconds.
+- `Z`: drop grain. Grain charges recover over time; the default recharge is 1 drop every 10 seconds.
 - Grain dropped too close to the coop gate is ignored by chickens.
-- `L`: open or close the coop gate.
-- `K`: clap. A visible wave expands from the player; chickens touched by the wave enter `CLAP_PANIC` and run in a random direction.
+- `F`: open or close the coop gate.
+- `X`: dash — quick burst movement in the current facing direction, limited by cooldown.
+- `C`: clap. A visible wave expands from the player; chickens touched by the wave enter `CLAP_PANIC` and run in a random direction.
 - The coop has one gate on the left side. Chickens can pass through that gate only when it is open.
 - A chicken is secured only after it is inside the coop and the gate is closed for the required hold time.
 - Opening the gate after securing chickens can release them again, so the player should close the gate after herding chickens in.
@@ -16,7 +17,7 @@ Bat Ga Prototype là một prototype mô phỏng lùa gà chạy trên React + V
 ## Tính năng chính
 
 - Điều khiển người chơi bằng WASD hoặc phím mũi tên.
-- Thả thóc bằng phím Space, giới hạn theo số lượt thả trong cấu hình.
+- Thả thóc bằng phím Z, giới hạn theo số lượt thả trong cấu hình.
 - Gà có các trạng thái hành vi: `WANDER`, `PECK`, `ALERT`, `ESCAPE`, `PANIC`, `GO_TO_FOOD`, `EAT`, `SECURED`.
 - Một gà trống có tốc độ chạy khác gà thường.
 - Va chạm với biên sân và chướng ngại vật.

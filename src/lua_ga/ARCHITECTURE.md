@@ -5,10 +5,21 @@
 - Player sprint lives on the player entity as `sprintActiveTime` and `sprintCooldownRemaining`. `Shift` while moving starts a timed sprint when cooldown is ready.
 - `CoopSystem` owns coop gate geometry, wall collision rectangles, secured timing, and release behavior when the gate is opened.
 - The coop has one left-side gate. `resolveCoopWallCollisions` blocks player and chickens against every wall segment; the gate segment exists only when the coop is closed.
-- `L` toggles `world.coop.closed`.
-- `ClapSystem` owns clap wave creation and expansion. `K` creates a wave at the player position.
+- `F` toggles `world.coop.closed`.
+- `ClapSystem` owns clap wave creation and expansion. `C` creates a wave at the player position.
 - Each wave tracks the chicken ids it already touched so one wave cannot repeatedly panic the same chicken.
 - A touched chicken enters `CLAP_PANIC`, receives a random direction, and runs for `clapRunDistance` or until its direction lock expires.
+
+## Rooster Rage / Attack Trigger
+
+- Original design: every `roosterAttackMinInterval`/`roosterAttackMaxInterval` seconds (default 12s, fixed), the rooster performed a **single instant check**: is the player within `chickenAlertRadius` right now? If not, the window was skipped entirely and the timer reset for another 12s — the rooster could go many cycles without ever attacking if the player was never in tight range at the exact tick.
+- Current design: that instant check was replaced with a two-stage trigger + a persistent "armed" window (`chicken.rageActive`):
+  1. **Timer trigger**: at `nextAttackAt`, instead of one-shot checking `alertRadius`, the rooster becomes `rageActive` (armed) — no reset if the player isn't nearby yet.
+  2. **Chase-spam trigger**: every time the player forces the rooster into a *new* `ESCAPE`/`PANIC` state (`recordRoosterChase`), the timestamp is recorded. If `roosterEscapeChaseThreshold` (default 5) such triggers happen within `roosterEscapeChaseWindow` seconds (default 7), the rooster becomes `rageActive` immediately, without waiting for the 12s timer.
+  3. While `rageActive` and not yet attacking, every frame checks `distance(chicken, player) <= roosterRageRadius` (default 480, much larger than `alertRadius`/`pressureRadius`/`panicRadius`). As soon as the player is within that large radius, `ROOSTER_AIM` starts. Until then, the rooster keeps behaving normally (wander/escape/panic) — being "armed" doesn't change its everyday behavior, it only means the next time the player gets close-ish, the attack fires.
+  4. Once `ROOSTER_AIM` starts, the cancel-condition (player ran away during the 3s telegraph) also uses `roosterRageRadius`, not the old small `alertRadius`, so an attack started from a rage trigger doesn't immediately self-cancel.
+- `Renderer` draws a pulsing orange dashed ring at `roosterRageRadius` while `rageActive` and not yet attacking, so the player can see "this rooster is primed" before the red aim/charge visuals (`ROOSTER_AIM`/`ROOSTER_CHARGE`/`ROOSTER_RECOVER`) kick in.
+- Tuning knobs: `roosterRageRadius`, `roosterEscapeChaseThreshold`, `roosterEscapeChaseWindow` in `defaultSettings.js`.
 
 Tài liệu này mô tả cấu trúc kỹ thuật của Bat Ga Prototype.
 
@@ -65,7 +76,7 @@ React chịu trách nhiệm hiển thị panel, nhận thay đổi settings, và
 `SimulationEngine.update(deltaTime)` xử lý theo thứ tự:
 
 1. Tăng elapsed time.
-2. Nếu Space được nhấn, gọi `dropGrain`.
+2. Nếu Z được nhấn, gọi `dropGrain`.
 3. Cập nhật player movement.
 4. Cập nhật grain lifetime/amount.
 5. Cập nhật hành vi và chuyển động của gà.
@@ -81,7 +92,10 @@ Thứ tự này quan trọng vì gà cần nhìn thấy vị trí mới của pl
 Quản lý keyboard events cho:
 
 - Di chuyển: WASD hoặc arrow keys.
-- Drop grain: Space.
+- Drop grain: Z.
+- Dash: X.
+- Clap: C.
+- Toggle coop gate: F.
 - Pause: P.
 
 Các input dạng action dùng consume method để tránh bị xử lý nhiều lần trong cùng một lần nhấn.

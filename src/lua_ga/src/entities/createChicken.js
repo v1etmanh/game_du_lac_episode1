@@ -53,6 +53,9 @@ export function createChicken(index, type, settings) {
     attackTargetY: position.y,
     attackStarted: false,
     nextAttackAt: Infinity,
+    rageActive: false,
+    rageArmedAt: 0,
+    escapeTriggerTimes: [],
 
     targetFoodId: null,
     eatTimer: 0,

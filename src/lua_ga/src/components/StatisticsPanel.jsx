@@ -67,7 +67,7 @@ export default function StatisticsPanel({ snapshot }) {
 
       <section className="helpBox">
         <h2>Controls</h2>
-        <p>WASD or arrows move. Shift sprints. Space drops grain. L opens or closes the coop. K claps. P pauses.</p>
+        <p>WASD or arrows move. Shift sprints. Z drops grain. X dashes. F opens or closes the coop. C claps. P pauses.</p>
       </section>
     </aside>
   );

@@ -677,6 +677,21 @@ export class Renderer {
   }
 
   drawRoosterAttackCue(ctx, chicken, player) {
+    if (chicken.type === "rooster" && chicken.rageActive && !ROOSTER_ATTACK_STATES.has(chicken.state)) {
+      const now = typeof performance === "undefined" ? Date.now() : performance.now();
+      const pulse = 0.35 + 0.25 * Math.sin(now / 180);
+      ctx.save();
+      ctx.strokeStyle = `rgba(255, 120, 0, ${pulse})`;
+      ctx.lineWidth = 3;
+      ctx.setLineDash([14, 10]);
+      ctx.beginPath();
+      ctx.arc(chicken.x, chicken.y, this.settings.roosterRageRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+      return;
+    }
+
     if (!isRagingRooster(chicken)) {
       return;
     }

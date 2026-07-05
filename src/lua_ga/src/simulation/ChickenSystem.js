@@ -129,6 +129,7 @@ function updateChickenIntent(chicken, world, settings, deltaTime) {
     if (chicken.state !== "PANIC" || chicken.directionLockRemaining <= 0) {
       chooseEscapeDirection(chicken, world.player, settings, true, playerDistance);
       world.stats.panicCount += 1;
+      recordRoosterChase(chicken, world, settings);
     }
     setState(chicken, "PANIC");
     chicken.speed = getEscapeSpeed(chicken, playerDistance, settings, true);
@@ -146,6 +147,7 @@ function updateChickenIntent(chicken, world, settings, deltaTime) {
   if (playerDistance <= chicken.alertRadius) {
     if (chicken.state !== "ESCAPE" || chicken.escapeDistanceRemaining <= 0 || chicken.directionLockRemaining <= 0) {
       chooseEscapeDirection(chicken, world.player, settings, false, playerDistance);
+      recordRoosterChase(chicken, world, settings);
     }
     setState(chicken, "ESCAPE");
     chicken.speed = getEscapeSpeed(chicken, playerDistance, settings, false);
@@ -181,13 +183,39 @@ function scheduleNextRoosterAttack(chicken, world, settings) {
   chicken.nextAttackAt = world.stats.elapsedTime + randomBetween(settings.roosterAttackMinInterval, settings.roosterAttackMaxInterval);
 }
 
-function isPlayerInRoosterAttackRange(chicken, world) {
-  return distance(chicken, world.player) <= chicken.alertRadius;
+function activateRoosterRage(chicken, world) {
+  if (chicken.attackStarted) {
+    return;
+  }
+
+  chicken.rageActive = true;
+  chicken.rageArmedAt = world.stats.elapsedTime;
+  chicken.escapeTriggerTimes = [];
+}
+
+// Mỗi lần gà trống bị đẩy vào ESCAPE/PANIC mới (không phải đang tiếp tục escape cũ),
+// ghi lại mốc thời gian. Nếu người chơi dồn đủ số lần trong khung thời gian ngắn,
+// coi như "chọc" gà quá nhiều -> tự kích hoạt hóa điên sớm, không cần chờ hết 12s.
+function recordRoosterChase(chicken, world, settings) {
+  if (chicken.type !== "rooster" || chicken.rageActive || chicken.attackStarted) {
+    return;
+  }
+
+  chicken.escapeTriggerTimes.push(world.stats.elapsedTime);
+
+  const windowStart = world.stats.elapsedTime - settings.roosterEscapeChaseWindow;
+  chicken.escapeTriggerTimes = chicken.escapeTriggerTimes.filter((timestamp) => timestamp >= windowStart);
+
+  if (chicken.escapeTriggerTimes.length >= settings.roosterEscapeChaseThreshold) {
+    activateRoosterRage(chicken, world);
+  }
 }
 
 function startRoosterAttack(chicken, world, settings) {
   const direction = normalize(world.player.x - chicken.x, world.player.y - chicken.y);
 
+  chicken.rageActive = false;
+  chicken.escapeTriggerTimes = [];
   chicken.attackStarted = true;
   chicken.attackTelegraphRemaining = settings.roosterAttackTelegraphTime;
   chicken.attackDistanceRemaining = settings.roosterAttackDistance;
@@ -212,16 +240,38 @@ function cancelRoosterAttack(chicken, world, settings) {
 }
 
 function updateRoosterAttack(chicken, world, settings, deltaTime) {
-  if (!chicken.attackStarted && world.stats.elapsedTime >= chicken.nextAttackAt) {
-    if (isPlayerInRoosterAttackRange(chicken, world)) {
+  // Tới hạn 12s -> không còn kiểm tra một lần duy nhất rồi bỏ lỡ nếu player ngoài tầm.
+  // Thay vào đó, gà vào trạng thái "vũ trang" (rageActive) và chờ player lọt vào
+  // bán kính rất lớn (roosterRageRadius) ở bất kỳ frame nào sau đó.
+  if (!chicken.attackStarted && !chicken.rageActive && world.stats.elapsedTime >= chicken.nextAttackAt) {
+    activateRoosterRage(chicken, world);
+  }
+
+  if (chicken.rageActive && !chicken.attackStarted) {
+    if (distance(chicken, world.player) <= settings.roosterRageRadius) {
       startRoosterAttack(chicken, world, settings);
-    } else {
-      scheduleNextRoosterAttack(chicken, world, settings);
+      return true;
     }
+
+    // Nếu player không bao giờ lọt vào bán kính rageRadius trong roosterRageTimeout
+    // giây, hủy trạng thái vũ trang và đặt lại lịch 12s bình thường -> tránh gà bị
+    // kẹt "vũ trang" vĩnh viễn (đây là nguyên nhân khiến hóa điên ngừng lặp lại
+    // sau vài lần nếu player ở xa lâu).
+    if (world.stats.elapsedTime - chicken.rageArmedAt >= settings.roosterRageTimeout) {
+      chicken.rageActive = false;
+      scheduleNextRoosterAttack(chicken, world, settings);
+      return false;
+    }
+
+    // Vẫn đang "vũ trang", chưa đủ gần để bung đòn -> để hành vi bình thường
+    // (wander/escape/panic) tiếp tục diễn ra trong lúc chờ.
+    return false;
   }
 
   if (chicken.state === "ROOSTER_AIM") {
-    if (!isPlayerInRoosterAttackRange(chicken, world)) {
+    // Đòn có thể được kích hoạt từ bán kính rageRadius rất lớn, nên điều kiện hủy
+    // trong lúc ngắm cũng phải dùng cùng bán kính đó, không dùng alertRadius nhỏ hơn.
+    if (distance(chicken, world.player) > settings.roosterRageRadius) {
       cancelRoosterAttack(chicken, world, settings);
       return false;
     }

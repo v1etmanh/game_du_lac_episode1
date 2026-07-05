@@ -25,11 +25,11 @@ export class InputManager {
   handleKeyDown(event) {
     const key = event.key.toLowerCase();
 
-    if ([" ", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
+    if (["arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
       event.preventDefault();
     }
 
-    if (key === " " && !this.keys.has(key)) {
+    if (key === "z" && !this.keys.has(key)) {
       this.dropPressed = true;
     }
 
@@ -37,15 +37,15 @@ export class InputManager {
       this.pausePressed = true;
     }
 
-    if (key === "l" && !this.keys.has(key)) {
+    if (key === "f" && !this.keys.has(key)) {
       this.toggleCoopPressed = true;
     }
 
-    if (key === "k" && !this.keys.has(key)) {
+    if (key === "c" && !this.keys.has(key)) {
       this.clapPressed = true;
     }
 
-    if (key === "b" && !this.keys.has(key)) {
+    if (key === "x" && !this.keys.has(key)) {
       this.dashPressed = true;
     }
 

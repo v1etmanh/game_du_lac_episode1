@@ -29,6 +29,10 @@ export const DEFAULT_SETTINGS = {
   roosterAttackRecoverTime: 1.1,
   roosterAttackMinInterval: 12,
   roosterAttackMaxInterval: 12,
+  roosterRageRadius: 480,
+  roosterRageTimeout: 10,
+  roosterEscapeChaseThreshold: 5,
+  roosterEscapeChaseWindow: 7,
 
   escapeConeAngle: 90,
   escapeDistribution: "center",
