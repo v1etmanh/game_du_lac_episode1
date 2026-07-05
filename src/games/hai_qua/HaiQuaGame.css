@@ -318,6 +318,75 @@
     0 7px 12px rgba(56, 30, 12, 0.32);
 }
 
+.hai-qua-wrap .power-wheel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  min-height: 116px;
+  opacity: 0.72;
+}
+
+.hai-qua-wrap .power-wheel.is-active {
+  opacity: 1;
+}
+
+.hai-qua-wrap .power-wheel-pointer {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 18px solid #fff5b9;
+  filter: drop-shadow(0 2px 2px rgba(56, 30, 12, 0.65));
+}
+
+.hai-qua-wrap .power-wheel-disc {
+  position: relative;
+  width: 82px;
+  height: 82px;
+  border: 4px solid #7b431d;
+  border-radius: 50%;
+  background:
+    linear-gradient(90deg, transparent 48%, rgba(75, 42, 17, 0.6) 48% 52%, transparent 52%),
+    conic-gradient(#9ff7ff 0deg 180deg, #ffe381 180deg 360deg);
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.24),
+    0 8px 16px rgba(56, 30, 12, 0.38);
+}
+
+.hai-qua-wrap .power-wheel.is-spinning .power-wheel-disc {
+  animation: power-wheel-spin 0.42s linear infinite;
+}
+
+.hai-qua-wrap .power-wheel-disc span {
+  position: absolute;
+  top: 50%;
+  color: #2b2f27;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.hai-qua-wrap .power-wheel-disc span:first-child {
+  left: 12px;
+}
+
+.hai-qua-wrap .power-wheel-disc span:last-child {
+  right: 12px;
+}
+
+.hai-qua-wrap .power-wheel-label {
+  min-height: 18px;
+  color: #fff4b8;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 rgba(74, 39, 13, 0.75);
+}
+
 .hai-qua-wrap .basket-grid {
   position: relative;
   z-index: 1;
@@ -341,11 +410,37 @@
   animation: basket-pop-in 0.22s ease;
 }
 
+.hai-qua-wrap .basket-item.is-matched {
+  border-color: rgba(159, 247, 255, 0.96);
+  background:
+    radial-gradient(circle at 50% 45%, rgba(159, 247, 255, 0.3), transparent 62%),
+    rgba(84, 47, 18, 0.38);
+  box-shadow:
+    inset 0 2px 5px rgba(54, 30, 12, 0.32),
+    0 0 16px rgba(159, 247, 255, 0.6);
+  animation: basket-match-pulse 0.52s ease-in-out infinite alternate;
+}
+
 .hai-qua-wrap .basket-item img {
   width: 84%;
   height: 84%;
   object-fit: contain;
   image-rendering: pixelated;
+}
+
+@keyframes power-wheel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes basket-match-pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.07);
+  }
 }
 
 @media (max-width: 820px) {

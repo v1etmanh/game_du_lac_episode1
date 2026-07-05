@@ -16,7 +16,15 @@ const ROW_RAIN_COOLDOWN = 16;
 const BASKET_COLS = 3;
 const BASKET_ROWS = 6;
 const BASKET_SIZE = BASKET_COLS * BASKET_ROWS;
-const COMBO_RAIN_COOLDOWN_MS = 3000;
+const POWER_SPIN_MS = 1400;
+const POWER_RESULT_MS = 900;
+const POWER_EFFECT_DURATION = 7;
+const MAGNET_RADIUS = 260;
+
+const POWER_TYPES = [
+  { id: 'magnet', label: 'Nam cham', shortLabel: 'NC' },
+  { id: 'timeStop', label: 'Dung thoi gian', shortLabel: 'TG' },
+];
 
 const PHASE_CONFIG = {
   1: { trees: 3, fruitsPerTree: 1, dropInterval: 10, fallMin: 6, fallMax: 7 },
@@ -160,6 +168,10 @@ function makeInitialState() {
       countdown: ROW_RAIN_COUNTDOWN,
       cooldown: 0,
       pulse: 0,
+    },
+    powerEffects: {
+      magnet: 0,
+      timeStop: 0,
     },
     catchPulse: 0,
     uiSecond: TOTAL_TIME,
@@ -419,6 +431,21 @@ const OrchardCanvas = forwardRef(function OrchardCanvas({ command, resetKey, onS
       state.rowRain.pulse = 1;
       return true;
     },
+    activateMagnet: () => {
+      const state = stateRef.current;
+      if (!state.isRunning) return false;
+      state.powerEffects.magnet = POWER_EFFECT_DURATION;
+      state.catchPulse = 0.5;
+      return true;
+    },
+    triggerTimeStopRain: () => {
+      const state = stateRef.current;
+      if (!state.isRunning) return false;
+      triggerPowerFruitStorm(state);
+      state.powerEffects.timeStop = POWER_EFFECT_DURATION;
+      state.rowRain.pulse = 1;
+      return true;
+    },
   }), []);
 
   return <canvas ref={canvasRef} width={WORLD.width} height={WORLD.height} className="orchard-canvas" />;
@@ -466,6 +493,9 @@ function updateGame(state, pressed, delta, fruitMeta, onHarvest, onStatsChange) 
   updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange);
   updateCollectEffects(state, delta);
 
+  state.powerEffects.magnet = Math.max(0, state.powerEffects.magnet - delta);
+  state.powerEffects.timeStop = Math.max(0, state.powerEffects.timeStop - delta);
+
   for (let index = 0; index < state.treePulses.length; index += 1) {
     state.treePulses[index] = Math.max(0, state.treePulses[index] - delta);
   }
@@ -508,6 +538,15 @@ function triggerRowRain(state, rowIndex) {
     state.treePulses[treeIndex] = 0.55;
     for (const anchorIndex of FRUIT_ANCHORS.keys()) {
       makeRainFruitDrop(state, treeIndex, anchorIndex, randomBetween(0, 0.6));
+    }
+  }
+}
+
+function triggerPowerFruitStorm(state) {
+  for (const treeIndex of TREE_LAYOUT.keys()) {
+    state.treePulses[treeIndex] = 0.8;
+    for (const anchorIndex of FRUIT_ANCHORS.keys()) {
+      makeRainFruitDrop(state, treeIndex, anchorIndex, randomBetween(0, 1.1));
     }
   }
 }
@@ -665,12 +704,35 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
   const remaining = [];
 
   for (const fruit of state.fallingFruits) {
-    fruit.elapsed += delta;
-    const progress = clamp(fruit.elapsed / fruit.fallTime, 0, 1);
-    const eased = progress * progress;
-    fruit.y = fruit.startY + (fruit.endY - fruit.startY) * eased;
+    if (fruit.magnetized && state.powerEffects.magnet <= 0) {
+      releaseMagnetizedFruit(fruit);
+    }
 
-    if (isFruitTouchingPlayer(state.lanAnh, fruit)) {
+    const holdY = fruit.endY - 74;
+    const shouldHold = !fruit.magnetized && state.powerEffects.timeStop > 0 && fruit.y >= holdY;
+
+    if (!shouldHold) {
+      fruit.elapsed += delta;
+    }
+
+    const progress = clamp(fruit.elapsed / fruit.fallTime, 0, 1);
+    let heldByTimeStop = false;
+
+    if (!fruit.magnetized) {
+      const eased = progress * progress;
+      fruit.y = fruit.startY + (fruit.endY - fruit.startY) * eased;
+
+      if (state.powerEffects.timeStop > 0 && fruit.y >= holdY) {
+        fruit.y = holdY + Math.sin(performance.now() / 180 + fruit.id) * 3;
+        heldByTimeStop = true;
+      }
+    }
+
+    if (state.powerEffects.magnet > 0) {
+      pullFruitTowardPlayer(state, fruit, delta);
+    }
+
+    if (isFruitTouchingPlayer(state, fruit)) {
       state.collected = Math.min(TARGET_FRUITS, state.collected + 1);
       state.catchPulse = 0.38;
       state.collectEffects.push({
@@ -688,7 +750,7 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
       continue;
     }
 
-    if (progress < 1) {
+    if (progress < 1 || heldByTimeStop || fruit.magnetized) {
       remaining.push(fruit);
     }
   }
@@ -696,13 +758,46 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
   state.fallingFruits = remaining;
 }
 
-function isFruitTouchingPlayer(lanAnh, fruit) {
-  const fruitRadius = fruit.size * 0.34;
+function releaseMagnetizedFruit(fruit) {
+  fruit.magnetized = false;
+  fruit.startY = fruit.y;
+  fruit.endY = Math.max(fruit.endY, Math.min(WORLD.height - 42, fruit.y + 96));
+  fruit.elapsed = 0;
+  fruit.fallTime = 0.85;
+}
+
+function playerCatchPoint(state) {
+  return {
+    x: state.lanAnh.x,
+    y: state.lanAnh.y - 92,
+  };
+}
+
+function pullFruitTowardPlayer(state, fruit, delta) {
+  const target = playerCatchPoint(state);
+  const fruitDistance = distance(target, fruit);
+
+  if (fruit.elapsed < 0) return;
+
+  fruit.magnetized = true;
+  if (fruitDistance <= 1) return;
+
+  const speed = clamp(560 + fruitDistance * 3.2, 620, 1500);
+  const step = Math.min(fruitDistance, speed * delta);
+  const ratio = step / fruitDistance;
+
+  fruit.x += (target.x - fruit.x) * ratio;
+  fruit.y += (target.y - fruit.y) * ratio;
+}
+
+function isFruitTouchingPlayer(state, fruit) {
+  const lanAnh = state.lanAnh;
+  const fruitRadius = fruit.size * (fruit.magnetized ? 0.46 : 0.38);
   const playerRect = {
-    left: lanAnh.x - 34,
-    right: lanAnh.x + 34,
-    top: lanAnh.y - (lanAnh.isJumping ? 148 : 126),
-    bottom: lanAnh.y - 36,
+    left: lanAnh.x - 42,
+    right: lanAnh.x + 42,
+    top: lanAnh.y - (lanAnh.isJumping ? 158 : 142),
+    bottom: lanAnh.y - 18,
   };
 
   const closestX = clamp(fruit.x, playerRect.left, playerRect.right);
@@ -741,6 +836,8 @@ function paint(ctx, assets, state, time) {
   for (const effect of state.collectEffects) {
     drawCollectEffect(ctx, effect);
   }
+
+  drawPowerEffects(ctx, state);
 
   if (state.success || state.gameOver) {
     drawResult(ctx, state);
@@ -904,6 +1001,57 @@ function drawCollectEffect(ctx, effect) {
   ctx.restore();
 }
 
+function drawPowerEffects(ctx, state) {
+  const magnetTime = state.powerEffects.magnet;
+  const timeStopTime = state.powerEffects.timeStop;
+
+  if (magnetTime > 0) {
+    const pulse = 0.5 + Math.sin(performance.now() / 120) * 0.12;
+    ctx.save();
+    ctx.globalAlpha = 0.22 + pulse * 0.16;
+    ctx.strokeStyle = '#9ff7ff';
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.arc(state.lanAnh.x, state.lanAnh.y - 82, MAGNET_RADIUS * pulse, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = 'rgba(24, 55, 54, 0.72)';
+    ctx.strokeStyle = 'rgba(170, 255, 246, 0.82)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(state.lanAnh.x - 54, state.lanAnh.y - 178, 108, 30, 8);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#d7fff8';
+    ctx.font = '900 14px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`NAM CHAM ${Math.ceil(magnetTime)}`, state.lanAnh.x, state.lanAnh.y - 163);
+    ctx.restore();
+  }
+
+  if (timeStopTime > 0) {
+    ctx.save();
+    ctx.globalAlpha = 0.18;
+    ctx.fillStyle = '#6fd6ff';
+    ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(18, 37, 48, 0.76)';
+    ctx.strokeStyle = 'rgba(181, 239, 255, 0.8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(WORLD.width / 2 - 88, 72, 176, 36, 9);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#e1fbff';
+    ctx.font = '900 16px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`DUNG TG ${Math.ceil(timeStopTime)}`, WORLD.width / 2, 90);
+    ctx.restore();
+  }
+}
+
 function drawLanAnh(ctx, assets, state, time) {
   const lanAnh = state.lanAnh;
   const nearTree = nearestTree(lanAnh)?.distance < 118;
@@ -974,26 +1122,21 @@ function drawResult(ctx, state) {
   ctx.restore();
 }
 
-function findBasketMatches(grid) {
-  const matched = new Set();
+function isMatchableCell(cell) {
+  return cell && !cell.matching && !cell.popping;
+}
 
-  // Hang ngang: vi BASKET_COLS = 3 nen 1 hang day du chinh la 3 o lien tiep.
+function findBasketMatch(grid) {
   for (let row = 0; row < BASKET_ROWS; row += 1) {
     const base = row * BASKET_COLS;
-    let allSameType = true;
-    for (let col = 0; col < BASKET_COLS; col += 1) {
-      const cell = grid[base + col];
-      if (!cell || cell.popping || cell.type !== grid[base]?.type) {
-        allSameType = false;
-        break;
-      }
-    }
-    if (allSameType) {
-      for (let col = 0; col < BASKET_COLS; col += 1) matched.add(base + col);
+    const a = grid[base];
+    const b = grid[base + 1];
+    const c = grid[base + 2];
+    if (isMatchableCell(a) && isMatchableCell(b) && isMatchableCell(c) && a.type === b.type && b.type === c.type) {
+      return [base, base + 1, base + 2];
     }
   }
 
-  // Cot doc: kiem tra 3 o lien tiep cung loai theo tung cot.
   for (let col = 0; col < BASKET_COLS; col += 1) {
     for (let row = 0; row <= BASKET_ROWS - 3; row += 1) {
       const i0 = row * BASKET_COLS + col;
@@ -1002,15 +1145,13 @@ function findBasketMatches(grid) {
       const a = grid[i0];
       const b = grid[i1];
       const c = grid[i2];
-      if (a && b && c && !a.popping && !b.popping && !c.popping && a.type === b.type && b.type === c.type) {
-        matched.add(i0);
-        matched.add(i1);
-        matched.add(i2);
+      if (isMatchableCell(a) && isMatchableCell(b) && isMatchableCell(c) && a.type === b.type && b.type === c.type) {
+        return [i0, i1, i2];
       }
     }
   }
 
-  return matched;
+  return null;
 }
 
 function App() {
@@ -1018,9 +1159,11 @@ function App() {
   const [lastFruit, setLastFruit] = useState(null);
   const [basketGrid, setBasketGrid] = useState(() => Array(BASKET_SIZE).fill(null));
   const [command, setCommand] = useState(null);
+  const [powerWheel, setPowerWheel] = useState({ status: 'idle', result: null, id: 0 });
   const [resetKey, setResetKey] = useState(0);
   const canvasRef = useRef(null);
-  const lastComboRainRef = useRef(0);
+  const resolvingPowerRef = useRef(false);
+  const powerTimersRef = useRef([]);
 
   const handleStatsChange = useCallback((nextStats) => {
     setStats(nextStats);
@@ -1035,6 +1178,7 @@ function App() {
         label: fruit.label,
         src: fruit.src,
         popping: false,
+        matching: false,
       };
 
       const emptyIndexes = [];
@@ -1055,24 +1199,46 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const matched = findBasketMatches(basketGrid);
-    if (matched.size === 0) return;
+    return () => {
+      powerTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+      powerTimersRef.current = [];
+    };
+  }, []);
+
+  useEffect(() => {
+    if (resolvingPowerRef.current) return;
+
+    const matched = findBasketMatch(basketGrid);
+    if (!matched) return;
+
+    resolvingPowerRef.current = true;
+    const matchedSet = new Set(matched);
+    const spinId = Date.now();
 
     setBasketGrid((grid) =>
-      grid.map((cell, index) => (matched.has(index) && cell ? { ...cell, popping: true } : cell)),
+      grid.map((cell, index) => (matchedSet.has(index) && cell ? { ...cell, matching: true } : cell)),
     );
+    setPowerWheel({ status: 'spinning', result: null, id: spinId });
 
-    const now = Date.now();
-    if (now - lastComboRainRef.current >= COMBO_RAIN_COOLDOWN_MS) {
-      const fired = canvasRef.current?.triggerNearestRowRain();
-      if (fired) lastComboRainRef.current = now;
-    }
+    const spinTimer = window.setTimeout(() => {
+      const power = POWER_TYPES[Math.floor(Math.random() * POWER_TYPES.length)];
+      setPowerWheel({ status: 'result', result: power, id: spinId });
 
-    const timer = window.setTimeout(() => {
-      setBasketGrid((grid) => grid.map((cell, index) => (matched.has(index) ? null : cell)));
-    }, 520);
+      if (power.id === 'magnet') {
+        canvasRef.current?.activateMagnet();
+      } else {
+        canvasRef.current?.triggerTimeStopRain();
+      }
 
-    return () => window.clearTimeout(timer);
+      const clearTimer = window.setTimeout(() => {
+        setBasketGrid((grid) => grid.map((cell, index) => (matchedSet.has(index) ? null : cell)));
+        setPowerWheel({ status: 'idle', result: null, id: spinId });
+        resolvingPowerRef.current = false;
+      }, POWER_RESULT_MS);
+      powerTimersRef.current.push(clearTimer);
+    }, POWER_SPIN_MS);
+
+    powerTimersRef.current.push(spinTimer);
   }, [basketGrid]);
 
   const trigger = (name) => {
@@ -1112,6 +1278,10 @@ function App() {
 
           <div className="actions">
             <button type="button" onClick={() => {
+              powerTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+              powerTimersRef.current = [];
+              resolvingPowerRef.current = false;
+              setPowerWheel({ status: 'idle', result: null, id: Date.now() });
               setBasketGrid(Array(BASKET_SIZE).fill(null));
               setResetKey((value) => value + 1);
             }}>Reset</button>
@@ -1143,11 +1313,23 @@ function App() {
           <div className="basket-handle" aria-hidden="true" />
           <div className="basket-title">Gio qua</div>
           <div className="basket-rim" aria-hidden="true" />
+          <div className={`power-wheel ${powerWheel.status !== 'idle' ? 'is-active' : ''} ${powerWheel.status === 'spinning' ? 'is-spinning' : ''}`}>
+            <div className="power-wheel-pointer" aria-hidden="true" />
+            <div className="power-wheel-disc" aria-hidden="true">
+              <span>NC</span>
+              <span>TG</span>
+            </div>
+            <div className="power-wheel-label">
+              {powerWheel.status === 'spinning'
+                ? 'Dang quay'
+                : powerWheel.result?.label ?? 'Match 3'}
+            </div>
+          </div>
           <div className="basket-grid">
             {basketGrid.map((item, index) => (
               <div
                 key={item ? item.id : `slot-${index}`}
-                className={`basket-item ${item ? '' : 'is-empty'} ${item?.popping ? 'is-popping' : ''}`}
+                className={`basket-item ${item ? '' : 'is-empty'} ${item?.matching ? 'is-matched' : ''} ${item?.popping ? 'is-popping' : ''}`}
               >
                 {item && <img src={item.src} alt={item.label} />}
               </div>
