@@ -5,21 +5,22 @@ const TOTAL_TIME = 420;
 const TARGET_FRUITS = 200;
 const CHARACTER_SCALE = 1.6;
 const JUMP_DISTANCE = 82;
-const FALL_TIME_SCALE = 0.45;
+const FALL_TIME_SCALE = 0.34;
 const HANGING_COUNTDOWN_MIN = 6;
 const HANGING_COUNTDOWN_MAX = 10;
-// Canh bao "Mua qua" hien 4s truoc khi mua roi, cong voi thoi gian nghi
-// sau moi dot mua (khong tinh combo tu ro) de tong khoang cach giua 2 lan
-// mua tu dong = 20s dung yeu cau.
-const ROW_RAIN_COUNTDOWN = 4;
-const ROW_RAIN_COOLDOWN = 16;
+// Canh bao "Mua qua" hien 5s truoc khi mua roi, cong voi thoi gian nghi
+// sau moi dot mua de tong khoang cach giua 2 lan mua tu dong gan 38s.
+const ROW_RAIN_COUNTDOWN = 5;
+const ROW_RAIN_COOLDOWN = 33;
 const BASKET_COLS = 3;
 const BASKET_ROWS = 6;
 const BASKET_SIZE = BASKET_COLS * BASKET_ROWS;
 const POWER_SPIN_MS = 1400;
 const POWER_RESULT_MS = 900;
-const POWER_EFFECT_DURATION = 7;
-const MAGNET_RADIUS = 260;
+const POWER_COOLDOWN_MS = 7000;
+const MAGNET_DURATION = 5;
+const TIME_STOP_DURATION = 4;
+const MAGNET_RADIUS = 180;
 
 const POWER_TYPES = [
   { id: 'magnet', label: 'Nam cham', shortLabel: 'NC' },
@@ -162,11 +163,12 @@ function makeInitialState() {
     fallingFruits: [],
     collectEffects: [],
     treePulses: TREE_LAYOUT.map(() => 0),
+    emptyTreeTimers: TREE_LAYOUT.map(() => 0),
     rowRain: {
       rowIndex: 0,
-      status: 'countdown',
+      status: 'cooldown',
       countdown: ROW_RAIN_COUNTDOWN,
-      cooldown: 0,
+      cooldown: 24,
       pulse: 0,
     },
     powerEffects: {
@@ -181,6 +183,7 @@ function makeInitialState() {
       direction: 'right',
       lastVector: { x: 1, y: 0 },
       moving: false,
+      pressingMove: false,
       sprinting: false,
       isJumping: false,
       canJump: true,
@@ -434,7 +437,7 @@ const OrchardCanvas = forwardRef(function OrchardCanvas({ command, resetKey, onS
     activateMagnet: () => {
       const state = stateRef.current;
       if (!state.isRunning) return false;
-      state.powerEffects.magnet = POWER_EFFECT_DURATION;
+      state.powerEffects.magnet = MAGNET_DURATION;
       state.catchPulse = 0.5;
       return true;
     },
@@ -442,7 +445,7 @@ const OrchardCanvas = forwardRef(function OrchardCanvas({ command, resetKey, onS
       const state = stateRef.current;
       if (!state.isRunning) return false;
       triggerPowerFruitStorm(state);
-      state.powerEffects.timeStop = POWER_EFFECT_DURATION;
+      state.powerEffects.timeStop = TIME_STOP_DURATION;
       state.rowRain.pulse = 1;
       return true;
     },
@@ -498,6 +501,7 @@ function updateGame(state, pressed, delta, fruitMeta, onHarvest, onStatsChange) 
 
   for (let index = 0; index < state.treePulses.length; index += 1) {
     state.treePulses[index] = Math.max(0, state.treePulses[index] - delta);
+    state.emptyTreeTimers[index] = Math.max(0, state.emptyTreeTimers[index] - delta);
   }
   state.catchPulse = Math.max(0, state.catchPulse - delta);
   state.rowRain.pulse = Math.max(0, state.rowRain.pulse - delta);
@@ -511,6 +515,12 @@ function updateGame(state, pressed, delta, fruitMeta, onHarvest, onStatsChange) 
 
 function updateRowRain(state, delta) {
   const rain = state.rowRain;
+
+  if (state.currentPhase === 1) {
+    rain.status = 'cooldown';
+    rain.cooldown = Math.max(rain.cooldown, 8);
+    return;
+  }
 
   if (rain.status === 'countdown') {
     rain.countdown -= delta;
@@ -543,10 +553,23 @@ function triggerRowRain(state, rowIndex) {
 }
 
 function triggerPowerFruitStorm(state) {
-  for (const treeIndex of TREE_LAYOUT.keys()) {
-    state.treePulses[treeIndex] = 0.8;
-    for (const anchorIndex of FRUIT_ANCHORS.keys()) {
-      makeRainFruitDrop(state, treeIndex, anchorIndex, randomBetween(0, 1.1));
+  const nearest = nearestRowIndex(state);
+  const rowDistances = TREE_ROWS
+    .map((treeIndexes, rowIndex) => {
+      const avgY = treeIndexes.reduce((sum, index) => sum + TREE_LAYOUT[index].y, 0) / treeIndexes.length;
+      return { rowIndex, distance: Math.abs(avgY - state.lanAnh.y) };
+    })
+    .sort((a, b) => a.distance - b.distance);
+  const selectedRows = state.currentPhase >= 5
+    ? rowDistances.slice(0, 2).map((item) => item.rowIndex)
+    : [nearest];
+
+  for (const rowIndex of selectedRows) {
+    for (const treeIndex of TREE_ROWS[rowIndex]) {
+      state.treePulses[treeIndex] = 0.8;
+      for (const anchorIndex of shuffle([...FRUIT_ANCHORS.keys()]).slice(0, 3)) {
+        makeRainFruitDrop(state, treeIndex, anchorIndex, randomBetween(0, 0.7));
+      }
     }
   }
 }
@@ -600,6 +623,7 @@ function updatePlayer(state, pressed, delta) {
   const directionCodes = Array.from(pressed).map((code) => KEY_DIRECTIONS[code]).filter(Boolean);
   let dx = 0;
   let dy = 0;
+  lanAnh.pressingMove = directionCodes.length > 0;
   for (const direction of directionCodes) {
     if (direction === 'up') dy -= 1;
     if (direction === 'down') dy += 1;
@@ -614,7 +638,8 @@ function updatePlayer(state, pressed, delta) {
   }
 
   const sprinting = pressed.has('ShiftLeft') || pressed.has('ShiftRight');
-  const speed = sprinting ? 330 : 140;
+  const speedBoost = state.powerEffects.timeStop > 0 ? 1.3 : 1;
+  const speed = (sprinting ? 330 : 140) * speedBoost;
   lanAnh.moving = dx !== 0 || dy !== 0;
   lanAnh.sprinting = sprinting && lanAnh.moving;
 
@@ -684,11 +709,36 @@ function shakeNearestTree(state) {
   const nearest = nearestTree(state.lanAnh);
   if (!nearest || nearest.distance > 132) return;
 
+  if (state.powerEffects.magnet > 0) {
+    dropAllFruitFromTree(state, nearest.index);
+    return;
+  }
+
   state.treePulses[nearest.index] = 0.34;
   const hangingFruits = state.hangingFruits.filter((fruit) => fruit.treeIndex === nearest.index);
   for (const fruit of hangingFruits) {
     fruit.countdown = Math.max(0.5, fruit.countdown - 2.4);
     fruit.quick = true;
+  }
+}
+
+function dropAllFruitFromTree(state, treeIndex) {
+  const config = PHASE_CONFIG[state.currentPhase];
+  const tree = TREE_LAYOUT[treeIndex];
+
+  state.treePulses[treeIndex] = 0.72;
+  state.emptyTreeTimers[treeIndex] = 3.2;
+  state.hangingFruits = state.hangingFruits.filter((fruit) => fruit.treeIndex !== treeIndex);
+
+  for (const anchor of FRUIT_ANCHORS) {
+    makeFruitDrop(
+      state,
+      treeIndex,
+      config,
+      true,
+      tree.x + anchor[0] * tree.scale + randomBetween(-6, 6),
+      tree.y + anchor[1] * tree.scale + randomBetween(-4, 4),
+    );
   }
 }
 
@@ -733,7 +783,7 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
     }
 
     if (isFruitTouchingPlayer(state, fruit)) {
-      state.collected = Math.min(TARGET_FRUITS, state.collected + 1);
+      state.collected += 1;
       state.catchPulse = 0.38;
       state.collectEffects.push({
         x: state.lanAnh.x,
@@ -744,7 +794,6 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
       onHarvest?.(fruitMeta[fruit.type]);
       if (state.collected >= TARGET_FRUITS) {
         state.success = true;
-        state.isRunning = false;
       }
       onStatsChange?.(summarizeState(state));
       continue;
@@ -778,6 +827,7 @@ function pullFruitTowardPlayer(state, fruit, delta) {
   const fruitDistance = distance(target, fruit);
 
   if (fruit.elapsed < 0) return;
+  if (!fruit.magnetized && fruitDistance > MAGNET_RADIUS) return;
 
   fruit.magnetized = true;
   if (fruitDistance <= 1) return;
@@ -839,7 +889,11 @@ function paint(ctx, assets, state, time) {
 
   drawPowerEffects(ctx, state);
 
-  if (state.success || state.gameOver) {
+  if (state.success && !state.gameOver) {
+    drawSuccessNotice(ctx, state);
+  }
+
+  if (state.gameOver) {
     drawResult(ctx, state);
   }
 }
@@ -898,13 +952,15 @@ function drawTree(ctx, assets, state, tree, treeIndex) {
   ctx.drawImage(assets.tree, x, y, width, height);
 
   const hanging = state.hangingFruits.filter((fruit) => fruit.treeIndex === treeIndex);
-  drawStaticFruits(ctx, assets, tree, hanging);
+  drawStaticFruits(ctx, assets, tree, hanging, state.emptyTreeTimers[treeIndex] > 0);
   for (const fruit of hanging) {
     drawHangingFruit(ctx, assets, tree, fruit);
   }
 }
 
-function drawStaticFruits(ctx, assets, tree, activeFruits) {
+function drawStaticFruits(ctx, assets, tree, activeFruits, hideAll = false) {
+  if (hideAll) return;
+
   const activeAnchors = new Set(activeFruits.map((fruit) => fruit.anchorIndex));
   const size = 44 * tree.scale;
 
@@ -1052,10 +1108,32 @@ function drawPowerEffects(ctx, state) {
   }
 }
 
+function drawSuccessNotice(ctx, state) {
+  ctx.save();
+  ctx.fillStyle = 'rgba(35, 52, 28, 0.82)';
+  ctx.strokeStyle = 'rgba(255, 232, 128, 0.86)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(WORLD.width / 2 - 148, 116, 296, 48, 10);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = '#fff4b8';
+  ctx.font = '900 18px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Chien thang - da pass', WORLD.width / 2, 134);
+
+  ctx.fillStyle = 'rgba(255, 251, 224, 0.82)';
+  ctx.font = '800 13px Inter, sans-serif';
+  ctx.fillText(`Tiep tuc hai: ${state.collected}/${TARGET_FRUITS}`, WORLD.width / 2, 153);
+  ctx.restore();
+}
+
 function drawLanAnh(ctx, assets, state, time) {
   const lanAnh = state.lanAnh;
   const nearTree = nearestTree(lanAnh)?.distance < 118;
-  const catching = state.catchPulse > 0 || (nearTree && !lanAnh.moving && !lanAnh.isJumping);
+  const catching = state.catchPulse > 0 || (nearTree && !lanAnh.pressingMove && !lanAnh.isJumping);
   const jumpLift = lanAnh.isJumping ? Math.sin(clamp(lanAnh.jumpElapsed / lanAnh.jumpDuration, 0, 1) * Math.PI) * 40 : 0;
   const frameTime = Math.floor(time * (lanAnh.sprinting ? 12 : 8));
 
@@ -1127,13 +1205,16 @@ function isMatchableCell(cell) {
 }
 
 function findBasketMatch(grid) {
+  const horizontalMatches = [];
+  const verticalMatches = [];
+
   for (let row = 0; row < BASKET_ROWS; row += 1) {
     const base = row * BASKET_COLS;
     const a = grid[base];
     const b = grid[base + 1];
     const c = grid[base + 2];
     if (isMatchableCell(a) && isMatchableCell(b) && isMatchableCell(c) && a.type === b.type && b.type === c.type) {
-      return [base, base + 1, base + 2];
+      horizontalMatches.push([base, base + 1, base + 2]);
     }
   }
 
@@ -1146,12 +1227,22 @@ function findBasketMatch(grid) {
       const b = grid[i1];
       const c = grid[i2];
       if (isMatchableCell(a) && isMatchableCell(b) && isMatchableCell(c) && a.type === b.type && b.type === c.type) {
-        return [i0, i1, i2];
+        verticalMatches.push([i0, i1, i2]);
       }
     }
   }
 
-  return null;
+  if (horizontalMatches.length === 0 && verticalMatches.length === 0) return null;
+
+  const isCrossCombo = horizontalMatches.length > 0 && verticalMatches.length > 0;
+  const matched = isCrossCombo
+    ? [...horizontalMatches, ...verticalMatches].flat()
+    : (horizontalMatches[0] ?? verticalMatches[0]);
+
+  return {
+    indexes: [...new Set(matched)],
+    isCrossCombo,
+  };
 }
 
 function App() {
@@ -1164,6 +1255,7 @@ function App() {
   const canvasRef = useRef(null);
   const resolvingPowerRef = useRef(false);
   const powerTimersRef = useRef([]);
+  const powerCooldownUntilRef = useRef(0);
 
   const handleStatsChange = useCallback((nextStats) => {
     setStats(nextStats);
@@ -1208,21 +1300,39 @@ function App() {
   useEffect(() => {
     if (resolvingPowerRef.current) return;
 
-    const matched = findBasketMatch(basketGrid);
-    if (!matched) return;
+    const match = findBasketMatch(basketGrid);
+    if (!match) return;
 
     resolvingPowerRef.current = true;
-    const matchedSet = new Set(matched);
+    const matchedSet = new Set(match.indexes);
     const spinId = Date.now();
+    const isPowerCoolingDown = spinId < powerCooldownUntilRef.current && !match.isCrossCombo;
 
     setBasketGrid((grid) =>
       grid.map((cell, index) => (matchedSet.has(index) && cell ? { ...cell, matching: true } : cell)),
     );
+
+    if (match.isCrossCombo) {
+      canvasRef.current?.triggerNearestRowRain();
+    }
+
+    if (isPowerCoolingDown) {
+      setPowerWheel({ status: 'cooldown', result: null, id: spinId });
+      const clearTimer = window.setTimeout(() => {
+        setBasketGrid((grid) => grid.map((cell, index) => (matchedSet.has(index) ? null : cell)));
+        setPowerWheel({ status: 'idle', result: null, id: spinId });
+        resolvingPowerRef.current = false;
+      }, 520);
+      powerTimersRef.current.push(clearTimer);
+      return;
+    }
+
     setPowerWheel({ status: 'spinning', result: null, id: spinId });
 
     const spinTimer = window.setTimeout(() => {
       const power = POWER_TYPES[Math.floor(Math.random() * POWER_TYPES.length)];
       setPowerWheel({ status: 'result', result: power, id: spinId });
+      powerCooldownUntilRef.current = Date.now() + POWER_COOLDOWN_MS;
 
       if (power.id === 'magnet') {
         canvasRef.current?.activateMagnet();
@@ -1281,6 +1391,7 @@ function App() {
               powerTimersRef.current.forEach((timer) => window.clearTimeout(timer));
               powerTimersRef.current = [];
               resolvingPowerRef.current = false;
+              powerCooldownUntilRef.current = 0;
               setPowerWheel({ status: 'idle', result: null, id: Date.now() });
               setBasketGrid(Array(BASKET_SIZE).fill(null));
               setResetKey((value) => value + 1);
@@ -1322,6 +1433,8 @@ function App() {
             <div className="power-wheel-label">
               {powerWheel.status === 'spinning'
                 ? 'Dang quay'
+                : powerWheel.status === 'cooldown'
+                  ? 'Hoi chieu'
                 : powerWheel.result?.label ?? 'Match 3'}
             </div>
           </div>
