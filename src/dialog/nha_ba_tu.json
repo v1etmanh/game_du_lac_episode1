@@ -1,50 +1,65 @@
 {
   "locationId": "nha_ba_tu",
   "locationName": "Nhà bà Tư",
-  "description": "Những câu chuyện cũ, tiếng đàn và điều cần được ghi lại.",
+  "description": "Nhà của nghệ nhân đàn bầu, nơi tiếng đàn giữ một nỗi buồn cũ.",
   "npcId": "ba_tu",
   "dialogues": [
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Nhà bà yên tĩnh quá. Cháu cứ có cảm giác mỗi đồ vật ở đây đều giữ một câu chuyện."
+      "text": "Bà Tư ơi, tụi cháu nghe nói bà là nghệ nhân đàn bầu trong làng. Cháu muốn hiểu về đàn bầu và cách chơi của nó."
     },
     {
       "speaker": "ba_tu",
       "speakerName": "Bà Tư",
-      "text": "Nhà cũ mà cháu. Cái gì ở lâu cũng biết nghe, biết nhớ."
+      "text": "Nghệ nhân thì bà không dám nhận lớn. Bà chỉ là người còn giữ một cây đàn cũ và vài bài chưa nỡ quên."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Bà ơi, tụi cháu muốn hiểu thêm về tiếng đàn bầu và những ký ức quanh nó."
-    },
-    {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Cháu muốn làm một bài phỏng vấn nhỏ, ghi lại nguồn gốc, cách chơi và ý nghĩa của đàn bầu. Bà cho tụi cháu hỏi chuyện được không ạ?"
+      "text": "Tiếng đàn trong nhà bà nghe buồn quá. Bà thường chơi bài gì vậy ạ?"
     },
     {
       "speaker": "ba_tu",
       "speakerName": "Bà Tư",
-      "text": "Được chứ. Hỏi cho kỹ, ghi cho thật lòng. Một nét đẹp văn hóa mà không ai ghi lại thì mai này dễ phai lắm."
+      "text": "Có khi là Bèo dạt mây trôi. Có bài người ta nghe để nhớ quê, có người nghe để nhớ một người không còn ngồi cạnh mình nữa."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Cháu muốn phỏng vấn bà cẩn thận, không chỉ hỏi đàn bầu có gì hay, mà hỏi vì sao nó quan trọng với bà."
+    },
+    {
+      "speaker": "ba_tu",
+      "speakerName": "Bà Tư",
+      "text": "Vậy thì hỏi chậm thôi. Đàn bầu chỉ có một dây, nhưng nếu hỏi đúng, nó kể được nhiều hơn một đời người."
     }
   ],
   "afterInterviewDialogues": [
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Bài báo xong rồi bà ơi. Cháu đã ghi lại cả tiếng đàn, cách chơi và những ký ức của bà."
+      "text": "Cảm ơn bà. Cháu hiểu hơn rồi: với bà, đàn bầu không chỉ là nhạc cụ, mà còn là cách bà giữ lại những người đã mất."
     },
     {
       "speaker": "ba_tu",
       "speakerName": "Bà Tư",
-      "text": "Tốt lắm. Ghi được rồi thì phải nghe thử, phải chạm vào nhịp của nó nữa."
+      "text": "Ngày xưa bà không biết chơi đâu. Chồng bà mới là người đàn. Chiều nào ông ấy cũng đàn Bèo dạt mây trôi cho bà nghe."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Vậy tụi cháu sẽ thử chơi đàn bầu, để hiểu điều bà kể bằng chính đôi tai của mình."
+      "text": "Rồi sau đó bà mới học đàn ạ?"
+    },
+    {
+      "speaker": "ba_tu",
+      "speakerName": "Bà Tư",
+      "text": "Sau khi đứa con chưa kịp chào đời mất đi, ông ấy buồn rồi sa vào rượu. Đến lúc ông ấy cũng mất, căn nhà im quá, bà mới tập đàn để còn nghe lại tiếng của ngày xưa."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Vậy tụi cháu sẽ thử chơi đàn bầu. Không phải để chơi cho giỏi ngay, mà để hiểu tiếng đàn bằng chính đôi tay mình."
     }
   ]
 }

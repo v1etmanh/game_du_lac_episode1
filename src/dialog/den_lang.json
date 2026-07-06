@@ -1,50 +1,67 @@
 {
   "locationId": "den_lang",
   "locationName": "Đền làng",
-  "description": "Nơi lễ hội và những trò chơi dân gian được kể lại qua thời gian.",
+  "description": "Sân hội làng nơi ánh lửa, tiếng cười và ô ăn quan gặp nhau.",
   "npcId": "gialang",
   "dialogues": [
     {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Đền làng hôm nay yên bình quá. Cháu thấy sân đền giống như nơi mọi người từng tụ họp chơi trò chơi."
-    },
-    {
       "speaker": "gialang",
-      "speakerName": "Ông Trưởng Làng",
-      "text": "Đúng vậy. Ngày trước, sau lễ hội, trẻ con hay ngồi quanh sân đền chơi ô ăn quan."
+      "speakerName": "Ông Già Làng",
+      "text": "Hai cháu tới đúng lúc rồi. Tối nay là hội làng, sân đền sẽ nổi lửa, trẻ con sẽ chơi trò cũ."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Cháu nhớ lờ mờ những ô kẻ trên đất, nhưng không nhớ rõ cách chơi."
+      "text": "Cháu nhớ nơi này. Có tiếng reo, có ánh lửa, rồi những ô vuông kẻ trên đất."
+    },
+    {
+      "speaker": "gialang",
+      "speakerName": "Ông Già Làng",
+      "text": "Ngày nhỏ cháu chơi ô ăn quan khá lắm. Nếu muốn, lát nữa cháu thử chơi lại một ván."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Tụi cháu muốn phỏng vấn Ông Ba về ô ăn quan: nguồn gốc, luật chơi, vật liệu và ý nghĩa của trò chơi này."
+      "text": "Khoan đã ông ơi, trước khi chơi cháu muốn phỏng vấn ông. Tụi cháu cần hiểu luật chơi, ký ức hội làng và ý nghĩa của trò này."
     },
     {
       "speaker": "gialang",
-      "speakerName": "Ông Trưởng Làng",
-      "text": "Hay lắm. Muốn chơi cho đúng thì trước hết phải hỏi người từng giữ ký ức của trò chơi."
+      "speakerName": "Ông Già Làng",
+      "text": "Được. Hỏi đi. Trò chơi dân gian cũng như ký ức, muốn giữ thì phải hiểu vì sao người ta từng yêu nó."
     }
   ],
   "afterInterviewDialogues": [
     {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Bài phỏng vấn đã xong. Cháu đã ghi lại luật chơi và cả những kỷ niệm của Ông Ba."
-    },
-    {
       "speaker": "gialang",
-      "speakerName": "Ông Trưởng Làng",
-      "text": "Vậy thì tốt. Giờ đừng chỉ đọc nữa, hãy thử ngồi xuống sân đền và chơi một ván."
+      "speakerName": "Ông Già Làng",
+      "text": "Giờ thì tới lượt cháu chơi. Ngày xưa cháu tính nước nhanh lắm, xem hôm nay đôi tay còn nhớ không."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Lần này cháu sẽ chơi trong khi nhớ vì sao trò chơi ấy từng quan trọng với tụi trẻ trong làng."
+      "text": "Cháu không chắc mình còn nhớ luật, nhưng cháu muốn thử. Có thể ký ức nằm trong cách rải từng viên sỏi."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Em sẽ ghi lại. Không chỉ ghi ai thắng, mà ghi cả khoảnh khắc anh nhớ lại mình từng thuộc về nơi này."
+    }
+  ],
+  "afterGameDialogues": [
+    {
+      "speaker": "gialang",
+      "speakerName": "Ông Già Làng",
+      "text": "Chơi xong rồi đó. Thắng thua không quan trọng bằng việc cháu đã ngồi lại với sân làng."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Cháu nhớ rồi. Không phải tất cả, nhưng đủ để biết tuổi thơ của cháu không chỉ có chia xa."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Vậy bài phóng sự cuối cùng sẽ viết về một làng quê, một trò chơi, và một người đang học cách tin lại ký ức của mình."
     }
   ]
 }

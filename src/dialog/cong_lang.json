@@ -1,38 +1,43 @@
 {
   "locationId": "cong_lang",
   "locationName": "Cổng làng",
-  "description": "Nơi bắt đầu hành trình tìm lại ký ức.",
+  "description": "Nơi Tính và Lan Anh bắt đầu hành trình tìm lại ký ức.",
   "npcId": "gialang",
   "dialogues": [
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Cái cổng này thật đẹp, như đang chờ mình trở về."
+      "text": "Tới rồi anh Tính. Đây là làng trong những tấm ảnh cũ của mẹ anh đúng không?"
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Tôi có cảm giác gì đó rất quen, nhưng vẫn không nhớ."
+      "text": "Anh không chắc nữa. Cổng làng nhìn quen, nhưng trong đầu anh cứ như có một lớp sương."
     },
     {
       "speaker": "gialang",
-      "speakerName": "Ông Trưởng Làng",
-      "text": "Đất làng không quên người của nó, cháu cứ đi và tìm."
+      "speakerName": "Ông Già Làng",
+      "text": "Hai cháu từ xa về à? Người trẻ bước qua cổng làng mà nhìn lâu như vậy, chắc là đang tìm một chuyện cũ."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Anh đừng lo, mình sẽ đi cùng nhau."
+      "text": "Dạ, tụi cháu đang tìm người từng biết gia đình anh Tính. Ông có nhớ cậu bé tên Tính ngày xưa không ạ?"
+    },
+    {
+      "speaker": "gialang",
+      "speakerName": "Ông Già Làng",
+      "text": "Tên thì ông nghe quen, nhưng chuyện nhà người ta không thể nói qua loa ở cổng làng được. Muốn tìm ký ức thì cứ đi chậm, hỏi đúng người."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Nếu có thể, tôi muốn nhớ lại những ngày xưa."
+      "text": "Vậy tụi cháu nên bắt đầu từ đâu ạ?"
     },
     {
       "speaker": "gialang",
-      "speakerName": "Ông Trưởng Làng",
-      "text": "Đừng vội, hãy bắt đầu từ những nơi quen thuộc."
+      "speakerName": "Ông Già Làng",
+      "text": "Đi theo lối kia ra vườn cây. Mùa này người trong làng đang thu hoạch, biết đâu hai cháu gặp được người chỉ đường."
     }
   ]
 }

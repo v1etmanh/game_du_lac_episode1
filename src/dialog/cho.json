@@ -1,38 +1,38 @@
 {
   "locationId": "cho",
   "locationName": "Chợ làng",
-  "description": "Nơi ồn ào, thân thiện và có nhiều câu chuyện lẫn lộn.",
+  "description": "Khu chợ nhỏ nơi trái cây vừa hái được mang ra bán.",
   "npcId": "bacnongdan",
   "dialogues": [
     {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Chợ nhỏ này vừa ồn vừa ấm áp."
-    },
-    {
       "speaker": "bacnongdan",
       "speakerName": "Bác Nông Dân",
-      "text": "Mời khách bán hàng đi cháu, người ta đỡ thấy buồn."
+      "text": "Hai cháu giúp bác nhanh quá. Bác không có nhiều tiền công, nhưng bác cho một ít trái cây đem ra chợ bán nhé."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Mùi khói bếp và tiếng người gọi nhau làm mình thấy quen."
+      "text": "Tụi cháu cũng đang hơi kẹt tiền. Nếu bán được, tụi cháu có thể tiếp tục đi hỏi chuyện trong làng."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Chúng ta hãy hỏi thêm ai đó về mẹ anh."
+      "text": "Nhưng tụi cháu chưa bán hàng bao giờ. Bác chỉ tụi cháu được không ạ?"
     },
     {
       "speaker": "bacnongdan",
       "speakerName": "Bác Nông Dân",
-      "text": "Bà Tư ở đây, chắc bà biết nhiều chuyện."
+      "text": "Bán ở chợ quê phải thật thà. Khách hỏi thì trả lời rõ, cân cho đúng, đừng vì nôn nóng mà nói quá."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Nếu có thể, tôi muốn biết câu chuyện mình từng bỏ quên."
+      "text": "Nghe giống như phỏng vấn vậy. Muốn người ta tin thì mình phải nói đúng."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Vậy mình thử bán hàng nhé. Biết đâu ở chợ cũng nghe được thêm tin về người quen cũ của anh."
     }
   ]
 }

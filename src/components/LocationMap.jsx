@@ -1,14 +1,13 @@
 import { useState } from 'react'
-import { LOCATIONS, getLocations } from '../data/locations.js'
+import { getLocations } from '../data/locations.js'
 import LocationCard from './LocationCard.jsx'
 import './LocationMap.css'
 
 const BG_IMAGE = '/background/Gemini_Generated_Image_493p7z493p7z493p.png'
 
-// Màn hình "Chọn địa điểm" - bản đồ làng + dải thẻ bài phía dưới.
-export default function LocationMap({ onBack, onEnterLocation, unlockAll = false }) {
-  const locations = getLocations(unlockAll)
-  const [selectedId, setSelectedId] = useState(locations[0].id)
+export default function LocationMap({ onBack, onEnterLocation, unlockAll = false, locations: providedLocations }) {
+  const locations = providedLocations || getLocations(unlockAll)
+  const [selectedId, setSelectedId] = useState(locations[0]?.id)
   const [shakingId, setShakingId] = useState(null)
 
   const handleCardClick = (location) => {
@@ -39,7 +38,7 @@ export default function LocationMap({ onBack, onEnterLocation, unlockAll = false
         </button>
         <div>
           <h1>✦ CHỌN ĐỊA ĐIỂM ✦</h1>
-          <p>Mỗi địa điểm là một trò chơi dân gian và một câu chuyện tuổi thơ.</p>
+          <p>Mỗi địa điểm là một trò chơi dân gian và một mảnh ký ức cần được kiểm chứng.</p>
         </div>
       </div>
 

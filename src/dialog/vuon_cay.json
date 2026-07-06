@@ -1,38 +1,38 @@
 {
   "locationId": "vuon_cay",
   "locationName": "Vườn cây ăn quả",
-  "description": "Khu vườn thơm mùi đất và tiếng chim gọi nhau.",
+  "description": "Khu vườn đang vào mùa thu hoạch.",
   "npcId": "bacnongdan",
   "dialogues": [
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Khu vườn này thơm mùi đất và cây xanh."
+      "text": "Bác ơi, cho tụi cháu hỏi thăm một chút được không ạ? Bác có biết gia đình của anh Tính ngày trước không?"
     },
     {
       "speaker": "bacnongdan",
       "speakerName": "Bác Nông Dân",
-      "text": "Vào đi cháu, giúp bác một tay thôi."
+      "text": "Gia đình cậu bé này hả? Bác chịu, bác mới nhận vườn này mấy năm nay thôi, không rõ chuyện xưa trong làng."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Hồi nhỏ mình từng làm việc này với người thân."
+      "text": "Dạ không sao. Nhưng bác thở mệt quá, bác đang làm gì vậy ạ?"
+    },
+    {
+      "speaker": "bacnongdan",
+      "speakerName": "Bác Nông Dân",
+      "text": "Tới mùa thu hoạch rồi mà bác không thuê được người. Cả vườn gần xong, nhưng tay chân rã rời, cứ hái một lúc lại phải ngồi xuống."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Anh có nhớ gì không?"
+      "text": "Vậy để tụi cháu giúp bác. Tụi cháu cũng đang cần đi quanh làng hỏi chuyện, giúp được gì thì giúp trước đã."
     },
     {
       "speaker": "bacnongdan",
       "speakerName": "Bác Nông Dân",
-      "text": "Cứ làm từ từ, chuyện nhớ lại sẽ đến."
-    },
-    {
-      "speaker": "tinh",
-      "speakerName": "Tính",
-      "text": "Có lẽ ký ức không phải lúc nào cũng hiện ra ngay."
+      "text": "Tốt quá. Hai cháu hái giúp bác mẻ quả cuối này nhé. Nhẹ tay thôi, quả chín mà rơi dập thì tiếc lắm."
     }
   ]
 }

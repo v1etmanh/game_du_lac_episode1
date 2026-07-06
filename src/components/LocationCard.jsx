@@ -1,7 +1,5 @@
-import { LOCATIONS } from '../data/locations.js'
 import './LocationCard.css'
 
-// 1 thẻ địa điểm trên bản đồ. Click lần 1 = chọn (xem preview), click lần 2 khi đã chọn = vào địa điểm.
 export default function LocationCard({ location, isSelected, isShaking, onClick }) {
   const locked = !location.unlocked
 
@@ -25,7 +23,7 @@ export default function LocationCard({ location, isSelected, isShaking, onClick 
       <div className="loc-card-body">
         <h3 className="loc-card-name">{location.name}</h3>
         <p className="loc-card-desc">{location.description}</p>
-        {location.completed && <div className="loc-card-stars">★ 3/3</div>}
+        {location.completed && <div className="loc-card-stars">★ Hoàn thành</div>}
         {locked && <div className="loc-card-lock">🔒</div>}
       </div>
     </div>

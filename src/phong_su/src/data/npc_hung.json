@@ -1,80 +1,80 @@
 {
   "id": "hung",
-  "name": "Anh Hùng",
-  "age": 47,
-  "topic": "Điêu Khắc Gốc Tre",
-  "tagline": "Bạn thuở nhỏ, giữ ký ức hộ người đang quên dần",
-  "greeting": "Ơ, chị đây rồi! Nghe nói chị đang đi khắp làng ghi chép chuyện xưa, anh mừng lắm — vì chị là vợ thằng Long, bạn thân từ hồi anh còn cởi truồng tắm sông đó! Nghe chị kể dạo này ảnh hay quên trước quên sau, anh cũng lo lắm. Vào xưởng ngồi đi chị, anh vừa gọt gốc tre vừa kể chị nghe chuyện hồi nhỏ tụi anh hay lê la ngoài bụi tre đầu làng. Biết đâu ghi lại được, sau này đọc cho ảnh nghe, ảnh nhớ ra chút gì thì quý lắm.",
+  "name": "Hùng",
+  "age": 24,
+  "topic": "Đồ Mộc Bằng Tre",
+  "tagline": "Bạn thuở nhỏ của Tính, người giữ nghề tre và vài mảnh ký ức cũ",
+  "greeting": "Vào xưởng đi. Cẩn thận mấy mảnh tre dưới chân, sắc lắm. Muốn hỏi chuyện nghề hay chuyện hồi nhỏ của Tính thì cứ hỏi cho rõ.",
   "portrait": "hung",
   "responses": {
     "origin": {
-      "keywords": ["nguồn gốc", "bắt đầu", "ra đời", "sao lại làm nghề này", "history", "origin", "nguon goc", "bat dau"],
-      "sampleQuestion": "Sao anh lại theo nghề điêu khắc gốc tre vậy?",
-      "text": "Chuyện này thì có dính tới thằng Long luôn đó chị! Hồi đó sau trận lũ lớn, hai đứa anh với Long ra bờ sông mò đồ trôi dạt, anh nhặt được một gốc tre xù xì, đem về đục thử cho vui — lúc đó Long còn đứng cười anh, nói 'mày đục cái gì kỳ vậy Hùng'. Ai ngờ đục xong, cái gốc tre hiện ra dáng một ông già đang cười, Long nhìn xong mắt sáng rực, cứ hối anh đục thêm. Từ cái lần đó anh mê luôn, bỏ nghề mộc để theo cái nghề chưa ai làm này.",
+      "keywords": ["nghề", "đồ mộc", "tre", "bắt đầu", "học nghề", "origin", "nghe", "do moc", "bat dau"],
+      "sampleQuestion": "Anh bắt đầu làm đồ mộc bằng tre từ khi nào?",
+      "text": "Anh bắt đầu từ mấy món nhỏ: cái khung, cái rổ, cái giá treo. Tre trong làng nhiều, nhưng muốn làm thành đồ dùng thì phải hiểu thớ tre, tuổi tre và cách nó cong. Anh học nghề vì thích biến thứ tưởng như bỏ đi thành món có ích. Cũng vì hồi nhỏ anh với Tính hay nhặt mấy đoạn tre ngoài bờ rào làm kiếm, làm cần câu, làm đủ thứ trò.",
       "unlock": ["origin"]
     },
     "selection": {
-      "keywords": ["chọn gốc tre", "nguyên liệu", "loại tre", "đất", "rễ", "material", "chon", "nguyen lieu", "loai tre"],
-      "sampleQuestion": "Làm sao anh chọn được gốc tre ưng ý?",
-      "text": "Chọn gốc tre là cái khó đầu tiên đó chị! Tre mọc ở đất thịt thì gốc cứng, rễ ngắn tủn, hợp làm mấy dáng chắc nịch. Còn tre mọc ở đất cát thì rễ dài ngoằn ngoèo, anh hay để dành làm râu tóc, làm mấy chi tiết bay bổng. Anh phải lội khắp các vùng, cầm từng gốc lên ngắm nghía, tưởng tượng xem trong đó đang giấu hình thù gì — như đang trò chuyện với cái gốc tre vậy đó.",
+      "keywords": ["chọn tre", "gốc tre", "vật liệu", "tuổi tre", "selection", "chon tre", "goc tre", "vat lieu"],
+      "sampleQuestion": "Khi chọn tre để làm đồ, anh nhìn chi tiết nào trước?",
+      "text": "Chọn tre không chỉ nhìn cây to hay nhỏ. Phải nhìn mắt tre, độ già, vết nứt, rồi nghe tiếng khi gõ nhẹ. Tre non thì mềm nhưng dễ hỏng, tre già quá thì giòn. Có những gốc tre xấu bên ngoài nhưng dáng lại đẹp, giống con người vậy, phải nhìn lâu mới biết nó có thể thành gì.",
       "unlock": ["selection"]
     },
     "treatment": {
-      "keywords": ["xử lý", "chống mối mọt", "ngâm bùn", "phơi", "bảo quản", "treatment", "xu ly", "moi mot", "ngam bun"],
-      "sampleQuestion": "Gốc tre cần xử lý thế nào để không bị mối mọt?",
-      "text": "Gốc tre mà không xử lý kỹ là mối mọt ăn hết công sức liền! Anh làm y như ông bà xưa dạy: đem gốc tre ngâm bùn cả mấy tháng trời cho ra hết đường với tinh bột trong ruột tre — cái mà mối mọt nó thích ăn nhất đó. Ngâm xong vớt lên phơi nắng cả chục ngày nữa mới được. Cực lắm, nhưng làm kiểu này màu tre lên tự nhiên đẹp, không cần thuốc hóa chất gì hết.",
+      "keywords": ["xử lý", "ngâm", "phơi", "mối mọt", "bảo quản", "treatment", "xu ly", "ngam", "phoi"],
+      "sampleQuestion": "Sau khi chặt tre, anh xử lý thế nào để đồ bền?",
+      "text": "Tre phải được phơi, ngâm hoặc hun khói tùy món định làm. Làm nhanh quá thì nhìn đẹp lúc đầu nhưng dễ nứt, dễ mối. Người làm nghề phải kiên nhẫn, vì có đoạn tre cần nằm yên nhiều ngày mới chịu vào dáng. Anh vẫn giữ cách cũ của ông nội: làm chậm, nhưng dùng được lâu.",
       "unlock": ["treatment"]
     },
     "carving": {
-      "keywords": ["kỹ thuật", "điêu khắc", "đục", "chạm khắc", "cách làm", "carving", "technique", "ky thuat", "dieu khac", "duc"],
-      "sampleQuestion": "Điêu khắc gốc tre có khó hơn điêu khắc gỗ không anh?",
-      "text": "Điêu khắc gốc tre khó hơn gỗ nhiều lắm chị à, vì nó không cho mình sửa sai đâu! Gỗ khối thì đục hư chỗ này còn bù chỗ khác được, chứ gốc tre mỗi cái một hình dáng tự nhiên riêng, đục lố một nhát là coi như bỏ cả gốc, làm lại từ đầu. Cho nên trước khi đục, anh phải ngồi ngắm cả buổi, xoay tới xoay lui, tưởng tượng ra hình trong đầu trước rồi mới dám xuống tay. Mỗi nhát đục là một quyết định không được hối hận — Long ngày xưa hay ngồi cạnh anh, chờ cả buổi chỉ để coi anh 'dám đục hay không dám'.",
+      "keywords": ["đục", "chạm", "khắc", "hoa văn", "dụng cụ", "carving", "duc", "cham", "khac"],
+      "sampleQuestion": "Khi đục khắc trên tre, khó nhất là gì?",
+      "text": "Khó nhất là biết dừng. Tre có thớ, đục quá tay là toác ngay, không vá lại như gỗ dày được. Anh hay phác nhẹ trước, rồi mới đi dao. Mấy vết đục không đều đôi khi lại làm món đồ có hồn, vì nó cho thấy bàn tay người làm, không phải máy móc.",
       "unlock": ["carving"]
     },
     "memories": {
-      "keywords": ["kỷ niệm", "long", "chồng", "tuổi thơ", "ngày xưa", "nhớ", "memory", "ky niem", "tuoi tho", "nho"],
-      "sampleQuestion": "Anh có kỷ niệm nào đáng nhớ với anh Long không?",
-      "text": "Hồi nhỏ anh với Long dính nhau như hình với bóng, chiều nào cũng ra mấy bụi tre đầu làng chơi trốn tìm, có lần ảnh té gãy tay vì trèo lên chảng ba cây tre để hái tổ chim. Sau này ảnh đi học xa, anh ở lại làng theo nghề, nhưng năm nào ảnh về cũng ghé xưởng anh ngồi cả buổi, không nói gì nhiều, chỉ ngồi coi anh đục. Giờ nghe chị kể ảnh quên nhiều chuyện quá, anh buồn lắm. Nhưng mà chị cứ ghi lại hết những chuyện anh kể đây đi, biết đâu đọc cho ảnh nghe, có cái gì đó trong ảnh sẽ sáng lên như cái gốc tre hồi đó vậy.",
+      "keywords": ["Tính", "tuổi thơ", "Minh", "Bà Ngần", "đom đóm", "bạn cũ", "memory", "ky niem", "tuoi tho", "dom dom"],
+      "sampleQuestion": "Anh nhớ gì về Tính hồi nhỏ và chuyện đi bắt đom đóm?",
+      "text": "Hồi nhỏ Tính, Minh và anh hay chạy ra nhà cũ sau bữa cơm để tìm đom đóm. Tính là đứa nôn nóng nhất, cứ thấy ánh sáng là đuổi theo, nhưng bắt được rồi lại thả ra vì sợ nó chết. Anh còn nhớ Tính hay nhắc Bà Ngần, vì bà chăm nó như vú nuôi. Chuyện gia đình nó thì tụi anh không hiểu hết, chỉ biết một ngày nó theo ba lên thành phố rồi làng bỗng thiếu một tiếng gọi.",
       "unlock": ["memories"]
     }
   },
   "fallback": [
-    "Cái đó anh chưa nghĩ tới à nha chị. Nhưng chị hỏi về gốc tre thì anh kể cả ngày không hết đâu, cái nghề này gắn với anh với cả thằng Long luôn rồi!",
-    "Ờ... anh không rành chuyện đó lắm. Nhưng anh hay nói với tụi nhỏ học nghề: cái gì tưởng bỏ đi cũng có thể thành báu vật, quan trọng là mình có chịu nhìn kỹ hay không thôi — như trí nhớ vậy đó, mất chỗ này biết đâu còn giữ ở chỗ khác.",
-    "Câu này khó anh quá chị ơi. Thôi chị hỏi anh cách chọn gốc tre, cách đục, hay chuyện hồi nhỏ của anh với Long đi, anh rành mấy cái đó hơn!"
+    "Chuyện đó anh không dám nói chắc. Nếu hỏi về nghề tre hoặc hồi nhỏ của Tính, anh kể được rõ hơn.",
+    "Hỏi cụ thể thêm đi. Ký ức mà hỏi chung chung thì dễ kể sai lắm.",
+    "Anh nhớ vài mảnh thôi, nhưng mảnh nào chắc thì anh sẽ nói đúng mảnh đó."
   ],
   "notebook": {
-    "title": "Điêu Khắc Gốc Tre",
+    "title": "Đồ Mộc Tre Và Ký Ức Của Hùng",
     "sections": [
       {
         "id": "origin",
-        "label": "Nguồn Gốc",
-        "icon": "📜",
-        "content": "Bắt nguồn từ một gốc tre trôi dạt sau lũ, nhặt được cùng người bạn thân Long. Đục thử cho vui, vô tình hiện ra dáng một ông già đang cười. Long chính là người khích lệ đầu tiên khiến Hùng quyết tâm theo nghề mới lạ này."
+        "label": "Bắt Đầu Nghề",
+        "icon": "bamboo",
+        "content": "Hùng bắt đầu từ các món đồ tre nhỏ và học cách biến đoạn tre tưởng bỏ đi thành vật hữu ích. Nghề gắn với trò chơi tuổi thơ của Hùng, Tính và Minh."
       },
       {
         "id": "selection",
-        "label": "Chọn Nguyên Liệu",
-        "icon": "🌱",
-        "content": "Gốc tre đất thịt: cứng, rễ ngắn — hợp dáng chắc nịch. Gốc tre đất cát: rễ dài — hợp làm râu, tóc, chi tiết bay bổng. Phải quan sát kỹ hình dáng tự nhiên để tưởng tượng ra hình thù trước khi đục."
+        "label": "Chọn Tre",
+        "icon": "search",
+        "content": "Chọn tre phải nhìn mắt tre, độ già, vết nứt và nghe tiếng khi gõ. Gốc tre xấu bên ngoài đôi khi có dáng đẹp nếu nhìn đủ lâu."
       },
       {
         "id": "treatment",
-        "label": "Xử Lý Chống Mối Mọt",
-        "icon": "💧",
-        "content": "Ngâm bùn nhiều tháng để loại bỏ đường và tinh bột trong tre. Phơi nắng nhiều ngày sau khi ngâm. Cách làm thủ công truyền thống giúp giữ màu tự nhiên, không cần hóa chất."
+        "label": "Xử Lý Vật Liệu",
+        "icon": "sun",
+        "content": "Tre cần phơi, ngâm hoặc hun khói. Làm nhanh thì dễ nứt, dễ mối; cách cũ của gia đình Hùng là làm chậm để đồ bền."
       },
       {
         "id": "carving",
-        "label": "Kỹ Thuật Điêu Khắc",
-        "icon": "🔨",
-        "content": "Khó hơn điêu khắc gỗ khối vì không sửa được sai sót — một nhát đục sai phải bỏ cả gốc. Mỗi gốc tre có hình dáng riêng, đòi hỏi óc tưởng tượng và quan sát kỹ trước khi xuống tay."
+        "label": "Đục Khắc",
+        "icon": "tool",
+        "content": "Đục tre khó nhất là biết dừng vì tre dễ toác theo thớ. Vết đục thủ công không đều có thể làm món đồ có hồn hơn."
       },
       {
         "id": "memories",
-        "label": "Ký Ức Cùng Long",
-        "icon": "🎋",
-        "content": "Tuổi thơ gắn bó với Long ở bụi tre đầu làng — trốn tìm, trèo cây hái tổ chim. Long luôn ghé thăm xưởng mỗi lần về làng. Nay Long dần quên nhiều chuyện, Hùng hy vọng những câu chuyện được ghi lại sẽ giúp bạn mình nhớ lại điều gì đó."
+        "label": "Ký Ức Với Tính",
+        "icon": "firefly",
+        "content": "Hùng nhớ Tính, Minh và mình từng đi bắt đom đóm ở nhà cũ. Tính từng được Bà Ngần chăm như vú nuôi trước khi theo ba lên thành phố."
       }
     ]
   }

@@ -1,38 +1,53 @@
 {
   "locationId": "nha_minh",
   "locationName": "Nhà Minh",
-  "description": "Nơi bạn cũ của Tính đang chờ một câu chuyện cũ.",
+  "description": "Quán nước nhỏ của Minh ở đầu xóm.",
   "npcId": "minh",
   "dialogues": [
     {
       "speaker": "minh",
       "speakerName": "Minh",
-      "text": "Tính à, mày về rồi à?"
+      "text": "Tính? Trời đất, đúng mày rồi. Lâu quá không gặp, nhìn mày khác hẳn."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Dạ... cháu không nhớ rõ, xin lỗi."
+      "text": "Xin lỗi, tao không nhớ rõ. Mày là Minh đúng không?"
+    },
+    {
+      "speaker": "minh",
+      "speakerName": "Minh",
+      "text": "Ừ. Hồi nhỏ tụi mình hay chạy quanh làng. Nhưng chuyện nhà mày thì tao không biết đâu, lúc đó tụi mình còn bé quá."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Anh ấy mất ký ức sau tai nạn, nên chúng cháu mới trở lại."
+      "text": "Vậy bây giờ anh đang bán quán nước ở quê ạ? Một quán nhỏ như này sống được không anh?"
     },
     {
       "speaker": "minh",
       "speakerName": "Minh",
-      "text": "Thế thì phải cố gắng giúp nó nhớ lại."
+      "text": "Sống chậm thôi. Sáng bán cà phê, trưa bán nước mía, chiều người đi đồng ghé nghỉ. Không giàu, nhưng biết mặt từng người qua lại."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Nếu mình từng là bạn của nhau, hãy kể cho mình nghe đi."
+      "text": "Mày có nhớ kỷ niệm nào của tụi mình không?"
     },
     {
       "speaker": "minh",
       "speakerName": "Minh",
-      "text": "Được, nhưng chuyện này không thể kể nhanh được."
+      "text": "Nhớ nhất là mấy đêm đi bắt đom đóm. Mày, tao với Hùng cứ cầm lọ thủy tinh chạy sau nhà cũ, tưởng bắt được ánh sáng là giữ được mùa hè."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Hùng còn ở làng không anh?"
+    },
+    {
+      "speaker": "minh",
+      "speakerName": "Minh",
+      "text": "Còn. Nó làm đồ mộc bằng tre ở nhà nó. Nếu muốn hỏi chuyện tuổi thơ của Tính, qua Hùng chắc rõ hơn tao."
     }
   ]
 }

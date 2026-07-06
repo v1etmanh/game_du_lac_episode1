@@ -1,5 +1,3 @@
-// Toàn bộ nhân vật xuất hiện trong dialog (2 nhân vật chính + NPC).
-// avatar: null nghĩa là chưa có ảnh trong public/npc_avt -> UI sẽ dùng fallback (chữ cái đầu tên).
 export const CHARACTERS = {
   lan_anh: {
     name: 'Lan Anh',
@@ -12,7 +10,7 @@ export const CHARACTERS = {
     portrait: { scale: 0.96, x: '4px', y: '8px', mobileScale: 0.84 },
   },
   gialang: {
-    name: 'Ông Trưởng Làng',
+    name: 'Ông Già Làng',
     avatar: '/npc_avt/gialang.png',
     portrait: { scale: 1.68, x: '-26px', y: '10px', mobileScale: 1.34 },
   },
@@ -41,8 +39,6 @@ export const CHARACTERS = {
     avatar: '/npc_avt/hung.png',
     portrait: { scale: 1.34, x: '-18px', y: '10px', mobileScale: 1.1 },
   },
-  sucu: { name: 'Sư Cụ', avatar: null },
 }
 
-// Giữ tên cũ để tương thích ngược với chỗ đã import NPCS trước đó.
 export const NPCS = CHARACTERS

@@ -1,38 +1,28 @@
 {
   "locationId": "ruong",
-  "locationName": "Ruộng lúa",
-  "description": "Đồng lúa vàng và gió thổi qua như lời chào cũ.",
+  "locationName": "Cánh đồng",
+  "description": "Bãi gió rộng ngoài làng.",
   "npcId": null,
   "dialogues": [
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Đồng lúa vàng, gió thổi qua như một lời chào cũ."
+      "text": "Gió ở đây mạnh thật. Hèn gì trẻ con trong làng thích ra cánh đồng thả diều."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Ở đây mình từng chạy, từng nghe tiếng diều và tiếng chim."
+      "text": "Anh nhớ cảm giác chạy trên bờ ruộng, nhưng không nhớ rõ mình chạy với ai."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Anh có muốn đứng lại một lát không?"
+      "text": "Anh có muốn chơi diều một chút không? Biết đâu cơ thể nhớ trước khi đầu óc nhớ."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Có, lần này mình muốn thật chậm."
-    },
-    {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Những ký ức nhỏ thường đến từ những nơi bình yên."
-    },
-    {
-      "speaker": "tinh",
-      "speakerName": "Tính",
-      "text": "Vậy thì hãy để nơi này gọi mình về."
+      "text": "Ừ. Nếu ký ức nằm trong gió, anh muốn thử kéo nó lại gần."
     }
   ]
 }

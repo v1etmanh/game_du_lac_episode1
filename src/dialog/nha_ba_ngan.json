@@ -1,38 +1,53 @@
 {
   "locationId": "nha_ba_ngan",
-  "locationName": "Nhà bà ngần",
-  "description": "Nơi có những câu chuyện về người mẹ và những ký ức ấm áp.",
+  "locationName": "Nhà bà Ngần",
+  "description": "Nhà của người vú nuôi từng chăm Tính khi còn bé.",
   "npcId": "ba_ngan",
   "dialogues": [
     {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Bà ngần ơi, cháu đến thăm bà."
-    },
-    {
       "speaker": "ba_ngan",
       "speakerName": "Bà Ngần",
-      "text": "Vào đi cháu, đừng ngại."
+      "text": "Ai ngoài sân đó? Lan Anh hả cháu? Còn cậu này..."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Bà có nhớ người con gái từng ở đây không?"
-    },
-    {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Anh muốn biết thêm về người mẹ của mình."
+      "text": "Dạ, cháu là Tính. Cháu nghe nói ngày nhỏ cháu từng ở làng này, nhưng cháu không nhớ rõ."
     },
     {
       "speaker": "ba_ngan",
       "speakerName": "Bà Ngần",
-      "text": "Có những điều người ta giữ kín lâu hơn cả tuổi thơ."
+      "text": "Tính... đúng rồi. Hồi bé bà từng bế cháu suốt. Người ta gọi bà là vú nuôi của cháu, vì mẹ cháu bận việc làng, còn bà thì ở gần nhà."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Bà có thể kể cho tụi cháu nghe về gia đình anh ấy ngày trước không ạ?"
+    },
+    {
+      "speaker": "ba_ngan",
+      "speakerName": "Bà Ngần",
+      "text": "Ngày nhỏ, nhà cháu vui lắm. Sân lúc nào cũng có tiếng cười. Ba cháu thương mẹ cháu nên từng bỏ cả nhà mình để về đây sống cùng bà ấy."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Nếu bà biết, xin bà giúp cháu nhớ lại."
+      "text": "Ba cháu bỏ nhà vì mẹ cháu? Cháu chưa từng nghe ông ấy kể như vậy."
+    },
+    {
+      "speaker": "ba_ngan",
+      "speakerName": "Bà Ngần",
+      "text": "Sau này người lớn mâu thuẫn, lời nói qua lại làm ai cũng tổn thương. Rồi ba cháu đưa cháu về thành phố. Từ đó nhà cũ vắng hẳn."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Cháu không tin nổi. Trong ký ức của cháu, ba luôn nói quá khứ ở đây không đáng nhắc lại."
+    },
+    {
+      "speaker": "ba_ngan",
+      "speakerName": "Bà Ngần",
+      "text": "Ký ức của người lớn đôi khi bị giận hờn che mất. Cháu cứ đi hỏi thêm, đừng vội tin một lời kể duy nhất, kể cả lời bà."
     }
   ]
 }

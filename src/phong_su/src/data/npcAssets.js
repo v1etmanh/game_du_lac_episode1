@@ -19,12 +19,20 @@ import ongTu4 from '../../public/ong_tu_4.png'
 import ongTu5 from '../../public/ong_tu_5.png'
 
 export const CHARACTER_IMAGES = {
+  ba_tu: baNam,
   ba_nam: baNam,
   ong_ba: ongTu,
   hung,
 }
 
 export const SECTION_BACKGROUNDS = {
+  ba_tu: {
+    origin: baNam1,
+    structure: baNam4,
+    playing: baNam5,
+    sound: baNam3,
+    memories: baNam2,
+  },
   ba_nam: {
     origin: baNam1,
     structure: baNam4,

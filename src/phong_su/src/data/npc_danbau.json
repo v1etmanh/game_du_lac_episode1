@@ -1,80 +1,80 @@
 {
-  "id": "ba_nam",
-  "name": "Bà Năm",
-  "age": 68,
+  "id": "ba_tu",
+  "name": "Bà Tư",
+  "age": 67,
   "topic": "Đàn Bầu",
-  "tagline": "Người giữ hồn nhạc cụ dân tộc",
-  "greeting": "Ôi, có người trẻ đến thăm bà rồi! Vào đây ngồi đi cháu, uống chén trà. Cháu muốn hỏi bà điều gì vậy?",
-  "portrait": "ba_nam",
+  "tagline": "Người học đàn để giữ lại tiếng thương của một đời",
+  "greeting": "Hai cháu cứ ngồi xuống. Cây đàn này không ưa người vội, mà chuyện cũ của bà cũng vậy.",
+  "portrait": "ba_tu",
   "responses": {
     "origin": {
-      "keywords": ["nguồn gốc", "ra đời", "lịch sử", "history", "origin", "bắt đầu", "xuất hiện", "có từ bao giờ", "ngày xưa", "thời xưa", "nguon goc", "ra doi", "lich su"],
-      "sampleQuestion": "Đàn bầu có nguồn gốc từ đâu vậy bà?",
-      "text": "Đàn bầu là nhạc cụ thuần Việt, cháu ơi. Không nơi nào trên thế giới có cây đàn này ngoài đất nước mình — đó là điều bà tự hào lắm! Có người nói đàn bầu ra đời từ thế kỷ XI thời nhà Lý, có tài liệu ghi lại từ thế kỷ XIII. Thuở xưa, những người hát xẩm — thường là người khiếm thị — hay gảy đàn bầu mưu sinh, tiếng đàn theo họ qua bao nẻo đường quê hương. Đàn bầu còn được dùng trong nhạc cung đình, nơi tiếng nhạc phải thanh tao và đặc sắc nhất. Một cây đàn mang cả lịch sử dân tộc trong đó, cháu ơi.",
+      "keywords": ["nguồn gốc", "ra đời", "lịch sử", "đàn bầu", "origin", "history", "nguon goc", "lich su", "xưa", "xua"],
+      "sampleQuestion": "Bà có thể kể đàn bầu có từ đâu và vì sao người làng mình quý nó không?",
+      "text": "Đàn bầu là nhạc cụ rất riêng của người Việt, chỉ một dây mà kéo được bao nhiêu cung bậc. Người ta kể nó đi qua nhiều đời, từ tiếng hát rong, tiếng hát xẩm cho tới sân khấu và lớp học. Với bà, nguồn gốc của đàn bầu không chỉ nằm trong sách, mà nằm ở cách người nghe lặng đi khi một nốt ngân lên. Nó giống như một sợi dây nối người còn sống với điều họ không muốn quên.",
       "unlock": ["origin"]
     },
     "structure": {
-      "keywords": ["cấu tạo", "làm bằng gì", "bộ phận", "cần đàn", "dây đàn", "quả bầu", "structure", "cau tao", "lam bang gi", "bo phan", "cau truc"],
-      "sampleQuestion": "Đàn bầu được cấu tạo từ những gì ạ?",
-      "text": "Cây đàn bầu tuy đơn sơ mà tinh tế lắm, cháu ơi! Đàn chỉ có một dây duy nhất thôi — một dây thôi! — nhưng tạo ra được vô vàn âm thanh. Thân đàn là ống tre hoặc hộp gỗ dài khoảng một mét. Ở một đầu có cần đàn nhỏ làm bằng tre, và gắn vào đó là một quả bầu khô — quả bầu nậm ấy tạo nên tên gọi đàn bầu. Khi gảy dây rồi uốn cần bầu nhẹ nhẹ, âm thanh thay đổi như tiếng người thở than. Dây đàn ngày xưa làm từ tơ lụa, bây giờ dùng dây kim loại mảnh để tiếng vang hơn. Giản dị lắm, nhưng đẹp vô cùng.",
+      "keywords": ["cấu tạo", "một dây", "quả bầu", "cần đàn", "thân đàn", "structure", "cau tao", "mot day", "qua bau"],
+      "sampleQuestion": "Cây đàn bầu của bà gồm những bộ phận nào, và bộ phận nào bà giữ kỹ nhất?",
+      "text": "Cây đàn bầu nhìn giản dị lắm: thân đàn dài, một dây đàn, cần đàn để uốn cao độ và quả bầu ở một đầu. Chính vì chỉ có một dây nên người chơi phải nghe rất kỹ từng rung động nhỏ. Cây đàn của bà còn giữ quả bầu cũ, đã sẫm màu theo năm tháng. Bà không thay nó, vì mỗi vết xước đều nhắc bà nhớ người từng ngồi chỉnh đàn trong căn nhà này.",
       "unlock": ["structure"]
     },
     "playing": {
-      "keywords": ["kỹ thuật", "đánh đàn", "chơi đàn", "gảy", "học đàn", "technique", "playing", "ky thuat", "danh dan", "choi dan", "gay dan"],
-      "sampleQuestion": "Bà chỉ cháu cách chơi đàn bầu được không?",
-      "text": "Kỹ thuật đàn bầu rất đặc biệt và khó học lắm, cháu ơi! Tay phải dùng que gảy nhỏ — ngày xưa bà dùng que tre, giờ có que nhựa — búng nhẹ vào dây. Phải nhẹ thôi, nặng tay quá thì tiếng mất đi sự mềm mại. Còn tay trái đặt lên cần bầu rồi uốn nhẹ để thay đổi cao độ — đây chính là điều tạo nên tiếng đặc trưng của đàn bầu mà không nhạc cụ nào có. Hai tay phải phối hợp nhịp nhàng như đang nói chuyện với nhau vậy. Bà học mất mấy năm mới gảy ra hơi nhạc chuẩn. Người ta hay nói: 'Đàn bầu ai gảy nấy nghe, làm thân con gái chớ nghe đàn bầu' — ý nói tiếng đàn dễ làm lòng người xao xuyến!",
+      "keywords": ["cách chơi", "chơi đàn", "gảy", "kỹ thuật", "tay trái", "tay phải", "beo dat may troi", "bèo dạt mây trôi", "playing", "ky thuat"],
+      "sampleQuestion": "Khi chơi Bèo dạt mây trôi, bà chú ý điều gì nhất?",
+      "text": "Tay phải gảy dây, tay trái uốn cần để tiếng đàn luyến lên hoặc trầm xuống. Nhưng nếu chỉ học động tác thì chưa đủ. Bài Bèo dạt mây trôi phải chơi như một hơi thở dài, không được khoe kỹ thuật quá. Ngày trước chồng bà thường đàn bài ấy vào chiều muộn; sau này bà học lại từng nốt, ban đầu vụng về lắm, chỉ để căn nhà bớt im.",
       "unlock": ["playing"]
     },
     "sound": {
-      "keywords": ["âm thanh", "tiếng đàn", "nghe như thế nào", "âm", "tiếng", "sound", "am thanh", "tieng dan", "nghe the nao"],
-      "sampleQuestion": "Tiếng đàn bầu nghe như thế nào ạ?",
-      "text": "Tiếng đàn bầu... khó tả lắm, cháu ơi. Nó vừa réo rắt vừa mênh mang, như tiếng người đang thì thầm điều gì đó rất xa xôi. Có lúc nghe như tiếng khóc thầm trong đêm khuya, có lúc lại như tiếng cười vọng lại từ xa. Tiếng đàn có thể mô phỏng tiếng chim hót buổi sáng, tiếng gió qua kẽ lá, thậm chí cả tiếng người nói chuyện. Người nước ngoài lần đầu nghe hay ngẩn người ra — họ không tin chỉ một sợi dây mà ra được âm thanh huyền diệu như vậy! Bà thích nhất gảy lúc hoàng hôn, tiếng đàn tan vào không khí chiều tà... nao lòng lắm cháu ơi.",
+      "keywords": ["âm thanh", "tiếng đàn", "nghe như", "buồn", "sound", "am thanh", "tieng dan"],
+      "sampleQuestion": "Vì sao tiếng đàn bầu nghe buồn mà vẫn khiến người ta muốn nghe tiếp?",
+      "text": "Tiếng đàn bầu mỏng mà sâu, như một giọng người đang nói nhỏ với chính mình. Có lúc nó buồn, nhưng không phải để kéo người ta chìm xuống; nó buồn để mình dám nhìn thẳng vào điều đã mất. Một nốt ngân đúng có thể làm người nghe nhớ mẹ, nhớ nhà, nhớ một lời chưa kịp nói. Bà nghĩ cái hay của đàn bầu là nó không ồn ào, nhưng chạm rất lâu.",
       "unlock": ["sound"]
     },
     "memories": {
-      "keywords": ["kỷ niệm", "học đàn", "tuổi thơ", "nhớ", "ngày xưa", "bà ngoại", "memory", "ký ức", "ky niem", "hoc dan", "tuoi tho", "nho"],
-      "sampleQuestion": "Bà có kỷ niệm nào đáng nhớ với đàn bầu không?",
-      "text": "Bà học đàn từ bà ngoại khi mới tám tuổi, cháu ơi. Những buổi sáng tinh mơ, khi sương còn chưa tan, bà ngoại ngồi ngoài hiên nhà, tay nhẹ nhàng gảy từng nốt, dạy bà từng chút một. Bà nhớ mùi hương trầm tỏa ra từ bàn thờ trong nhà, tiếng chim hót líu lo ngoài vườn, và tiếng đàn bầu hòa vào nhau thật bình yên. Đến khi bà ngoại mất, cây đàn đó bà giữ như báu vật, không dám cho ai mượn. Bây giờ bà dạy lại cho mấy đứa cháu trong làng, mỗi lần nghe chúng gảy những nốt đầu tiên còn vụng về, bà lại nhớ bà ngoại da diết...",
+      "keywords": ["kỷ niệm", "chồng", "đứa con", "thai", "mất", "rượu", "quá khứ", "memory", "ky niem", "qua khu", "con", "ruou"],
+      "sampleQuestion": "Bà bắt đầu học đàn sau chuyện gì, và bà có muốn cháu ghi lại điều đó không?",
+      "text": "Ngày xưa bà không biết chơi đàn. Chồng bà mới là người đàn, chiều nào cũng đàn Bèo dạt mây trôi cho bà nghe. Khi cái thai mất, ông ấy buồn quá rồi sa vào rượu, sau đó cũng rời bà mà đi. Bà học đàn không phải để thành nghệ nhân trước tiên, mà để mỗi khi gảy lên, bà còn được ngồi thêm một chút với chồng và đứa con chưa kịp gọi tên.",
       "unlock": ["memories"]
     }
   },
   "fallback": [
-    "Chuyện đó bà không biết nhiều, cháu ơi. Nhưng bà hay nghĩ rằng mỗi khi tâm hồn mình xao xuyến, cứ nghe tiếng đàn bầu là lòng lại dịu xuống.",
-    "Ờ... bà không rành chuyện đó lắm. Nhưng mà cháu hỏi bà về đàn bầu thì bà kể mãi không hết đó! Cái nhạc cụ này gắn với cả cuộc đời bà rồi.",
-    "Câu đó bà chưa nghĩ tới. Nhưng bà hay nói với mấy đứa cháu: dù đi đâu, làm gì, nhớ giữ lấy tiếng đàn bầu — đó là hồn của dân tộc mình đó."
+    "Chuyện đó bà chưa dám nói vội. Cháu hỏi cụ thể hơn một chút, bà sẽ kể phần bà nhớ chắc.",
+    "Đàn bầu không hợp với câu hỏi quá nhanh đâu cháu. Mình đi từng nốt, từng chuyện một.",
+    "Có những chuyện bà chỉ kể khi biết người nghe sẽ ghi lại cho tử tế."
   ],
   "notebook": {
-    "title": "Đàn Bầu",
+    "title": "Đàn Bầu Của Bà Tư",
     "sections": [
       {
         "id": "origin",
         "label": "Nguồn Gốc",
-        "icon": "📜",
-        "content": "Đàn bầu là nhạc cụ độc đáo chỉ có tại Việt Nam — không nơi nào trên thế giới có cây đàn này. Xuất hiện từ thế kỷ XI–XIII. Gắn liền với hát xẩm của người khiếm thị và nhạc cung đình. Mang cả lịch sử dân tộc trong tiếng nhạc."
+        "icon": "music",
+        "content": "Đàn bầu là nhạc cụ một dây đặc trưng của Việt Nam, đi qua nhiều không gian từ dân gian tới sân khấu. Với Bà Tư, đàn bầu là sợi dây nối ký ức và người đã mất."
       },
       {
         "id": "structure",
         "label": "Cấu Tạo",
-        "icon": "🎵",
-        "content": "Chỉ có một dây duy nhất — điều hiếm có trên thế giới. Thân đàn là ống tre hoặc hộp gỗ dài ~1m. Cần đàn gắn với quả bầu khô (bầu nậm) tạo nên tên gọi. Dây ngày xưa làm từ tơ lụa, nay dùng kim loại mảnh."
+        "icon": "gourd",
+        "content": "Cây đàn gồm thân đàn, một dây, cần đàn và quả bầu. Quả bầu cũ trên cây đàn của Bà Tư được giữ lại vì gắn với người chồng từng chỉnh đàn trong căn nhà này."
       },
       {
         "id": "playing",
-        "label": "Kỹ Thuật Chơi",
-        "icon": "🎼",
-        "content": "Tay phải gảy nhẹ bằng que nhỏ — nhẹ thôi để tiếng mềm mại. Tay trái uốn cần bầu để thay đổi cao độ âm thanh. Hai tay phối hợp như đang đối thoại với nhau. Cần nhiều năm luyện tập. 'Đàn bầu ai gảy nấy nghe...' — tiếng đàn dễ làm lòng xao xuyến."
+        "label": "Cách Chơi",
+        "icon": "hand",
+        "content": "Tay phải gảy dây, tay trái uốn cần tạo cao độ. Bèo dạt mây trôi cần chơi như một hơi thở dài, không khoe kỹ thuật mà giữ cảm xúc."
       },
       {
         "id": "sound",
         "label": "Âm Thanh",
-        "icon": "🎶",
-        "content": "Réo rắt, mênh mang, huyền bí. Nghe như tiếng người thì thầm, tiếng khóc thầm hay tiếng cười xa xa. Có thể mô phỏng tiếng chim, tiếng gió, tiếng người. Một dây mà ra được vô vàn âm thanh — điều kỳ diệu khiến người ngoại quốc ngẩn người."
+        "icon": "wave",
+        "content": "Tiếng đàn bầu mỏng, sâu, buồn nhưng không bi lụy. Nó giúp người nghe đối diện điều đã mất và nhớ những lời chưa kịp nói."
       },
       {
         "id": "memories",
-        "label": "Ký Ức Cá Nhân",
-        "icon": "🌸",
-        "content": "Học đàn từ năm 8 tuổi dưới sự dạy dỗ của bà ngoại. Những buổi sáng sớm ngoài hiên với mùi hương trầm và tiếng chim. Cây đàn của bà ngoại được giữ gìn như báu vật. Nay truyền dạy lại cho thế hệ trẻ trong làng."
+        "label": "Ký Ức Riêng",
+        "icon": "memory",
+        "content": "Bà Tư từng không biết chơi đàn; chồng bà mới là nghệ nhân đàn bầu. Sau khi mất con và mất chồng, bà học đàn để giữ lại tiếng thương của gia đình mình."
       }
     ]
   }

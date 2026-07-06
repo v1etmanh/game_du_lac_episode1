@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { CHARACTERS } from '../data/npcs.js'
 import './DialogScreen.css'
 
-// Đọc trước toàn bộ file json trong src/dialog lúc build (Vite glob import).
 const dialogModules = import.meta.glob('../dialog/*.json', { eager: true })
 
 function loadDialogData(locationId) {
@@ -15,8 +14,6 @@ function loadDialogData(locationId) {
   return null
 }
 
-// Màn hình hội thoại: nền = ảnh landscape của địa điểm, hộp thoại kiểu giấy cũ phía dưới,
-// chân dung nhân vật đang nói nổi bên trái (Lan Anh/Tính) hoặc bên phải (NPC).
 export default function DialogScreen({ locationId, onFinish, onBack, dialogueKey = 'dialogues' }) {
   const data = loadDialogData(locationId)
   const [lineIndex, setLineIndex] = useState(0)

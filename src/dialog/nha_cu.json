@@ -1,44 +1,51 @@
 {
   "locationId": "nha_cu",
   "locationName": "Nhà cũ",
-  "description": "Ngôi nhà cũ của một gia đình bà con đã đi nước ngoài, lâu lâu mới về dọn dẹp và thăm quê.",
+  "description": "Căn nhà vắng nơi nhóm bạn từng để lại câu đố đom đóm.",
   "backgroundImage": "/landscape/chua.png",
   "npcId": null,
   "dialogues": [
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Nhà này vắng thật. Sao cổng vẫn mở vậy anh Tính?"
+      "text": "Đây là nhà cũ mà Minh và Hùng nhắc tới sao? Nhìn vắng quá."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Nhà của bà con anh. Cả nhà đi nước ngoài lâu rồi, nhưng thỉnh thoảng họ về dọn dẹp, thăm quê. Hồi nhỏ tụi anh hay được cho vào sân chơi."
+      "text": "Anh nhớ cái sân này. Tụi anh từng giấu mấy tờ giấy trong nhà, như một trò giải mã để tìm đom đóm."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Có phải đây là chỗ anh từng kể về đom đóm không?"
+      "text": "Vậy mình thử giải lại đi. Có thể những mảnh giấy đó sẽ cho biết khi nào đom đóm xuất hiện."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Ừ. Hồi đó anh với lũ bạn cứ thắc mắc vì sao đom đóm chỉ xuất hiện vào vài buổi, còn những hôm khác tìm mãi không thấy."
+      "text": "Nếu anh từng để lại dấu vết cho chính mình, anh muốn đọc lại nó bằng mắt của bây giờ."
+    }
+  ],
+  "afterGameDialogues": [
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Mảnh cuối cùng ghi: Đom đóm chỉ về khi niềm vui trong mọi người đủ lớn."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Bọn anh từng để lại mấy câu đố trong nhà: nơi nào thấy ánh sáng nhỏ, khi nào nó xuất hiện, và phải ghi lại thế nào để lần sau tìm được."
+      "text": "Còn dòng này nữa: sau ánh lửa, sau hội làng. Nghĩa là phải chờ đêm hội?"
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Vậy mình phải giải hết trước đã. Nếu biết đúng thời điểm, mình có thể ra vườn chờ đom đóm."
+      "text": "Vậy điểm tiếp theo là đền làng. Nếu hội làng thắp lửa, có thể ký ức về đom đóm cũng quay lại."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Giải xong mấy mảnh ghi chú, mình sẽ sang vườn sau nhà hái ít quả, đợi trời tối rồi quan sát."
+      "text": "Anh bắt đầu nhớ tiếng người cười quanh sân đền. Mình đi thôi."
     }
   ]
 }

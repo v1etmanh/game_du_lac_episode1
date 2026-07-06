@@ -1,50 +1,55 @@
 {
   "locationId": "nha_hung",
   "locationName": "Nhà Hùng",
-  "description": "Nơi lưu giữ ký ức tuổi thơ và nghề chạm khắc gốc tre.",
+  "description": "Xưởng đồ mộc tre của Hùng.",
   "npcId": "hung",
   "dialogues": [
     {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Anh Hùng, tụi em nghe nói anh vẫn giữ nghề chạm khắc gốc tre ở làng."
-    },
-    {
       "speaker": "hung",
       "speakerName": "Hùng",
-      "text": "Ừ, nghề nhỏ thôi, nhưng mỗi gốc tre lại có một dáng, một câu chuyện riêng."
+      "text": "Tính đó hả? Tao nghe Minh nói mày về, mà không nghĩ mày qua nhanh vậy."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Em muốn biết vì sao anh theo nghề này. Có phải nó cũng gắn với những ngày xưa của tụi mình không?"
-    },
-    {
-      "speaker": "lan_anh",
-      "speakerName": "Lan Anh",
-      "text": "Tụi em muốn phỏng vấn anh để ghi lại cách chọn gốc tre, xử lý vật liệu, kỹ thuật đục và ký ức phía sau nghề."
+      "text": "Tao đang cố nhớ lại. Minh nói hồi nhỏ tụi mình hay đi bắt đom đóm cùng nhau."
     },
     {
       "speaker": "hung",
       "speakerName": "Hùng",
-      "text": "Được. Nếu đã muốn ghi lại thì vào xưởng ngồi đi. Anh kể, còn hai đứa hỏi cho tới khi cuốn sổ đầy."
+      "text": "Ừ, ba thằng chạy khắp xóm. Mày hồi đó lì lắm, thấy cái gì sáng là đòi đuổi theo cho bằng được."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Anh Hùng, tụi em thấy anh làm đồ mộc bằng tre. Tụi em có thể phỏng vấn anh vừa về nghề, vừa về ký ức tuổi thơ của Tính được không?"
+    },
+    {
+      "speaker": "hung",
+      "speakerName": "Hùng",
+      "text": "Được. Nhưng hỏi cho rõ nhé. Tre mà đục sai còn sửa được, ký ức mà kể sai thì làm người ta đau."
     }
   ],
   "afterInterviewDialogues": [
     {
       "speaker": "hung",
       "speakerName": "Hùng",
-      "text": "Bài báo nhìn ra dáng lắm. Ít nhất mấy gốc tre này không chỉ nằm im trong xưởng nữa."
+      "text": "Mày muốn tìm đom đóm thì sau này phải tới nhà cũ. Nhưng trước đó, Lan Anh nên qua nhà bà Tư."
     },
     {
       "speaker": "lan_anh",
       "speakerName": "Lan Anh",
-      "text": "Tụi em hiểu hơn rồi: một món đồ thủ công không chỉ có hình dáng, mà còn có ký ức của người làm."
+      "text": "Bà Tư, nghệ nhân đàn bầu ấy ạ?"
+    },
+    {
+      "speaker": "hung",
+      "speakerName": "Hùng",
+      "text": "Ừ. Bà ấy ít nói về mình, nhưng tiếng đàn của bà giữ nhiều chuyện trong làng. Hiểu được tiếng đàn đó, hai đứa sẽ hiểu vì sao ký ức không chỉ nằm trong lời kể."
     },
     {
       "speaker": "tinh",
       "speakerName": "Tính",
-      "text": "Cảm ơn anh. Giờ tụi em sẽ tiếp tục phần thử thách tiếp theo."
+      "text": "Cảm ơn mày. Tao chưa nhớ hết, nhưng ít nhất tao biết mình từng có bạn ở đây."
     }
   ]
 }
