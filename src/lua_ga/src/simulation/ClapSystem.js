@@ -23,6 +23,8 @@ export function createClapWave(world, settings) {
 }
 
 export function updateClapWaves(world, settings, deltaTime) {
+  let hitCount = 0;
+
   for (const wave of world.clapWaves) {
     wave.radius += wave.speed * deltaTime;
 
@@ -55,8 +57,10 @@ export function updateClapWaves(world, settings, deltaTime) {
       chicken.escapeDistanceRemaining = settings.clapRunDistance;
       chicken.directionLockRemaining = settings.clapDirectionLockTime;
       world.stats.panicCount += 1;
+      hitCount += 1;
     }
   }
 
   world.clapWaves = world.clapWaves.filter((wave) => wave.radius <= wave.maxRadius + wave.width);
+  return hitCount;
 }

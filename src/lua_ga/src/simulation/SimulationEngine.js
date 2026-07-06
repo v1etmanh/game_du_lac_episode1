@@ -6,6 +6,7 @@ import { updateChickens } from "./ChickenSystem.js";
 import { resolveCoopWallCollisions, updateCoop } from "./CoopSystem.js";
 import { createClapWave, updateClapWaves } from "./ClapSystem.js";
 import { keepInsideWorld, resolveChickenSeparation, resolveObstacleCollisions } from "./CollisionSystem.js";
+import { AudioSystem } from "./AudioSystem.js";
 import { distance, normalize } from "../math/vector.js";
 
 export class SimulationEngine {
@@ -16,6 +17,7 @@ export class SimulationEngine {
     this.world = createWorld(this.settings);
     this.input = new InputManager(canvas);
     this.renderer = new Renderer(canvas, this.settings);
+    this.audio = new AudioSystem(canvas);
     this.animationFrame = null;
     this.lastTime = 0;
     this.snapshotAccumulator = 0;
@@ -24,6 +26,7 @@ export class SimulationEngine {
 
   start() {
     this.input.attach();
+    this.audio.attach();
     this.world.stats.startedAt = performance.now();
     this.lastTime = performance.now();
     this.animationFrame = requestAnimationFrame(this.loop);
@@ -31,6 +34,7 @@ export class SimulationEngine {
 
   stop() {
     this.input.detach();
+    this.audio.dispose();
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
     }
@@ -101,14 +105,30 @@ export class SimulationEngine {
 
     this.updatePlayer(deltaTime);
     updateGrain(this.world, this.settings, deltaTime);
-    updateClapWaves(this.world, this.settings, deltaTime);
+    const clapHits = updateClapWaves(this.world, this.settings, deltaTime);
+    if (clapHits > 0) {
+      this.audio.playEffect("collision");
+    }
+
+    const chickenStatesBefore = new Map(
+      this.world.chickens.map((chicken) => [
+        chicken.id,
+        {
+          secured: chicken.secured,
+          state: chicken.state
+        }
+      ])
+    );
+
     updateChickens(this.world, this.settings, deltaTime);
+    this.playChickenStateSounds(chickenStatesBefore);
     resolveChickenSeparation(this.world);
     for (const chicken of this.world.chickens) {
       keepInsideWorld(chicken, this.settings);
       resolveCoopWallCollisions(chicken, this.world.coop);
     }
     updateCoop(this.world, this.settings, deltaTime);
+    this.playCoopSounds(chickenStatesBefore);
 
     if (!this.world.completed && this.world.stats.elapsedTime >= this.settings.challengeDuration) {
       this.failChallenge("time");
@@ -209,6 +229,28 @@ export class SimulationEngine {
     resolveCoopWallCollisions(player, this.world.coop);
     player.dashEndX = player.x;
     player.dashEndY = player.y;
+  }
+
+  playChickenStateSounds(chickenStatesBefore) {
+    for (const chicken of this.world.chickens) {
+      const previous = chickenStatesBefore.get(chicken.id);
+      if (
+        chicken.type === "rooster" &&
+        chicken.state === "ROOSTER_AIM" &&
+        previous?.state !== "ROOSTER_AIM"
+      ) {
+        this.audio.playEffect("attack");
+      }
+    }
+  }
+
+  playCoopSounds(chickenStatesBefore) {
+    for (const chicken of this.world.chickens) {
+      const previous = chickenStatesBefore.get(chicken.id);
+      if (!previous?.secured && chicken.secured) {
+        this.audio.playEffect("success");
+      }
+    }
   }
 
   emitSnapshot() {
