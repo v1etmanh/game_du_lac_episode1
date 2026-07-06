@@ -17,7 +17,34 @@
     {
       "speaker": "ba_ngan",
       "speakerName": "Bà Ngần",
-      "text": "Tính... đúng rồi. Hồi bé bà từng bế cháu suốt. Người ta gọi bà là vú nuôi của cháu, vì mẹ cháu bận việc làng, còn bà thì ở gần nhà."
+      "text": "Tính... đúng rồi. Bà nhận ra đôi mắt đó. Bà có nhiều chuyện muốn nói với cháu, nhưng bây giờ sân nhà đang rối quá."
+    },
+    {
+      "speaker": "lan_anh",
+      "speakerName": "Lan Anh",
+      "text": "Có chuyện gì vậy bà? Tụi cháu giúp được không ạ?"
+    },
+    {
+      "speaker": "ba_ngan",
+      "speakerName": "Bà Ngần",
+      "text": "Mấy con gà sổng ra vườn, bà gọi mãi không chịu vào chuồng. Hai cháu giúp bà lùa chúng vào trước nhé, rồi bà sẽ ngồi xuống kể chuyện ngày xưa cho nghe."
+    },
+    {
+      "speaker": "tinh",
+      "speakerName": "Tính",
+      "text": "Dạ được. Tụi cháu lùa gà vào chuồng trước, chuyện cũ mình nói sau cũng được bà."
+    }
+  ],
+  "afterGameDialogues": [
+    {
+      "speaker": "ba_ngan",
+      "speakerName": "Bà Ngần",
+      "text": "May có hai cháu, chứ một mình bà chạy theo tụi nó chắc tới tối. Vào hiên ngồi đi, giờ bà kể cho nghe."
+    },
+    {
+      "speaker": "ba_ngan",
+      "speakerName": "Bà Ngần",
+      "text": "Hồi bé bà từng bế cháu suốt, Tính à. Người ta gọi bà là vú nuôi của cháu, vì mẹ cháu bận việc làng, còn bà thì ở gần nhà."
     },
     {
       "speaker": "lan_anh",
@@ -48,15 +75,6 @@
       "speaker": "ba_ngan",
       "speakerName": "Bà Ngần",
       "text": "Ký ức của người lớn đôi khi bị giận hờn che mất. Cháu cứ đi hỏi thêm, đừng vội tin một lời kể duy nhất, kể cả lời bà."
-    },{
-      "speaker": "ba_ngan",
-      "speakerName": "Bà Ngần",
-      "text": "trước khi đi chúng cháu giúp bà lùa mấy con gà vô chuồn với ."
-    },
-     {
-      "speaker": "tinh",
-      "speakerName": "Tính",
-      "text": "Cái này thì ko thành vấn đề thưa bà, yes madam"
     }
   ]
 }

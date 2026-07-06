@@ -34,6 +34,13 @@ const DEBUG_GRID = false // bật/tắt lưới toạ độ y để canh chỉnh
 
 // Các NPC chỉ có state 'walk_right' (không có walk_down/walk_left...) nên
 // không đủ animation để đi vào sạp trò chuyện -> loại khỏi danh sách được chọn làm khách
+const SOUND_SOURCES = {
+  background: '/sound/nhac_nen.mp3',
+  prize: '/sound/prize.wav',
+}
+const BACKGROUND_VOLUME = 0.08
+const PRIZE_VOLUME = 0.14
+
 const CUSTOMER_EXCLUDED_IDS = new Set([
   'ba_ban_da',
   'ba_ban_mit',
@@ -53,6 +60,7 @@ export default function GameCanvas() {
   const lastTsRef = useRef(0)
   const spawnTimerRef = useRef(0)
   const pickTimerRef = useRef(0)
+  const audioRef = useRef(null)
   const [activeCustomer, setActiveCustomer] = useState(null) // {uid, name, fruitId, tree}
   // Khác activeCustomer (điều khiển hiện/ẩn DialogBox), weighingOrder chỉ khác null
   // khi khách đã ĐỒNG Ý mua ở DialogBox và đang chờ người chơi cân hàng -> điều
@@ -69,6 +77,55 @@ export default function GameCanvas() {
     }
     return img
   }, [])
+
+  // ----- Audio -----
+  const ensureAudio = useCallback(() => {
+    if (audioRef.current) return audioRef.current
+
+    const background = new Audio(SOUND_SOURCES.background)
+    background.loop = true
+    background.volume = BACKGROUND_VOLUME
+    background.preload = 'auto'
+
+    const prize = new Audio(SOUND_SOURCES.prize)
+    prize.volume = PRIZE_VOLUME
+    prize.preload = 'auto'
+
+    audioRef.current = { background, prize }
+    return audioRef.current
+  }, [])
+
+  const playBackgroundMusic = useCallback(() => {
+    const { background } = ensureAudio()
+    if (!background.paused) return
+    background.volume = BACKGROUND_VOLUME
+    background.play().catch(() => {})
+  }, [ensureAudio])
+
+  const playPrizeSound = useCallback(() => {
+    const { prize } = ensureAudio()
+    const sound = prize.cloneNode()
+    sound.volume = PRIZE_VOLUME
+    sound.currentTime = 0
+    sound.play().catch(() => {})
+  }, [ensureAudio])
+
+  useEffect(() => {
+    const unlockAudio = () => playBackgroundMusic()
+
+    playBackgroundMusic()
+    window.addEventListener('pointerdown', unlockAudio)
+    window.addEventListener('keydown', unlockAudio)
+
+    return () => {
+      window.removeEventListener('pointerdown', unlockAudio)
+      window.removeEventListener('keydown', unlockAudio)
+      if (audioRef.current) {
+        audioRef.current.background.pause()
+        audioRef.current.background.currentTime = 0
+      }
+    }
+  }, [playBackgroundMusic])
 
   // ----- Khởi tạo ảnh nền, bàn, giỏ hoa quả -----
   useEffect(() => {
@@ -129,6 +186,7 @@ export default function GameCanvas() {
     chosen.mode = 'approach'
     chosen.dir = 'walk_down'
     chosen.speed = 55
+    playPrizeSound()
   }
 
   // ----- Vòng lặp game (update + draw) -----
@@ -336,7 +394,7 @@ export default function GameCanvas() {
 
     rafRef.current = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [getImg, activeCustomer])
+  }, [getImg, activeCustomer, playPrizeSound])
 
   // ----- NPC rời sạp + reset activeCustomer + áp cooldown, dùng chung cho cả
   // trường hợp "khách từ chối ngay ở DialogBox" lẫn "cân xong (đúng hoặc sai)" -----

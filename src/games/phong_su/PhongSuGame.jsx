@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import PhongSuApp from '../../phong_su/src/App.jsx'
 import '../../phong_su/src/index.css'
 import GameTutorial from '../../components/GameTutorial.jsx'
 import './PhongSuGame.css'
+
+const BACKGROUND_MUSIC_SRC = '/songs/beodatmaytroi/beo-dai-may-troi-beat.mp3'
+const BACKGROUND_MUSIC_VOLUME = 0.08
 
 const CONTROLS = [
   { key: 'Nhấp chuột', label: 'Chọn nhân vật trong làng để bắt đầu phỏng vấn' },
@@ -20,6 +23,55 @@ const TIPS = [
 
 export default function PhongSuGame({ npcId, onExit, onComplete }) {
   const [started, setStarted] = useState(false)
+  const musicRef = useRef(null)
+
+  const ensureMusic = useCallback(() => {
+    if (musicRef.current) return musicRef.current
+
+    const music = new Audio(BACKGROUND_MUSIC_SRC)
+    music.loop = true
+    music.volume = BACKGROUND_MUSIC_VOLUME
+    music.preload = 'auto'
+
+    musicRef.current = music
+    return music
+  }, [])
+
+  const playBackgroundMusic = useCallback(() => {
+    const music = ensureMusic()
+    if (!music.paused) return
+    music.volume = BACKGROUND_MUSIC_VOLUME
+    music.play().catch(() => {})
+  }, [ensureMusic])
+
+  useEffect(() => {
+    if (!started) return undefined
+
+    const unlockAudio = () => playBackgroundMusic()
+
+    playBackgroundMusic()
+    window.addEventListener('pointerdown', unlockAudio)
+    window.addEventListener('keydown', unlockAudio)
+
+    return () => {
+      window.removeEventListener('pointerdown', unlockAudio)
+      window.removeEventListener('keydown', unlockAudio)
+    }
+  }, [playBackgroundMusic, started])
+
+  useEffect(() => {
+    return () => {
+      if (musicRef.current) {
+        musicRef.current.pause()
+        musicRef.current.currentTime = 0
+      }
+    }
+  }, [])
+
+  function handleStart() {
+    setStarted(true)
+    playBackgroundMusic()
+  }
 
   if (!started) {
     return (
@@ -31,7 +83,7 @@ export default function PhongSuGame({ npcId, onExit, onComplete }) {
         tips={TIPS}
         accent="#a8433a"
         onExit={onExit}
-        onStart={() => setStarted(true)}
+        onStart={handleStart}
       />
     )
   }

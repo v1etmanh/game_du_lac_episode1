@@ -23,7 +23,7 @@ const INTERVIEW_BY_LOCATION = {
 
 const MINIGAME_LOCATIONS = new Set(['vuon_cay', 'cho', 'ruong', 'nha_ba_tu', 'nha_cu', 'den_lang','nha_ba_ngan'])
 const DIALOG_ONLY_LOCATIONS = new Set(['cong_lang', 'nha_minh'])
-const POST_GAME_DIALOG_LOCATIONS = new Set(['nha_cu', 'den_lang'])
+const POST_GAME_DIALOG_LOCATIONS = new Set(['nha_cu', 'den_lang', 'nha_ba_ngan'])
 
 function getUnlocksAfter(locationId, completed) {
   switch (locationId) {
@@ -32,13 +32,15 @@ function getUnlocksAfter(locationId, completed) {
     case 'vuon_cay':
       return ['cho']
     case 'cho':
-      return ['nha_ba_ngan', 'nha_ba_tu']
+      return ['nha_ba_tu']
     case 'nha_ba_tu':
-      return completed.has('nha_hung') ? ['ruong', 'nha_minh', 'nha_cu'] : ['ruong', 'nha_minh']
+      return ['nha_minh', 'ruong']
     case 'nha_minh':
       return ['nha_hung']
     case 'nha_hung':
-      return completed.has('nha_ba_tu') ? ['nha_cu'] : ['nha_ba_tu']
+      return ['nha_ba_ngan']
+    case 'nha_ba_ngan':
+      return ['nha_cu']
     case 'nha_cu':
       return ['den_lang']
     default:
