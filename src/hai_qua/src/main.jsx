@@ -21,6 +21,8 @@ const POWER_COOLDOWN_MS = 7000;
 const MAGNET_DURATION = 5;
 const TIME_STOP_DURATION = 4;
 const MAGNET_RADIUS = 180;
+const MAGNET_BASKET_SKIP_INTERVAL = 3;
+const MAGNET_TREE_REFILL_DELAY = 16;
 
 const POWER_TYPES = [
   { id: 'magnet', label: 'Nam cham', shortLabel: 'NC' },
@@ -172,6 +174,7 @@ function makeInitialState() {
     collectEffects: [],
     treePulses: TREE_LAYOUT.map(() => 0),
     emptyTreeTimers: TREE_LAYOUT.map(() => 0),
+    magnetBasketCounter: 0,
     rowRain: {
       rowIndex: 0,
       status: 'cooldown',
@@ -287,7 +290,8 @@ function spawnHangingFruit(state, treeIndex, config, quick = false) {
 
 function triggerDrop(state) {
   const config = PHASE_CONFIG[state.currentPhase];
-  const activeTrees = shuffle(TREE_LAYOUT.map((_, index) => index)).slice(0, config.trees);
+  const activeTrees = shuffle(TREE_LAYOUT.map((_, index) => index).filter((index) => canTreeSpawnFruit(state, index)))
+    .slice(0, config.trees);
 
   for (const treeIndex of activeTrees) {
     for (let fruit = 0; fruit < config.fruitsPerTree; fruit += 1) {
@@ -553,6 +557,7 @@ function triggerRowRain(state, rowIndex) {
   const treeIndexes = TREE_ROWS[rowIndex];
 
   for (const treeIndex of treeIndexes) {
+    if (!canTreeSpawnFruit(state, treeIndex)) continue;
     state.treePulses[treeIndex] = 0.55;
     for (const anchorIndex of FRUIT_ANCHORS.keys()) {
       makeRainFruitDrop(state, treeIndex, anchorIndex, randomBetween(0, 0.6));
@@ -574,6 +579,7 @@ function triggerPowerFruitStorm(state) {
 
   for (const rowIndex of selectedRows) {
     for (const treeIndex of TREE_ROWS[rowIndex]) {
+      if (!canTreeSpawnFruit(state, treeIndex)) continue;
       state.treePulses[treeIndex] = 0.8;
       for (const anchorIndex of shuffle([...FRUIT_ANCHORS.keys()]).slice(0, 3)) {
         makeRainFruitDrop(state, treeIndex, anchorIndex, randomBetween(0, 0.7));
@@ -768,11 +774,13 @@ function shakeNearestTree(state) {
 }
 
 function dropAllFruitFromTree(state, treeIndex) {
+  if (!canTreeSpawnFruit(state, treeIndex)) return;
+
   const config = PHASE_CONFIG[state.currentPhase];
   const tree = TREE_LAYOUT[treeIndex];
 
   state.treePulses[treeIndex] = 0.72;
-  state.emptyTreeTimers[treeIndex] = 3.2;
+  state.emptyTreeTimers[treeIndex] = MAGNET_TREE_REFILL_DELAY;
   state.hangingFruits = state.hangingFruits.filter((fruit) => fruit.treeIndex !== treeIndex);
 
   for (const anchor of FRUIT_ANCHORS) {
@@ -785,6 +793,10 @@ function dropAllFruitFromTree(state, treeIndex) {
       tree.y + anchor[1] * tree.scale + randomBetween(-4, 4),
     );
   }
+}
+
+function canTreeSpawnFruit(state, treeIndex) {
+  return state.emptyTreeTimers[treeIndex] <= 0;
 }
 
 function nearestTree(lanAnh) {
@@ -828,6 +840,7 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
     }
 
     if (isFruitTouchingPlayer(state, fruit)) {
+      const magnetHarvest = fruit.magnetized;
       state.collected += 1;
       state.catchPulse = 0.38;
       state.collectEffects.push({
@@ -836,7 +849,10 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
         life: 0.72,
         maxLife: 0.72,
       });
-      onHarvest?.(fruitMeta[fruit.type]);
+      onHarvest?.(fruitMeta[fruit.type], {
+        addToBasket: !magnetHarvest || shouldAddMagnetFruitToBasket(state),
+        magnetHarvest,
+      });
       if (state.collected >= TARGET_FRUITS) {
         state.success = true;
       }
@@ -850,6 +866,11 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
   }
 
   state.fallingFruits = remaining;
+}
+
+function shouldAddMagnetFruitToBasket(state) {
+  state.magnetBasketCounter += 1;
+  return state.magnetBasketCounter % MAGNET_BASKET_SKIP_INTERVAL !== 0;
 }
 
 function releaseMagnetizedFruit(fruit) {
@@ -1368,9 +1389,13 @@ function App() {
     playSound('fruitCollision');
   }, [playSound]);
 
-  const handleHarvest = useCallback((fruit) => {
+  const handleHarvest = useCallback((fruit, options = {}) => {
     playFruitCollisionSound();
     setLastFruit(fruit);
+    if (options.addToBasket === false) {
+      return;
+    }
+
     setBasketGrid((grid) => {
       const newItem = {
         id: `${fruit.id}-${Date.now()}-${Math.random()}`,
