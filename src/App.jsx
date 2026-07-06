@@ -11,6 +11,7 @@ import BanHangGame from './games/ban_hang/BanHangGame.jsx'
 import DanBauGame from './games/dan_bau/DanBauGame.jsx'
 import NhaCuQuest from './games/nha_cu/NhaCuQuest.jsx'
 import PhongSuGame from './games/phong_su/PhongSuGame.jsx'
+import LuaGaGame from './games/lua_ga/LuaGaGame.jsx'
 import { LOCATIONS } from './data/locations.js'
 import './App.css'
 
@@ -20,8 +21,8 @@ const INTERVIEW_BY_LOCATION = {
   nha_ba_tu: 'ba_tu',
 }
 
-const MINIGAME_LOCATIONS = new Set(['vuon_cay', 'cho', 'ruong', 'nha_ba_tu', 'nha_cu', 'den_lang'])
-const DIALOG_ONLY_LOCATIONS = new Set(['cong_lang', 'nha_ba_ngan', 'nha_minh'])
+const MINIGAME_LOCATIONS = new Set(['vuon_cay', 'cho', 'ruong', 'nha_ba_tu', 'nha_cu', 'den_lang','nha_ba_ngan'])
+const DIALOG_ONLY_LOCATIONS = new Set(['cong_lang', 'nha_minh'])
 const POST_GAME_DIALOG_LOCATIONS = new Set(['nha_cu', 'den_lang'])
 
 function getUnlocksAfter(locationId, completed) {
@@ -190,6 +191,9 @@ export default function App() {
       )}
       {screen === 'minigame' && activeLocation?.id === 'nha_cu' && (
         <NhaCuQuest onExit={handleMinigameExit} />
+      )}
+        {screen === 'minigame' && activeLocation?.id === 'nha_ba_ngan' && (
+        <LuaGaGame onExit={handleMinigameExit} />
       )}
     </div>
   )
