@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import SimulationCanvas from '../../lua_ga/src/components/SimulationCanvas.jsx'
 import CompletionModal from '../../lua_ga/src/components/CompletionModal.jsx'
 import { DEFAULT_SETTINGS } from '../../lua_ga/src/config/defaultSettings.js'
-import './LuaGaGame.css'
+import './luaGaGame.css'
 
 export default function LuaGaGame({ onExit }) {
   const [snapshot, setSnapshot] = useState(null)
