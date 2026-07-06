@@ -124,6 +124,8 @@ export default function App({ initialNpcId = null, onExit, onComplete }) {
   // thêm nguồn đoạn trích thật ngoài `notebook.sections` (xem mục 4 trong
   // NEWSPAPER_FEATURE_IMPLEMENTATION.md).
   const [interviewMessages, setInterviewMessages] = useState([])
+  const [interviewCaseFile, setInterviewCaseFile] = useState(null)
+  const [interviewSummary, setInterviewSummary] = useState(null)
 
   const handleSelectNPC = (npc) => {
     setCurrentNPC(npc)
@@ -139,9 +141,11 @@ export default function App({ initialNpcId = null, onExit, onComplete }) {
     setScene('village')
   }
 
-  const handleComplete = (npc, messages) => {
+  const handleComplete = (npc, messages, caseFile, summary) => {
     setCurrentNPC(npc)
     setInterviewMessages(messages || [])
+    setInterviewCaseFile(caseFile || null)
+    setInterviewSummary(summary || null)
     setScene('complete')
   }
 
@@ -190,6 +194,8 @@ export default function App({ initialNpcId = null, onExit, onComplete }) {
           key={`np-${currentNPC.id}`}
           npcData={currentNPC}
           messages={interviewMessages}
+          caseFile={interviewCaseFile}
+          interviewSummary={interviewSummary}
           onBack={() => setScene('complete')}
           onFinish={handleFinishNewspaper}
         />

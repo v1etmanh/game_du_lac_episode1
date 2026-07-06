@@ -4,6 +4,7 @@ import ImageSlot from '../components/newspaper/ImageSlot.jsx'
 import { buildDefaultDraft, loadDraft, saveDraft } from '../data/newspaperDefaults.js'
 import { NEWSPAPER_LAYOUTS } from '../data/newspaperLayouts.js'
 import { getAllBackgrounds } from '../data/npcAssets.js'
+import { evaluateArticle } from '../engine/articleEvaluator.js'
 
 function escapeHtml(str) {
   const div = document.createElement('div')
@@ -68,12 +69,13 @@ async function nodeToPng(node, { pixelRatio = 2 } = {}) {
  * milestone có sẵn của NPC, hoặc dán URL ảnh ngoài. Xuất file PNG bằng
  * canvas/SVG nội bộ, lưu nháp vào localStorage theo từng NPC.
  */
-export default function NewspaperScene({ npcData, messages, onBack, onFinish }) {
+export default function NewspaperScene({ npcData, messages, caseFile, interviewSummary, onBack, onFinish: finishNewspaper }) {
   const [draft, setDraft] = useState(() => loadDraft(npcData.id) || buildDefaultDraft(npcData))
   const [trayExtra, setTrayExtra] = useState([])
   const [pendingPick, setPendingPick] = useState(null)
   const [urlInput, setUrlInput] = useState('')
   const [toast, setToast] = useState('')
+  const [evaluation, setEvaluation] = useState(null)
 
   const paperRef = useRef(null)
   const textRefs = useRef({})
@@ -102,8 +104,18 @@ export default function NewspaperScene({ npcData, messages, onBack, onFinish }) 
     const fromChat = (messages || [])
       .filter(m => m.sender === 'npc')
       .map((m, i) => ({ id: `msg-${m.id ?? i}`, label: `💬 Lời kể #${i + 1}`, text: m.text }))
-    return [...fromSections, ...fromChat]
-  }, [npcData, messages])
+    const fromEvidence = (caseFile?.evidence || []).map((item, i) => ({
+      id: `ev-${item.id ?? i}`,
+      label: `Bang chung: ${item.source || item.kind || 'nguon'}`,
+      text: item.text,
+    }))
+    const fromQuotes = (caseFile?.quotes || []).map((item, i) => ({
+      id: `quote-${item.id ?? i}`,
+      label: 'Trich dan da xin phep',
+      text: `"${item.text}"`,
+    }))
+    return [...fromEvidence, ...fromQuotes, ...fromSections, ...fromChat]
+  }, [npcData, messages, caseFile])
 
   const updateField = (key, value) => setDraft(d => ({ ...d, [key]: value }))
   const setLayout = (id) => updateField('layout', id)
@@ -185,6 +197,26 @@ export default function NewspaperScene({ npcData, messages, onBack, onFinish }) 
     }
   }
 
+  const collectCurrentDraft = () => {
+    const texts = { ...draft.texts }
+    Object.entries(textRefs.current).forEach(([id, node]) => { if (node) texts[id] = node.innerHTML })
+    return { ...draft, texts }
+  }
+
+  const handleEvaluateArticle = () => {
+    const result = evaluateArticle(collectCurrentDraft(), caseFile || { evidence: [], contradictions: [], quotes: [] })
+    setEvaluation(result)
+    flashToast(`Diem bai bao: ${result.score}/100 - ${result.label}`)
+  }
+
+  const handleFinishWithEvaluation = () => {
+    const result = evaluateArticle(collectCurrentDraft(), caseFile || { evidence: [], contradictions: [], quotes: [] })
+    setEvaluation(result)
+    finishNewspaper?.(result)
+  }
+
+  const onFinish = handleFinishWithEvaluation
+
   return (
     <div className="np-editor">
       <div className="np-topbar">
@@ -201,6 +233,26 @@ export default function NewspaperScene({ npcData, messages, onBack, onFinish }) 
 
       <div className="np-workspace">
         <aside className="np-sidebar">
+          <section className="np-panel article-score-panel">
+            <h4>Dao Duc Bai Bao</h4>
+            <p className="np-hint">
+              Ho so phong van: {interviewSummary?.overall ?? 0}/100, {caseFile?.evidence?.length ?? 0} bang chung.
+            </p>
+            <button className="np-btn np-btn-primary" onClick={handleEvaluateArticle}>Cham thu bai bao</button>
+            {evaluation && (
+              <div className="article-score-result">
+                <div className="article-score-number">{evaluation.score}/100</div>
+                <strong>{evaluation.label}</strong>
+                <span>{evaluation.evidenceRefs} bang chung duoc nhac toi</span>
+                <ul>
+                  {evaluation.findings.map((item, index) => (
+                    <li key={`${item.level}-${index}`} className={`article-finding ${item.level}`}>{item.text}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </section>
+
           <section className="np-panel">
             <h4>📐 Bố Cục</h4>
             <p className="np-hint">Đổi bố cục không làm mất nội dung đã chọn/nhập.</p>

@@ -1,78 +1,133 @@
 import { useState, useCallback } from 'react'
-import { getResponse } from '../utils/aiSimulator.js'
-
-/**
- * Gọi backend RAG (embedding local + Gemini generation).
- * Nếu backend không phản hồi được (chưa bật server, mất mạng...),
- * ném lỗi để nơi gọi tự rơi về aiSimulator.js làm phương án dự phòng.
- */
-async function fetchRagResponse(npcId, userText) {
-  const res = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ npcId, message: userText })
-  })
-  if (!res.ok) throw new Error(`RAG API lỗi: ${res.status}`)
-  const data = await res.json()
-  return { text: data.text, unlock: data.unlock || [] }
-}
+import {
+  createInitialCaseFile,
+  createInitialInterviewState,
+  runInterviewTurn,
+  summarizeInterview,
+} from '../engine/investigationEngine.js'
 
 let msgId = 100
 
-/**
- * Manages conversation state for a given NPC.
- * @param {Object} npcData
- * @param {Function} unlockSections  - callback from useNotebook
- */
+async function requestInterviewTurn(npcId, message, options, interviewState, caseFile) {
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(() => controller.abort(), 18000)
+  let res
+
+  try {
+    res = await fetch('/api/interview-turn', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        npcId,
+        message,
+        options,
+        interviewState,
+        caseFile,
+      }),
+    })
+  } finally {
+    window.clearTimeout(timeoutId)
+  }
+
+  if (!res.ok) {
+    throw new Error(`Interview server returned ${res.status}`)
+  }
+
+  return res.json()
+}
+
 export function useConversation(npcData, unlockSections) {
+  const [interviewState, setInterviewState] = useState(() => createInitialInterviewState(npcData))
+  const [caseFile, setCaseFile] = useState(() => createInitialCaseFile(npcData))
   const [messages, setMessages] = useState([
     {
       id: msgId++,
       sender: 'npc',
       text: npcData.greeting,
-      timestamp: Date.now()
-    }
+      timestamp: Date.now(),
+      meta: { tags: ['mo dau'] },
+    },
   ])
   const [isTyping, setIsTyping] = useState(false)
 
-  const sendMessage = useCallback(async (userText) => {
+  const sendMessage = useCallback(async (userText, options = {}) => {
     const trimmed = userText.trim()
     if (!trimmed || isTyping) return
 
+    const localTurn = runInterviewTurn(npcData, interviewState, caseFile, trimmed, options)
     const userMsg = {
       id: msgId++,
       sender: 'player',
       text: trimmed,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      meta: {
+        questionType: localTurn.response.meta.questionType,
+        score: localTurn.response.meta.score,
+      },
     }
+
     setMessages(prev => [...prev, userMsg])
     setIsTyping(true)
 
-    // Simulate NPC thinking
     const delay = 700 + Math.random() * 700
     await new Promise(resolve => setTimeout(resolve, delay))
 
-    let response
+    let turn = localTurn
     try {
-      response = await fetchRagResponse(npcData.id, trimmed)
+      const serverTurn = await requestInterviewTurn(
+        npcData.id,
+        trimmed,
+        options,
+        interviewState,
+        caseFile,
+      )
+
+      if (serverTurn?.response && serverTurn?.nextState && serverTurn?.nextCaseFile) {
+        turn = {
+          response: serverTurn.response,
+          nextState: serverTurn.nextState,
+          nextCaseFile: serverTurn.nextCaseFile,
+        }
+      }
     } catch (err) {
-      console.warn('[Chat] Backend RAG lỗi, dùng aiSimulator dự phòng:', err.message)
-      response = getResponse(npcData, trimmed)
+      console.warn('[Interview] Server khong san sang, dung engine local:', err.message)
+      turn = {
+        ...localTurn,
+        response: {
+          ...localTurn.response,
+          meta: {
+            ...localTurn.response.meta,
+            tags: [...(localTurn.response.meta?.tags || []), 'local-fallback'],
+          },
+        },
+      }
     }
 
     const npcMsg = {
       id: msgId++,
       sender: 'npc',
-      text: response.text,
-      timestamp: Date.now()
+      text: turn.response.text,
+      timestamp: Date.now(),
+      meta: turn.response.meta,
     }
+
     setMessages(prev => [...prev, npcMsg])
+    setInterviewState(turn.nextState)
+    setCaseFile(turn.nextCaseFile)
     setIsTyping(false)
 
-    if (response.unlock?.length > 0) {
-      unlockSections(response.unlock)
+    if (turn.response.unlock?.length > 0) {
+      unlockSections(turn.response.unlock)
     }
-  }, [npcData, unlockSections, isTyping])
+  }, [npcData, unlockSections, isTyping, interviewState, caseFile])
 
-  return { messages, sendMessage, isTyping }
+  return {
+    messages,
+    sendMessage,
+    isTyping,
+    interviewState,
+    caseFile,
+    interviewSummary: summarizeInterview(interviewState, caseFile),
+  }
 }

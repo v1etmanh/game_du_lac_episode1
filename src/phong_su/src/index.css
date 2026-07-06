@@ -632,6 +632,253 @@ input, textarea {
     "footer footer footer";
 }
 
+.interview-dashboard,
+.evidence-board {
+  background: rgba(253, 243, 227, 0.92);
+  border: 1px solid rgba(139, 94, 60, 0.28);
+  border-radius: 12px;
+  padding: 10px;
+  color: var(--text);
+  box-shadow: 0 4px 18px rgba(42, 24, 10, 0.18);
+}
+
+.interview-dashboard {
+  margin: 10px 0;
+}
+
+.interview-dashboard-head,
+.evidence-board-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--wood-dark);
+  margin-bottom: 8px;
+}
+
+.interview-dashboard-head strong,
+.evidence-board-head strong {
+  color: var(--red);
+}
+
+.interview-metric-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+}
+
+.interview-metric-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-mid);
+}
+
+.interview-metric-track {
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(92, 61, 30, 0.14);
+  margin-top: 3px;
+}
+
+.interview-metric-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+.interview-dashboard-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.interview-dashboard-foot span,
+.ready-chip {
+  border-radius: 999px;
+  padding: 3px 7px;
+  background: rgba(139, 94, 60, 0.12);
+  color: var(--wood-dark);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.ready-chip {
+  display: inline-flex;
+  margin-top: 8px;
+}
+
+.ready-chip.ready {
+  background: rgba(39, 174, 96, 0.16);
+  color: #176d3d;
+}
+
+.evidence-board {
+  margin-top: 10px;
+  max-height: 245px;
+  overflow: auto;
+}
+
+.evidence-list {
+  display: grid;
+  gap: 7px;
+}
+
+.evidence-empty {
+  font-size: 0.78rem;
+  color: var(--text-mid);
+  margin: 0;
+}
+
+.evidence-item {
+  border-radius: 10px;
+  border: 1px solid rgba(139, 94, 60, 0.22);
+  background: #fff8ee;
+  padding: 8px;
+}
+
+.evidence-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--wood);
+}
+
+.evidence-item p {
+  margin: 5px 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.evidence-item small {
+  color: var(--text-mid);
+  font-size: 0.66rem;
+}
+
+.status-contradiction {
+  border-color: rgba(217, 93, 79, 0.45);
+}
+
+.status-quotable {
+  border-color: rgba(39, 174, 96, 0.42);
+}
+
+.evidence-special {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.evidence-alert,
+.evidence-quote {
+  border-radius: 9px;
+  padding: 7px 8px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.evidence-alert {
+  background: rgba(217, 93, 79, 0.12);
+  color: #793027;
+}
+
+.evidence-quote {
+  background: rgba(39, 174, 96, 0.12);
+  color: #176d3d;
+}
+
+.question-type-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 12px 0;
+  background: linear-gradient(to bottom, #fdf3e3, #fae8cc);
+}
+
+.question-type-btn {
+  flex: 0 0 auto;
+  border: 1px solid rgba(139, 94, 60, 0.34);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: rgba(255, 248, 238, 0.72);
+  color: var(--wood-dark);
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.question-type-btn.active {
+  background: linear-gradient(135deg, var(--wood), var(--wood-dark));
+  color: #fff8ee;
+}
+
+.article-score-panel {
+  border-color: rgba(39, 174, 96, 0.35);
+}
+
+.article-score-result {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff8ee;
+  color: var(--text);
+  border: 1px solid rgba(139, 94, 60, 0.2);
+}
+
+.article-score-number {
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--red);
+  line-height: 1;
+}
+
+.article-score-result span {
+  font-size: 0.76rem;
+  color: var(--text-mid);
+  font-weight: 700;
+}
+
+.article-score-result ul {
+  display: grid;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-finding {
+  border-radius: 8px;
+  padding: 7px 8px;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  background: rgba(139, 94, 60, 0.1);
+}
+
+.article-finding.risk {
+  background: rgba(217, 93, 79, 0.13);
+  color: #793027;
+}
+
+.article-finding.warn {
+  background: rgba(212, 160, 84, 0.16);
+  color: #6b491e;
+}
+
+.article-finding.good {
+  background: rgba(39, 174, 96, 0.13);
+  color: #176d3d;
+}
+
 /* Layout 2: Magazine - Tạp Chí
    Ảnh chính full-width nổi bật ở trên, 2 cột chữ ở dưới, hộp trích + thumbs
 */

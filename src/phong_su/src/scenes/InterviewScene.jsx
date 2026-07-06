@@ -3,8 +3,11 @@ import NPCPortrait from '../components/NPCPortrait.jsx'
 import MessageList from '../components/MessageList.jsx'
 import TextInput from '../components/TextInput.jsx'
 import Notebook from '../components/Notebook.jsx'
+import InterviewDashboard from '../components/InterviewDashboard.jsx'
+import EvidenceBoard from '../components/EvidenceBoard.jsx'
 import { useNotebook } from '../hooks/useNotebook.js'
 import { useConversation } from '../hooks/useConversation.js'
+import { getQuestionTypes } from '../engine/investigationEngine.js'
 
 function NotebookBadge({ unlockedCount, totalSections, recentlyUnlocked, npcData, onChooseQuestion }) {
   // Câu hỏi gợi ý lấy trực tiếp từ `npcData.responses[sectionId].sampleQuestion`
@@ -94,11 +97,13 @@ export default function InterviewScene({ npcData, onBack, onComplete }) {
     totalSections,
   } = useNotebook(npcData)
 
-  const { messages, sendMessage, isTyping } = useConversation(npcData, (ids) => {
+  const { messages, sendMessage, isTyping, caseFile, interviewSummary } = useConversation(npcData, (ids) => {
     unlockSections(ids)
   })
 
   const [prefill, setPrefill] = useState(undefined)
+  const [selectedQuestionType, setSelectedQuestionType] = useState('open')
+  const questionTypes = getQuestionTypes()
 
   const handleChooseQuestion = (q) => {
     setPrefill(q)
@@ -109,11 +114,16 @@ export default function InterviewScene({ npcData, onBack, onComplete }) {
 
   // Trigger completion callback once
   const [completionFired, setCompletionFired] = useState(false)
-  if (isComplete && !completionFired) {
+  const readyToWrite = interviewSummary.readyToWrite || (isComplete && interviewSummary.evidenceCount >= 3)
+  if (readyToWrite && !completionFired) {
     setCompletionFired(true)
     // Truyền kèm `messages` (lịch sử chat thật) để màn "Biên Tập Báo" có
     // thêm nguồn đoạn trích ngoài `notebook.sections` — xem NewspaperScene.jsx.
-    setTimeout(() => onComplete(npcData, messages), 1200)
+    setTimeout(() => onComplete(npcData, messages, caseFile, interviewSummary), 1200)
+  }
+
+  const sendWithQuestionType = (text) => {
+    sendMessage(text, { forcedType: selectedQuestionType })
   }
 
   return (
@@ -200,6 +210,8 @@ export default function InterviewScene({ npcData, onBack, onComplete }) {
             )}
           </div>
 
+          <InterviewDashboard summary={interviewSummary} />
+
           <Notebook
             npcData={npcData}
             unlockedSections={unlockedSections}
@@ -207,6 +219,8 @@ export default function InterviewScene({ npcData, onBack, onComplete }) {
             currentSectionId={currentSectionId}
             completionPct={completionPct}
           />
+
+          <EvidenceBoard caseFile={caseFile} />
         </div>
 
         {/* Cột phải: hội thoại — khung nhỏ, canh giữa, không chiếm hết vùng */}
@@ -221,7 +235,20 @@ export default function InterviewScene({ npcData, onBack, onComplete }) {
             </div>
 
             <div className="interview-input-wrap">
-              <TextInput onSend={sendMessage} disabled={isTyping} prefill={prefill} />
+              <div className="question-type-row">
+                {questionTypes.map(type => (
+                  <button
+                    key={type.id}
+                    type="button"
+                    className={`question-type-btn ${selectedQuestionType === type.id ? 'active' : ''}`}
+                    title={type.hint}
+                    onClick={() => setSelectedQuestionType(type.id)}
+                  >
+                    {type.label}
+                  </button>
+                ))}
+              </div>
+              <TextInput onSend={sendWithQuestionType} disabled={isTyping} prefill={prefill} />
             </div>
           </div>
         </div>

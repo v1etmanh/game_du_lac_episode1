@@ -31,6 +31,20 @@ const styles = {
     color: sender === 'player' ? 'rgba(255,248,238,0.7)' : 'var(--text-light)',
     marginBottom: '3px',
   }),
+  metaRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 5,
+    marginTop: 7,
+  },
+  metaChip: {
+    fontSize: '0.68rem',
+    fontWeight: 700,
+    borderRadius: 999,
+    padding: '2px 7px',
+    background: 'rgba(92,61,30,0.12)',
+    color: '#6f4424',
+  },
   typingDots: {
     alignSelf: 'flex-start',
     background: 'linear-gradient(135deg, #fff8ee, #fdf0dc)',
@@ -78,6 +92,19 @@ export default function MessageList({ messages, isTyping, npcName }) {
             </div>
             <div style={styles.bubble(msg.sender)}>
               {msg.text}
+              {msg.meta && (
+                <div style={styles.metaRow}>
+                  {msg.meta.questionType && (
+                    <span style={styles.metaChip}>{msg.meta.questionType}</span>
+                  )}
+                  {typeof msg.meta.score === 'number' && (
+                    <span style={styles.metaChip}>diem {msg.meta.score}</span>
+                  )}
+                  {(msg.meta.tags || []).map(tag => (
+                    <span key={tag} style={styles.metaChip}>{tag}</span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
