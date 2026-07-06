@@ -50,13 +50,14 @@ export class Rope {
     const kiteBehind = Math.max(0, -horizontalPosition) * engagement;
     const lengthRatio = this.getLengthRatio();
     const shortRopeDrag = Math.pow(1 - lengthRatio, 2) * 0.12;
+    const shortRopeJumpBoost = Math.pow(1 - lengthRatio, 1.15) * this.tension * engagement * 150;
 
     return {
       horizontalAcceleration: kiteAhead * 1180 - kiteBehind * 760,
       speedLimitBonus: kiteAhead * 190,
       runSpeedMultiplier: 0.2 + Math.pow(lengthRatio, 1.35) * 1.12,
       speedLimitBase: 135 + Math.pow(lengthRatio, 1.22) * 485,
-      jumpBoost: -lowKite * engagement * 90,
+      jumpBoost: shortRopeJumpBoost - lowKite * engagement * 70,
       gravityRelief: highKite * engagement * 90,
       drag: kiteBehind * 0.07 + lowKite * engagement * 0.035 + shortRopeDrag,
     };

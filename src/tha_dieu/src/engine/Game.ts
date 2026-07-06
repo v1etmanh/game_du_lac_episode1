@@ -201,12 +201,18 @@ export class Game {
   private handleCollisions(): void {
     const kiteBounds = this.kite.getBounds();
 
+    for (let pass = 0; pass < 2; pass += 1) {
+      for (const obstacle of this.obstacles) {
+        const bounds = obstacle.getBounds();
+
+        if (intersects(this.player.getBounds(), bounds)) {
+          this.player.resolveObstacleCollision(bounds);
+        }
+      }
+    }
+
     for (const obstacle of this.obstacles) {
       const bounds = obstacle.getBounds();
-
-      if (intersects(this.player.getBounds(), bounds)) {
-        this.player.bumpFromObstacle(bounds);
-      }
 
       if (intersects(kiteBounds, bounds) || pointInBounds(this.kite.position.x, this.kite.position.y, bounds)) {
         const pushDirection = this.kite.position.x < bounds.x + bounds.width * 0.5 ? -1 : 1;

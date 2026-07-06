@@ -14,6 +14,7 @@ const noKiteAssist: KiteAssist = {
 
 export class Player {
   readonly position = new Vector2(120, 0);
+  readonly previousPosition = new Vector2(120, 0);
   readonly velocity = new Vector2();
   readonly acceleration = new Vector2();
   readonly width = 34;
@@ -27,14 +28,15 @@ export class Player {
   // chướng ngại vật cao như cối xay gió và cây cao.
   jumpChargeLevel = 0;
   readonly baseJumpVelocity = 465;
-  readonly maxJumpChargeVelocity = 330;
+  readonly maxJumpChargeVelocity = 380;
   // Thêm một chút sức bật tức thời khi người chơi bấm nhảy ngay trong lúc vẫn
   // đang giữ chuột phải (thu dây) — cộng thêm vào lực tích lũy thông thường.
-  readonly comboHoldJumpBonus = 80;
+  readonly comboHoldJumpBonus = 130;
   lastJumpWasCharged = false;
 
   reset(groundY: number): void {
     this.position.set(120, groundY - this.height);
+    this.previousPosition.copy(this.position);
     this.velocity.set(0, 0);
     this.acceleration.set(0, 0);
     this.grounded = true;
@@ -52,6 +54,7 @@ export class Player {
     const windLiftActive = windLiftTimer > 0;
     this.stunTimer = Math.max(0, this.stunTimer - deltaSeconds);
     this.justJumped = false;
+    this.previousPosition.copy(this.position);
 
     // Tích lực nhảy cao: chỉ cần giữ chuột phải (thu dây diều) trong lúc đang ở
     // trên mặt đất — không bắt buộc phải đứng yên. Nhả chuột phải sẽ làm lực tụt
@@ -132,29 +135,97 @@ export class Player {
     this.position.x = Math.max(0, this.position.x);
   }
 
-  bumpFromObstacle(obstacleBounds: Bounds): void {
+  resolveObstacleCollision(obstacleBounds: Bounds): void {
     const bounds = this.getBounds();
-    const playerCenterX = bounds.x + bounds.width * 0.5;
-    const obstacleCenterX = obstacleBounds.x + obstacleBounds.width * 0.5;
-    const pushLeft = playerCenterX < obstacleCenterX;
-    const separationPadding = 1.5;
+    const previousBounds = this.getPreviousBounds();
+    const previousBottom = previousBounds.y + previousBounds.height;
+    const previousTop = previousBounds.y;
+    const obstacleBottom = obstacleBounds.y + obstacleBounds.height;
+    const skin = 1.5;
 
-    if (pushLeft) {
-      this.position.x = obstacleBounds.x - (bounds.x - this.position.x) - bounds.width - separationPadding;
-      this.velocity.x = Math.min(this.velocity.x, -90);
-    } else {
-      this.position.x = obstacleBounds.x + obstacleBounds.width - (bounds.x - this.position.x) + separationPadding;
-      this.velocity.x = Math.max(this.velocity.x, 90);
+    if (previousBottom <= obstacleBounds.y + skin && this.velocity.y >= 0) {
+      this.position.y = obstacleBounds.y - (bounds.y - this.position.y) - bounds.height - skin;
+      this.velocity.y = 0;
+      this.grounded = true;
+      return;
     }
 
+    if (previousTop >= obstacleBottom - skin && this.velocity.y < 0) {
+      this.position.y = obstacleBottom - (bounds.y - this.position.y) + skin;
+      this.velocity.y = Math.max(this.velocity.y, 70);
+      return;
+    }
+
+    if (previousBounds.x + previousBounds.width <= obstacleBounds.x + skin) {
+      this.pushLeftOfObstacle(bounds, obstacleBounds, skin);
+      return;
+    }
+
+    if (previousBounds.x >= obstacleBounds.x + obstacleBounds.width - skin) {
+      this.pushRightOfObstacle(bounds, obstacleBounds, skin);
+      return;
+    }
+
+    this.resolveEmbeddedObstacle(bounds, obstacleBounds, skin);
+  }
+
+  private resolveEmbeddedObstacle(bounds: Bounds, obstacleBounds: Bounds, skin: number): void {
+    const overlapLeft = bounds.x + bounds.width - obstacleBounds.x;
+    const overlapRight = obstacleBounds.x + obstacleBounds.width - bounds.x;
+    const overlapTop = bounds.y + bounds.height - obstacleBounds.y;
+    const overlapBottom = obstacleBounds.y + obstacleBounds.height - bounds.y;
+
+    const smallestOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+
+    if (smallestOverlap === overlapTop && this.velocity.y >= 0) {
+      this.position.y = obstacleBounds.y - (bounds.y - this.position.y) - bounds.height - skin;
+      this.velocity.y = 0;
+      this.grounded = true;
+      return;
+    }
+
+    if (smallestOverlap === overlapBottom && this.velocity.y <= 0) {
+      this.position.y = obstacleBounds.y + obstacleBounds.height - (bounds.y - this.position.y) + skin;
+      this.velocity.y = Math.max(this.velocity.y, 70);
+      return;
+    }
+
+    const playerCenterX = bounds.x + bounds.width * 0.5;
+    const obstacleCenterX = obstacleBounds.x + obstacleBounds.width * 0.5;
+    if (playerCenterX < obstacleCenterX) {
+      this.pushLeftOfObstacle(bounds, obstacleBounds, skin);
+    } else {
+      this.pushRightOfObstacle(bounds, obstacleBounds, skin);
+    }
+  }
+
+  private pushLeftOfObstacle(bounds: Bounds, obstacleBounds: Bounds, skin: number): void {
+    this.position.x = obstacleBounds.x - (bounds.x - this.position.x) - bounds.width - skin;
+    this.velocity.x = Math.min(this.velocity.x, -90);
     this.velocity.x *= 0.35;
-    this.stunTimer = 0.12;
+    this.stunTimer = 0.08;
+  }
+
+  private pushRightOfObstacle(bounds: Bounds, obstacleBounds: Bounds, skin: number): void {
+    this.position.x = obstacleBounds.x + obstacleBounds.width - (bounds.x - this.position.x) + skin;
+    this.velocity.x = Math.max(this.velocity.x, 90);
+    this.velocity.x *= 0.35;
+    this.stunTimer = 0.08;
   }
 
   getBounds(): Bounds {
     return {
       x: this.position.x + 6,
       y: this.position.y + 4,
+      width: this.width - 12,
+      height: this.height - 4,
+    };
+  }
+
+  getPreviousBounds(): Bounds {
+    return {
+      x: this.previousPosition.x + 6,
+      y: this.previousPosition.y + 4,
       width: this.width - 12,
       height: this.height - 4,
     };
