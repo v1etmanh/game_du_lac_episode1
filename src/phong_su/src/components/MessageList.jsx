@@ -98,7 +98,7 @@ export default function MessageList({ messages, isTyping, npcName }) {
                     <span style={styles.metaChip}>{msg.meta.questionType}</span>
                   )}
                   {typeof msg.meta.score === 'number' && (
-                    <span style={styles.metaChip}>diem {msg.meta.score}</span>
+                    <span style={styles.metaChip}>điểm {msg.meta.score}</span>
                   )}
                   {(msg.meta.tags || []).map(tag => (
                     <span key={tag} style={styles.metaChip}>{tag}</span>

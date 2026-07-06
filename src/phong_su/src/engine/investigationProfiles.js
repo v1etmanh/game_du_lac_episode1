@@ -1,12 +1,12 @@
 export const QUESTION_TYPES = [
-  { id: 'open', label: 'Cau hoi mo', hint: 'Mo chu de va de nhan vat tu ke.' },
-  { id: 'timeline', label: 'Moc thoi gian', hint: 'Lam ro truoc, sau, luc nao.' },
-  { id: 'emotion', label: 'Cam xuc', hint: 'Hoi ve cam giac va ky uc.' },
-  { id: 'object_detail', label: 'Chi tiet vat the', hint: 'Dao vao do vat, vi tri, dau hieu.' },
-  { id: 'compare', label: 'Doi chieu', hint: 'So voi loi ke/vat chung khac.' },
-  { id: 'cause', label: 'Nguyen nhan', hint: 'Hoi vi sao su viec xay ra.' },
-  { id: 'consequence', label: 'He qua', hint: 'Hoi sau do dieu gi thay doi.' },
-  { id: 'quote_confirm', label: 'Xac nhan trich dan', hint: 'Xin phep dung cau noi.' },
+  { id: 'open', label: 'Câu hỏi mở', hint: 'Mở chủ đề và để nhân vật tự kể.' },
+  { id: 'timeline', label: 'Mốc thời gian', hint: 'Làm rõ trước, sau, lúc nào.' },
+  { id: 'emotion', label: 'Cảm xúc', hint: 'Hỏi về cảm giác và ký ức.' },
+  { id: 'object_detail', label: 'Chi tiết vật thể', hint: 'Đào vào đồ vật, vị trí, dấu hiệu.' },
+  { id: 'compare', label: 'Đối chiếu', hint: 'So với lời kể/vật chứng khác.' },
+  { id: 'cause', label: 'Nguyên nhân', hint: 'Hỏi vì sao sự việc xảy ra.' },
+  { id: 'consequence', label: 'Hệ quả', hint: 'Hỏi sau đó điều gì thay đổi.' },
+  { id: 'quote_confirm', label: 'Xác nhận trích dẫn', hint: 'Xin phép dùng câu nói.' },
 ];
 
 const CASE_PROFILES = {

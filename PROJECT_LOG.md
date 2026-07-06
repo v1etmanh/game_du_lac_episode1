@@ -84,3 +84,31 @@ Nhật ký hành động tự động (theo quy ước 3 giai đoạn: Truy vấ
   - HUD (`ui/HUD.tsx`) hiển thị `snapshot.maxRopeLength` — do lấy trực tiếp từ `rope.maxLength` nên sẽ tự phản ánh đúng giới hạn động, không cần sửa gì thêm.
   - Hệ số đệm an toàn (130px) và tỉ lệ `0.58` đang giả định thân diều bán kính ~22 + đuôi diều dài ~70; nếu sau này đổi asset diều lớn/nhỏ hơn đáng kể, nên rà lại hằng số `kiteSafetyMargin` trong `Rope.updateMaxLengthForViewport`.
   - Chưa kiểm thử thủ công bằng cách chạy `npm run dev` và bấm phím S thực tế trên trình duyệt (chỉ mới xác nhận qua `tsc --noEmit`) — nên người dùng nên tự trải nghiệm lại minigame thả diều để xác nhận cảm giác chơi (max length mới có thể khiến dây thả không được dài như trước ở màn hình nhỏ).
+
+## [2026-07-06] - Thêm màn hướng dẫn (tutorial) trước 3 minigame: lua_ga, tha_dieu, hai_qua
+
+- Tác động:
+  - Tạo mới component dùng chung `src/components/GameTutorial.jsx` + `GameTutorial.css`: overlay full-screen hiển thị tên game, mục tiêu, bảng phím điều khiển, mẹo chơi và nút "Bắt đầu" / "Quay lại bản đồ".
+  - Sửa `src/games/lua_ga/LuaGaGame.jsx`: thêm state `started`, hiển thị `GameTutorial` trước khi render `SimulationCanvas`. Nội dung control lấy từ `src/lua_ga/README.md` (WASD/mũi tên, Shift sprint, Z thả thóc, X dash, C vỗ tay, F mở/đóng cổng).
+  - Sửa `src/games/hai_qua/HaiQuaGame.jsx`: thêm state `started`, hiển thị `GameTutorial` trước khi render `HaiQuaApp`. Nội dung control lấy từ `src/hai_qua/readme.md` (di chuyển, Shift sprint, Space nhảy, Q rung cây, chạm để bắt quả).
+  - Sửa `src/components/KiteFieldGame.jsx` (wrapper minigame Thả diều dùng cho địa điểm `ruong`): thêm state `started`, hiển thị `GameTutorial` trước khi render `KiteGame` (`src/tha_dieu/src/App.tsx`). Nội dung control lấy từ `src/tha_dieu/src/engine/Input.ts` (A/D hoặc mũi tên di chuyển, Space/chuột trái nhảy, Q/chuột phải giữ để thu dây, S thả dây, R chơi lại, Esc tạm dừng).
+  - Không đổi logic gameplay/App.jsx/luồng màn hình hiện có — chỉ chèn thêm 1 bước màn hình tutorial trước khi các component game gốc được mount.
+
+- Ghi chú cho tương lai:
+  - Nếu muốn thêm tutorial cho các minigame còn lại (ban_hang, dan_bau, oanquan, phong_su, nha_cu/giai_do), tái sử dụng `GameTutorial` component, chỉ cần soạn `title/objective/controls/tips` phù hợp rồi gate màn game gốc bằng state `started` giống pattern ở 3 file trên.
+  - `GameTutorial` nhận prop `accent` (mã màu hex) để đổi tông màu theo chủ đề từng game; hiện dùng: lua_ga #c8952e (vàng đất), hai_qua #7fae3f (xanh lá), tha_dieu #3f8fae (xanh da trời).
+  - Chưa test chạy dev server (vite) sau khi sửa — nên chạy `npm run dev` ở thư mục gốc `D:\dream_project\game` để kiểm tra 3 minigame trên trước khi build production.
+
+## [2026-07-06] - Sửa lỗi thiếu file GameTutorial.jsx/.css (import resolve failed)
+
+- Hành động: Phát hiện lỗi Vite "Failed to resolve import '../../components/GameTutorial.jsx'" do lần trước tạo 2 file `GameTutorial.jsx` và `GameTutorial.css` bằng nhầm tool (tool sandbox nội bộ) thay vì Desktop Commander, nên file không thực sự tồn tại trong `D:\dream_project\game\src\components`. Đã tạo lại đúng cả 2 file bằng `desktop-commander:write_file` (chia nhỏ theo từng đoạn ≤40 dòng).
+- Tác động: `src/components/GameTutorial.jsx` và `src/components/GameTutorial.css` giờ tồn tại thật trên máy, nội dung giống bản thiết kế ban đầu (overlay tutorial dùng chung cho lua_ga, tha_dieu, hai_qua). Đã xác nhận lại bằng `list_directory` và `read_file` — file đầy đủ, JSX hợp lệ. Không cần sửa gì thêm ở 3 file wrapper (`LuaGaGame.jsx`, `HaiQuaGame.jsx`, `KiteFieldGame.jsx`) vì các file này đã được ghi đúng bằng Desktop Commander từ đầu.
+- Ghi chú cho tương lai: LUÔN dùng `desktop-commander:write_file` (không dùng tool tạo file sandbox nội bộ) khi tạo/sửa file trong project thật ở `D:\dream_project\game`, vì tool sandbox không ghi vào ổ đĩa thật của người dùng. Nên chạy `npm run dev` và thử vào lại 3 địa điểm `nha_ba_ngan`, `ruong`, `vuon_cay` để xác nhận màn tutorial hiện đúng và lỗi import đã hết.
+
+## [2026-07-06] - Thêm màn hướng dẫn (tutorial) cho minigame phong_su
+
+- Hành động: Tiếp tục việc thêm `GameTutorial` cho các minigame còn lại (theo ghi chú của phiên trước). Sửa `src/games/phong_su/PhongSuGame.jsx` bằng `desktop-commander:edit_block`: thêm state `started`, import `GameTutorial` từ `../../components/GameTutorial.jsx`, hiển thị màn tutorial trước khi render `PhongSuApp`. Nội dung tutorial soạn dựa trên việc đọc thật `src/phong_su/src/App.jsx` và `InterviewScene.jsx` để mô tả đúng cơ chế game (chọn NPC trong làng → phỏng vấn bằng cách gõ câu hỏi hoặc chọn gợi ý từ sổ tay 📔 → thu thập đủ chứng cứ → viết bài báo 📰), không phải điều khiển bàn phím như 3 game trước.
+- Tác động: `PhongSuGame` giờ có màn tutorial riêng (accent đỏ mực báo `#a8433a`) trước khi vào game, cùng pattern với `lua_ga`, `hai_qua`, `tha_dieu`. Đã chạy `npm run build` ở gốc dự án — build thành công (1922 modules, 4.61s), không lỗi.
+- Ghi chú cho tương lai:
+  - Danh sách minigame còn thiếu tutorial theo ghi chú trước: `ban_hang`, `dan_bau`, `oanquan`, `nha_cu/giai_do`. Có thể áp dụng đúng pattern này (đọc file component gốc để hiểu cơ chế thật trước khi soạn `controls`/`tips`, tránh đoán mò).
+  - Chưa chạy `npm run dev` để tự tay xác nhận UI tutorial hiển thị đúng trong trình duyệt — chỉ mới xác nhận qua `npm run build` (build sạch). Nên vào thử địa điểm có `phong_su` (nhà Hùng / Ông Tư / Bà Năm tuỳ theo `INTERVIEW_BY_LOCATION` trong `App.jsx`) để xem trực tiếp.
