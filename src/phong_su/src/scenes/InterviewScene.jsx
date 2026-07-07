@@ -102,8 +102,15 @@ export default function InterviewScene({ npcData, onBack, onComplete }) {
   })
 
   const [prefill, setPrefill] = useState(undefined)
-  const [selectedQuestionType, setSelectedQuestionType] = useState('open')
-  const questionTypes = getQuestionTypes()
+  const [selectedQuestionType, setSelectedQuestionType] = useState('auto')
+  const questionTypes = [
+    {
+      id: 'auto',
+      label: 'Tu nhan dien',
+      hint: 'De game tu phan loai cau hoi theo noi dung ban go.',
+    },
+    ...getQuestionTypes(),
+  ]
 
   const handleChooseQuestion = (q) => {
     setPrefill(q)
@@ -123,7 +130,10 @@ export default function InterviewScene({ npcData, onBack, onComplete }) {
   }
 
   const sendWithQuestionType = (text) => {
-    sendMessage(text, { forcedType: selectedQuestionType })
+    const options = selectedQuestionType === 'auto'
+      ? {}
+      : { forcedType: selectedQuestionType }
+    sendMessage(text, options)
   }
 
   return (

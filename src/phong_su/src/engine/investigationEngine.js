@@ -9,11 +9,11 @@ const VAGUE_PATTERNS = [
 ];
 
 const TYPE_PATTERNS = {
-  timeline: /khi nao|lúc nào|luc nao|trước|truoc|sau|hôm đó|hom do|thời điểm|thoi diem/i,
+  timeline: /khi nao|lúc nào|luc nao|trước|truoc|sau|hôm đó|hom do|thời điểm|thoi diem|mốc thời gian|moc thoi gian|cuộc đời|cuoc doi/i,
   emotion: /cảm thấy|cam thay|buồn|buon|vui|sợ|so|nhớ|nho|xúc động|xuc dong|lo/i,
   object_detail: /ở đâu|o dau|vật|vat|đồ|do|chiếc|chiec|cây|cay|đàn|dan|sỏi|soi|gốc|goc|bàn|ban/i,
   compare: /khác với|khac voi|đối chiếu|doi chieu|theo lời|theo loi|hung nói|hung noi|ông nói|ong noi|bà nói|ba noi/i,
-  cause: /vì sao|vi sao|tại sao|tai sao|nguyên nhân|nguyen nhan|do đâu|do dau/i,
+  cause: /vì sao|vi sao|tại sao|tai sao|nguyên nhân|nguyen nhan|do đâu|do dau|lý do|ly do|điều gì|dieu gi|đưa .* tới|dua .* toi|đưa .* đến|dua .* den/i,
   consequence: /sau đó|sau do|thay đổi|thay doi|hệ quả|he qua|ảnh hưởng|anh huong/i,
   quote_confirm: /ghi đúng|ghi dung|trích dẫn|trich dan|đưa vào bài|dua vao bai|cháu có thể ghi|chau co the ghi/i,
 };
@@ -45,17 +45,53 @@ function uniqueById(items) {
 function detectTopic(npcData, profile, questionText) {
   const raw = questionText.toLowerCase();
   const normalized = normalizeText(questionText);
+  let bestMatch = null;
+  const setMatch = (topicId, score) => {
+    if (!topicId) return;
+    if (!bestMatch || score > bestMatch.score) {
+      bestMatch = { topicId, score };
+    }
+  };
 
   for (const fact of profile.coreFacts) {
-    const keywords = fact.keywords || [];
-    if (keywords.some((keyword) => raw.includes(keyword.toLowerCase()) || normalized.includes(normalizeText(keyword)))) {
-      return fact.topicId;
+    let score = 0;
+    for (const keyword of fact.keywords || []) {
+      const rawKeyword = keyword.toLowerCase();
+      const normalizedKeyword = normalizeText(keyword);
+      if (!normalizedKeyword) continue;
+
+      const matched = raw.includes(rawKeyword) || normalized.includes(normalizedKeyword);
+      if (!matched) continue;
+
+      const wordCount = normalizedKeyword.split(' ').length;
+      const specificity = wordCount * 8 + Math.min(normalizedKeyword.length, 24);
+      const broadPenalty = wordCount === 1 && normalizedKeyword.length <= 4 ? 12 : 0;
+      score += specificity - broadPenalty;
     }
+
+    if (score > 0) setMatch(fact.topicId, score);
   }
 
   const sections = npcData?.notebook?.sections || [];
-  const section = sections.find((item) => normalized.includes(normalizeText(item.label)));
-  return section?.id || null;
+  for (const section of sections) {
+    const label = normalizeText(section.label);
+    if (label && normalized.includes(label)) {
+      setMatch(section.id, 40 + Math.min(label.length, 30));
+    }
+  }
+
+  const personalCause = /(dieu gi|ly do|vi sao|tai sao|nguyen nhan|do dau)/.test(normalized)
+    && /(dua|den voi|toi voi|bat dau|hoc|chon)/.test(normalized);
+  if (personalCause && profile.coreFacts.some((item) => item.topicId === 'memories')) {
+    setMatch('memories', 76);
+  }
+
+  const personalMemory = /(cuoc doi|doi ba|doi ong|doi anh|ky uc|ky niem|moc thoi gian|thoi gian nao|ngay xua|hoi nho|qua khu)/.test(normalized);
+  if (personalMemory && profile.coreFacts.some((item) => item.topicId === 'memories')) {
+    setMatch('memories', 82);
+  }
+
+  return bestMatch?.topicId || null;
 }
 
 export function classifyQuestion(questionText, context = {}) {
@@ -70,6 +106,12 @@ export function classifyQuestion(questionText, context = {}) {
         type = candidate;
         break;
       }
+    }
+    if (TYPE_PATTERNS.cause.test(trimmed) || TYPE_PATTERNS.cause.test(normalized)) {
+      type = 'cause';
+    }
+    if (TYPE_PATTERNS.timeline.test(trimmed) || TYPE_PATTERNS.timeline.test(normalized)) {
+      type = 'timeline';
     }
   }
 

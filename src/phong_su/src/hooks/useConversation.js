@@ -7,14 +7,15 @@ import {
 } from '../engine/investigationEngine.js'
 
 let msgId = 100
+const INTERVIEW_API_URL = import.meta.env.VITE_INTERVIEW_API_URL || '/api/interview-turn'
 
-async function requestInterviewTurn(npcId, message, options, interviewState, caseFile) {
+async function requestInterviewTurn(npcId, message, options, interviewState, caseFile, history) {
   const controller = new AbortController()
   const timeoutId = window.setTimeout(() => controller.abort(), 18000)
   let res
 
   try {
-    res = await fetch('/api/interview-turn', {
+    res = await fetch(INTERVIEW_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
@@ -24,6 +25,7 @@ async function requestInterviewTurn(npcId, message, options, interviewState, cas
         options,
         interviewState,
         caseFile,
+        history,
       }),
     })
   } finally {
@@ -31,7 +33,7 @@ async function requestInterviewTurn(npcId, message, options, interviewState, cas
   }
 
   if (!res.ok) {
-    throw new Error(`Interview server returned ${res.status}`)
+    throw new Error(`Interview API returned ${res.status}`)
   }
 
   return res.json()
@@ -81,6 +83,11 @@ export function useConversation(npcData, unlockSections) {
         options,
         interviewState,
         caseFile,
+        messages.slice(-8).map(item => ({
+          sender: item.sender,
+          text: item.text,
+          meta: item.meta,
+        })),
       )
 
       if (serverTurn?.response && serverTurn?.nextState && serverTurn?.nextCaseFile) {
@@ -120,7 +127,7 @@ export function useConversation(npcData, unlockSections) {
     if (turn.response.unlock?.length > 0) {
       unlockSections(turn.response.unlock)
     }
-  }, [npcData, unlockSections, isTyping, interviewState, caseFile])
+  }, [npcData, unlockSections, isTyping, interviewState, caseFile, messages])
 
   return {
     messages,

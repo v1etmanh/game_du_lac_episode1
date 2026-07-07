@@ -65,6 +65,8 @@ const styles = {
   }),
 }
 
+const HIDDEN_META_TAGS = new Set(['local-fallback', 'server-rule', 'server-ai'])
+
 export default function MessageList({ messages, isTyping, npcName }) {
   const bottomRef = useRef(null)
 
@@ -100,7 +102,7 @@ export default function MessageList({ messages, isTyping, npcName }) {
                   {typeof msg.meta.score === 'number' && (
                     <span style={styles.metaChip}>điểm {msg.meta.score}</span>
                   )}
-                  {(msg.meta.tags || []).map(tag => (
+                  {(msg.meta.tags || []).filter(tag => !HIDDEN_META_TAGS.has(tag)).map(tag => (
                     <span key={tag} style={styles.metaChip}>{tag}</span>
                   ))}
                 </div>
