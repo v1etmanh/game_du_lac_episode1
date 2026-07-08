@@ -61,7 +61,7 @@ export function App({ onExit }: AppProps = {}) {
   return (
     <main className="game-shell">
       <canvas ref={canvasRef} className="game-canvas" aria-label="Kite side-scrolling game canvas" />
-      <HUD snapshot={snapshot} />
+      <HUD snapshot={snapshot} onExit={onExit} />
       <PauseMenu
         crashed={snapshot.crashed}
         completed={snapshot.completed}

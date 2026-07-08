@@ -132,6 +132,24 @@
   color: #b5322d;
 }
 
+.hud-exit-btn {
+  pointer-events: auto;
+  cursor: pointer;
+  padding: 9px 14px;
+  border: 1px solid rgb(255 255 255 / 64%);
+  border-radius: 8px;
+  background: rgb(31 86 84 / 92%);
+  box-shadow: 0 12px 28px rgb(44 77 76 / 20%);
+  backdrop-filter: blur(9px);
+  color: #f8fbf7;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.hud-exit-btn:hover {
+  background: #1f5654;
+}
+
 .completion-banner {
   position: absolute;
   left: 50%;
