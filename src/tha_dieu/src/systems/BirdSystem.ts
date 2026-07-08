@@ -19,7 +19,14 @@ export class BirdSystem {
 
     if (this.timer <= 0) {
       this.timer = this.getSpawnInterval(distance);
-      this.spawn(birds, playerX, viewportWidth, groundY, distance);
+      const difficulty = Math.min(distance / 5200, 1);
+      const maxBirds = 2 + Math.floor(difficulty * 4);
+      if (birds.length < maxBirds) {
+        this.spawn(birds, playerX, viewportWidth, groundY, distance);
+        if (difficulty > 0.72 && birds.length < maxBirds && Math.random() < 0.22) {
+          this.spawn(birds, playerX, viewportWidth, groundY, distance);
+        }
+      }
     }
 
     birds.forEach((bird) => bird.update(deltaSeconds));
@@ -39,15 +46,15 @@ export class BirdSystem {
     const minY = groundY - 370;
     const maxY = groundY - 150;
     const spawnY = minY + Math.random() * (maxY - minY);
-    const difficultySpeed = Math.min(distance / 45, 130);
-    const speed = 160 + Math.random() * 90 + difficultySpeed;
+    const difficultySpeed = Math.min(distance / 32, 180);
+    const speed = 170 + Math.random() * 95 + difficultySpeed;
     birds.push(new Bird(spawnX, spawnY, speed));
   }
 
   private getSpawnInterval(distance: number): number {
     const difficulty = Math.min(distance / 5200, 1);
-    const min = 3.6 - difficulty * 1.8;
-    const max = 5.8 - difficulty * 2.4;
+    const min = 3.35 - difficulty * 1.55;
+    const max = 5.45 - difficulty * 2.25;
     return min + Math.random() * (max - min);
   }
 }

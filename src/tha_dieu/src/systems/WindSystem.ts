@@ -18,15 +18,18 @@ export class WindSystem {
     this.turbulenceClock = 0;
   }
 
-  update(deltaSeconds: number): void {
+  update(deltaSeconds: number, difficulty = 0): void {
     this.retargetTimer -= deltaSeconds;
     this.turbulenceClock += deltaSeconds;
 
     if (this.retargetTimer <= 0) {
-      this.retargetTimer = 3.4 + Math.random() * 3.2;
-      this.targetDirectionRadians = ((-18 + Math.random() * 70) * Math.PI) / 180;
-      this.targetStrength = 0.24 + Math.random() * 0.78;
-      this.wind.turbulence = 0.08 + Math.random() * 0.18;
+      const minTimer = 2.25 + (1 - difficulty) * 1.15;
+      const maxTimer = 4.25 + (1 - difficulty) * 2.35;
+      this.retargetTimer = minTimer + Math.random() * (maxTimer - minTimer);
+      const directionSpread = 70 + difficulty * 24;
+      this.targetDirectionRadians = ((-22 + Math.random() * directionSpread) * Math.PI) / 180;
+      this.targetStrength = 0.26 + Math.random() * (0.78 + difficulty * 0.24);
+      this.wind.turbulence = 0.09 + Math.random() * (0.18 + difficulty * 0.1);
     }
 
     const turbulence = Math.sin(this.turbulenceClock * 3.1) * this.wind.turbulence;
@@ -35,6 +38,6 @@ export class WindSystem {
 
     this.wind.directionRadians += (this.targetDirectionRadians + turbulence - this.wind.directionRadians) * directionSmoothing;
     this.wind.strength += (this.targetStrength - this.wind.strength) * strengthSmoothing;
-    this.wind.strength = Math.max(0.15, Math.min(1.05, this.wind.strength));
+    this.wind.strength = Math.max(0.15, Math.min(1.18, this.wind.strength));
   }
 }

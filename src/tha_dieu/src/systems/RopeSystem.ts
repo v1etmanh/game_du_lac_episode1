@@ -5,14 +5,21 @@ import { Rope } from "../physics/Rope";
 
 export class RopeSystem {
   private isShorteningNow = false;
+  command: "shorten" | "release" | null = null;
+  limit: "min" | "max" | null = null;
+  speed = 0;
 
   constructor(private readonly rope: Rope) {}
 
-  updateLength(input: Input, deltaSeconds: number, viewportHeight: number): void {
-    const shortenSpeed = 140;
-    const releaseSpeed = 190;
-    const isReleasingNow = input.isReleasePressed();
-    this.isShorteningNow = input.isShortenPressed() && !isReleasingNow;
+  updateLength(input: Input, deltaSeconds: number, viewportHeight: number, difficulty = 0): void {
+    const shortenSpeed = 240 + difficulty * 85;
+    const releaseSpeed = 310 + difficulty * 110;
+    const ropeCommand = input.getRopeCommand();
+    this.command = ropeCommand;
+    this.limit = null;
+    this.speed = 0;
+    this.isShorteningNow = ropeCommand === "shorten";
+    const isReleasingNow = ropeCommand === "release";
     const previousLength = this.rope.length;
 
     // Co giãn giới hạn tối đa theo chiều cao màn hình thật mỗi khung hình, để khi người
@@ -28,6 +35,14 @@ export class RopeSystem {
     this.rope.length = Math.max(this.rope.minLength, Math.min(this.rope.maxLength, this.rope.length));
 
     const lengthDelta = this.rope.length - previousLength;
+    this.speed = deltaSeconds > 0 ? lengthDelta / deltaSeconds : 0;
+
+    if (ropeCommand === "shorten" && this.rope.length <= this.rope.minLength + 0.1 && lengthDelta >= -0.01) {
+      this.limit = "min";
+    } else if (ropeCommand === "release" && this.rope.length >= this.rope.maxLength - 0.1 && lengthDelta <= 0.01) {
+      this.limit = "max";
+    }
+
     if (Math.abs(lengthDelta) > 0.01) {
       this.rope.reelDirection = Math.sign(lengthDelta);
       this.rope.reelEffect = Math.min(1, this.rope.reelEffect + deltaSeconds * 10);

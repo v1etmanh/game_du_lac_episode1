@@ -11,6 +11,12 @@ export type AssetKey =
   | "windmillTower"
   | "windmillFan"
   | "powerline"
+  | "bambooPole"
+  | "lowBranch"
+  | "hayStack"
+  | "woodenCart"
+  | "lowPowerline"
+  | "stormGust"
   | "windGust"
   | "kiteBody"
   | "kiteTail"
@@ -30,6 +36,12 @@ const MANIFEST: Record<AssetKey, string> = {
   windmillTower: "/tha_dieu/coixoaygio.png",
   windmillFan: "/tha_dieu/fan.png",
   powerline: "/tha_dieu/chuongngaivat.png",
+  bambooPole: "/tha_dieu/obstacles/bamboo_pole.png",
+  lowBranch: "/tha_dieu/obstacles/low_branch.png",
+  hayStack: "/tha_dieu/obstacles/hay_stack.png",
+  woodenCart: "/tha_dieu/obstacles/wooden_cart.png",
+  lowPowerline: "/tha_dieu/obstacles/low_powerline.png",
+  stormGust: "/tha_dieu/obstacles/storm_gust.png",
   windGust: "/tha_dieu/gio.png",
   kiteBody: "/tha_dieu/dieu.png",
   kiteTail: "/tha_dieu/day_dieu.png",

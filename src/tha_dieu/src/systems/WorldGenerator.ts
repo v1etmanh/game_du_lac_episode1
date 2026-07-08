@@ -29,8 +29,8 @@ export class WorldGenerator {
 
   private getNextGap(distance: number): number {
     const difficulty = Math.min(distance / 6000, 1);
-    const minGap = 520 - difficulty * 150;
-    const maxGap = 860 - difficulty * 210;
+    const minGap = 500 - difficulty * 135;
+    const maxGap = 820 - difficulty * 195;
     return minGap + Math.random() * (maxGap - minGap);
   }
 
@@ -45,32 +45,75 @@ export class WorldGenerator {
   private pickObstacleType(distance: number): ObstacleType {
     const roll = Math.random();
 
-    if (distance < 1400) {
-      return roll < 0.7 ? "rock" : "tree";
+    if (distance < 850) {
+      if (roll < 0.38) {
+        return "rock";
+      }
+      if (roll < 0.68) {
+        return "bambooPole";
+      }
+      return roll < 0.86 ? "hayStack" : "tree";
+    }
+
+    if (distance < 1700) {
+      if (roll < 0.28) {
+        return "rock";
+      }
+      if (roll < 0.48) {
+        return "bambooPole";
+      }
+      if (roll < 0.64) {
+        return "hayStack";
+      }
+      if (roll < 0.78) {
+        return "tree";
+      }
+      return roll < 0.9 ? "lowBranch" : "rollingRock";
     }
 
     if (distance < 3000) {
-      if (roll < 0.5) {
+      if (roll < 0.22) {
         return "rock";
       }
-      if (roll < 0.72) {
+      if (roll < 0.38) {
         return "tree";
       }
-      return roll < 0.9 ? "rollingRock" : "windmill";
+      if (roll < 0.52) {
+        return "lowBranch";
+      }
+      if (roll < 0.66) {
+        return "rollingRock";
+      }
+      if (roll < 0.78) {
+        return "woodenCart";
+      }
+      if (roll < 0.9) {
+        return "windmill";
+      }
+      return "stormGust";
     }
 
-    if (roll < 0.34) {
+    if (roll < 0.16) {
       return "rock";
     }
-    if (roll < 0.6) {
+    if (roll < 0.3) {
       return "tree";
     }
-    if (roll < 0.78) {
+    if (roll < 0.43) {
+      return "lowBranch";
+    }
+    if (roll < 0.56) {
       return "rollingRock";
     }
-    if (roll < 0.92) {
+    if (roll < 0.68) {
+      return "woodenCart";
+    }
+    if (roll < 0.8) {
       return "windmill";
     }
-    return "powerline";
+    if (roll < 0.9) {
+      return "lowPowerline";
+    }
+    return roll < 0.96 ? "stormGust" : "powerline";
   }
 }

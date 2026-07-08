@@ -231,6 +231,101 @@ export class RenderSystem {
     const ground = obstacle.groundY;
     const centerX = obstacle.x + obstacle.width / 2;
 
+    if (obstacle.type === "bambooPole") {
+      const image = AssetLoader.get("bambooPole");
+      if (image) {
+        this.drawFitHeightImage(context, image, centerX, ground, obstacle.height, 0);
+        return;
+      }
+      context.fillStyle = "#cda455";
+      context.fillRect(centerX - 6, ground - obstacle.height, 12, obstacle.height);
+      return;
+    }
+
+    if (obstacle.type === "lowBranch") {
+      const image = AssetLoader.get("lowBranch");
+      if (image) {
+        this.drawFitHeightImage(context, image, centerX, ground - 86, 84, 0);
+        return;
+      }
+      context.strokeStyle = "#6d4429";
+      context.lineWidth = 14;
+      context.lineCap = "round";
+      context.beginPath();
+      context.moveTo(obstacle.x + 8, ground - 128);
+      context.quadraticCurveTo(centerX, ground - 158, obstacle.x + obstacle.width - 10, ground - 120);
+      context.stroke();
+      return;
+    }
+
+    if (obstacle.type === "hayStack") {
+      const image = AssetLoader.get("hayStack");
+      if (image) {
+        this.drawFitHeightImage(context, image, centerX, ground, obstacle.height * 1.28, 4);
+        return;
+      }
+      context.fillStyle = "#d6a743";
+      context.beginPath();
+      context.moveTo(obstacle.x, ground);
+      context.lineTo(centerX, ground - obstacle.height);
+      context.lineTo(obstacle.x + obstacle.width, ground);
+      context.closePath();
+      context.fill();
+      return;
+    }
+
+    if (obstacle.type === "woodenCart") {
+      const image = AssetLoader.get("woodenCart");
+      if (image) {
+        this.drawFitHeightImage(context, image, centerX, ground, obstacle.height * 1.35, 7);
+        return;
+      }
+      context.fillStyle = "#8b5528";
+      context.fillRect(obstacle.x + 10, ground - 56, obstacle.width - 20, 38);
+      context.fillStyle = "#4b321e";
+      context.beginPath();
+      context.arc(obstacle.x + obstacle.width * 0.68, ground - 18, 18, 0, Math.PI * 2);
+      context.fill();
+      return;
+    }
+
+    if (obstacle.type === "lowPowerline") {
+      const image = AssetLoader.get("lowPowerline");
+      if (image) {
+        this.drawFitHeightImage(context, image, centerX, ground, obstacle.height, 0);
+        return;
+      }
+      context.strokeStyle = "#30342f";
+      context.lineWidth = 4;
+      context.beginPath();
+      context.moveTo(obstacle.x, ground - 118);
+      context.quadraticCurveTo(centerX, ground - 102, obstacle.x + obstacle.width, ground - 118);
+      context.stroke();
+      return;
+    }
+
+    if (obstacle.type === "stormGust") {
+      const image = AssetLoader.get("stormGust");
+      const bob = Math.sin(performance.now() * 0.006 + obstacle.x * 0.01) * 7;
+      if (image) {
+        context.save();
+        context.globalAlpha = 0.92;
+        context.translate(centerX, ground - obstacle.height * 0.5 + bob);
+        context.rotate(Math.sin(performance.now() * 0.003) * 0.08);
+        const drawHeight = obstacle.height * 0.9;
+        const drawWidth = drawHeight * (image.naturalWidth / image.naturalHeight);
+        context.drawImage(image, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
+        context.restore();
+        return;
+      }
+      context.strokeStyle = "rgba(120, 170, 190, 0.78)";
+      context.lineWidth = 8;
+      context.beginPath();
+      context.arc(centerX, ground - 120, 52, 0.4, Math.PI * 1.8);
+      context.stroke();
+      return;
+    }
+
     if (obstacle.type === "tree") {
       const image = AssetLoader.get("tree");
       if (image) {

@@ -80,6 +80,58 @@
   background: #1f5654;
 }
 
+.stall-panel {
+  min-width: 200px;
+  padding: 9px 12px;
+  border: 1px solid rgb(255 255 255 / 64%);
+  border-radius: 8px;
+  background: rgb(248 252 249 / 82%);
+  box-shadow: 0 12px 28px rgb(44 77 76 / 12%);
+  backdrop-filter: blur(9px);
+}
+
+.stall-panel.active .hud-label {
+  color: #b5322d;
+}
+
+.stall-track {
+  margin-top: 6px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgb(181 50 45 / 14%);
+  overflow: hidden;
+}
+
+.stall-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #e4a84f;
+  transition: width 0.08s linear;
+}
+
+.stall-panel.active .stall-fill {
+  background: #e2574c;
+}
+
+.rope-state-panel {
+  min-width: 180px;
+  padding: 9px 12px;
+  border: 1px solid rgb(255 255 255 / 64%);
+  border-radius: 8px;
+  background: rgb(248 252 249 / 82%);
+  box-shadow: 0 12px 28px rgb(44 77 76 / 12%);
+  backdrop-filter: blur(9px);
+}
+
+.rope-state-panel.blocked {
+  border-color: rgb(226 87 76 / 46%);
+  background: rgb(255 244 230 / 88%);
+}
+
+.rope-state-panel.blocked .hud-label {
+  color: #b5322d;
+}
+
 .completion-banner {
   position: absolute;
   left: 50%;

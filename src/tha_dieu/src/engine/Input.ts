@@ -3,8 +3,17 @@ export class Input {
   private readonly pressedThisFrame = new Set<string>();
   private mouseJumpDown = false;
   private mouseShortenDown = false;
+  private lastRopeCommand: "shorten" | "release" | null = null;
 
   constructor(private readonly mouseTarget: HTMLElement | null = null) {}
+
+  private clearControls(): void {
+    this.mouseJumpDown = false;
+    this.mouseShortenDown = false;
+    this.lastRopeCommand = null;
+    this.pressed.clear();
+    this.pressedThisFrame.clear();
+  }
 
   private readonly onMouseDown = (event: MouseEvent) => {
     // Chuột trái = nhảy, chuột phải = thu dây diều ngắn lại (giữ để tích lực).
@@ -14,14 +23,18 @@ export class Input {
     } else if (event.button === 2) {
       event.preventDefault();
       this.mouseShortenDown = true;
+      this.lastRopeCommand = "shorten";
     }
   };
 
   private readonly onMouseUp = (event: MouseEvent) => {
     if (event.button === 0) {
+      event.preventDefault();
       this.mouseJumpDown = false;
     } else if (event.button === 2) {
+      event.preventDefault();
       this.mouseShortenDown = false;
+      this.reconcileRopeCommand();
     }
   };
 
@@ -29,8 +42,10 @@ export class Input {
     if ((event.buttons & 2) !== 0) {
       event.preventDefault();
       this.mouseShortenDown = true;
+      this.lastRopeCommand = "shorten";
     } else if (this.mouseShortenDown) {
       this.mouseShortenDown = false;
+      this.reconcileRopeCommand();
     }
   };
 
@@ -38,14 +53,18 @@ export class Input {
     if (event.button === 2) {
       event.preventDefault();
       this.mouseShortenDown = true;
+      this.lastRopeCommand = "shorten";
     }
   };
 
   private readonly onMouseLeaveOrBlur = () => {
-    this.mouseJumpDown = false;
-    this.mouseShortenDown = false;
-    this.pressed.clear();
-    this.pressedThisFrame.clear();
+    this.clearControls();
+  };
+
+  private readonly onVisibilityChange = () => {
+    if (document.hidden) {
+      this.clearControls();
+    }
   };
 
   private readonly onContextMenu = (event: Event) => {
@@ -63,6 +82,7 @@ export class Input {
     }
 
     this.pressed.add(event.code);
+    this.updateRopeCommandFromKey(event.code);
   };
 
   private readonly onKeyUp = (event: KeyboardEvent) => {
@@ -70,36 +90,40 @@ export class Input {
       event.preventDefault();
     }
     this.pressed.delete(event.code);
+    this.reconcileRopeCommand();
   };
 
   attach(): void {
-    window.addEventListener("keydown", this.onKeyDown);
-    window.addEventListener("keyup", this.onKeyUp);
+    window.addEventListener("keydown", this.onKeyDown, true);
+    window.addEventListener("keyup", this.onKeyUp, true);
 
     const target = this.mouseTarget ?? window;
-    target.addEventListener("mousedown", this.onMouseDown as EventListener);
-    target.addEventListener("contextmenu", this.onContextMenu);
+    target.addEventListener("mousedown", this.onMouseDown as EventListener, true);
+    target.addEventListener("contextmenu", this.onContextMenu, true);
     // Bắt mouseup/mouseleave trên window để không bị "kẹt" trạng thái nhấn
     // nếu người chơi thả chuột ngoài canvas.
-    window.addEventListener("mousemove", this.onMouseMove as EventListener);
-    window.addEventListener("mousedown", this.onGlobalMouseDown as EventListener);
-    window.addEventListener("mouseup", this.onMouseUp as EventListener);
-    window.addEventListener("contextmenu", this.onContextMenu);
+    window.addEventListener("mousemove", this.onMouseMove as EventListener, true);
+    window.addEventListener("mousedown", this.onGlobalMouseDown as EventListener, true);
+    window.addEventListener("mouseup", this.onMouseUp as EventListener, true);
+    window.addEventListener("contextmenu", this.onContextMenu, true);
     window.addEventListener("blur", this.onMouseLeaveOrBlur);
+    document.addEventListener("visibilitychange", this.onVisibilityChange);
   }
 
   dispose(): void {
-    window.removeEventListener("keydown", this.onKeyDown);
-    window.removeEventListener("keyup", this.onKeyUp);
+    window.removeEventListener("keydown", this.onKeyDown, true);
+    window.removeEventListener("keyup", this.onKeyUp, true);
 
     const target = this.mouseTarget ?? window;
-    target.removeEventListener("mousedown", this.onMouseDown as EventListener);
-    target.removeEventListener("contextmenu", this.onContextMenu);
-    window.removeEventListener("mousemove", this.onMouseMove as EventListener);
-    window.removeEventListener("mousedown", this.onGlobalMouseDown as EventListener);
-    window.removeEventListener("mouseup", this.onMouseUp as EventListener);
-    window.removeEventListener("contextmenu", this.onContextMenu);
+    target.removeEventListener("mousedown", this.onMouseDown as EventListener, true);
+    target.removeEventListener("contextmenu", this.onContextMenu, true);
+    window.removeEventListener("mousemove", this.onMouseMove as EventListener, true);
+    window.removeEventListener("mousedown", this.onGlobalMouseDown as EventListener, true);
+    window.removeEventListener("mouseup", this.onMouseUp as EventListener, true);
+    window.removeEventListener("contextmenu", this.onContextMenu, true);
     window.removeEventListener("blur", this.onMouseLeaveOrBlur);
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
+    this.clearControls();
   }
 
   isLeftPressed(): boolean {
@@ -115,11 +139,27 @@ export class Input {
   }
 
   isShortenPressed(): boolean {
-    return this.pressed.has("KeyQ") || this.mouseShortenDown;
+    return this.pressed.has("KeyW") || this.pressed.has("KeyQ") || this.mouseShortenDown;
   }
 
   isReleasePressed(): boolean {
     return this.pressed.has("KeyS");
+  }
+
+  getRopeCommand(): "shorten" | "release" | null {
+    const wantsShorten = this.isShortenPressed();
+    const wantsRelease = this.isReleasePressed();
+
+    if (wantsShorten && wantsRelease) {
+      return this.lastRopeCommand;
+    }
+    if (wantsShorten) {
+      return "shorten";
+    }
+    if (wantsRelease) {
+      return "release";
+    }
+    return null;
   }
 
   wasRestartPressed(): boolean {
@@ -141,10 +181,37 @@ export class Input {
       "ArrowLeft",
       "ArrowRight",
       "Space",
+      "KeyW",
       "KeyQ",
       "KeyS",
       "KeyR",
       "Escape",
     ].includes(code);
+  }
+
+  private updateRopeCommandFromKey(code: string): void {
+    if (code === "KeyW" || code === "KeyQ") {
+      this.lastRopeCommand = "shorten";
+    } else if (code === "KeyS") {
+      this.lastRopeCommand = "release";
+    }
+  }
+
+  private reconcileRopeCommand(): void {
+    const wantsShorten = this.isShortenPressed();
+    const wantsRelease = this.isReleasePressed();
+
+    if (wantsShorten && wantsRelease) {
+      return;
+    }
+    if (wantsShorten) {
+      this.lastRopeCommand = "shorten";
+      return;
+    }
+    if (wantsRelease) {
+      this.lastRopeCommand = "release";
+      return;
+    }
+    this.lastRopeCommand = null;
   }
 }

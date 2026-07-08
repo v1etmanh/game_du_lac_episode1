@@ -6,7 +6,7 @@ const noKiteAssist: KiteAssist = {
   horizontalAcceleration: 0,
   speedLimitBonus: 0,
   runSpeedMultiplier: 1,
-  speedLimitBase: 520,
+  speedLimitBase: 600,
   jumpBoost: 0,
   gravityRelief: 0,
   drag: 0,
@@ -67,7 +67,7 @@ export class Player {
       this.jumpChargeLevel = Math.max(0, this.jumpChargeLevel - deltaSeconds * 2.5);
     }
 
-    const acceleration = this.stunTimer > 0 ? 0 : this.grounded ? 4000 : 1900;
+    const acceleration = this.stunTimer > 0 ? 0 : this.grounded ? 4550 : 2150;
     const friction = Math.max(0.84, (this.grounded ? 0.92 : 0.99) - kiteAssist.drag);
     const heightAboveGround = groundY - (this.position.y + this.height);
     const liftGravity = heightAboveGround < 170 ? -120 : heightAboveGround < 250 ? 40 : 260;
@@ -91,7 +91,7 @@ export class Player {
     const maxBackwardSpeed = Math.max(115, maxForwardSpeed * 0.7);
     this.velocity.x = Math.max(-maxBackwardSpeed, Math.min(maxForwardSpeed, this.velocity.x));
     if (windLiftActive) {
-      const windCruiseSpeed = 760;
+      const windCruiseSpeed = 820;
       const windSmoothing = 1 - Math.exp(-deltaSeconds * 6.5);
       this.velocity.x += (windCruiseSpeed - this.velocity.x) * windSmoothing;
     }

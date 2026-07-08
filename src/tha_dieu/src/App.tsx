@@ -8,8 +8,11 @@ const initialSnapshot: GameSnapshot = {
   windDirectionDegrees: 20,
   windStrength: 0.35,
   ropeLength: 260,
-  minRopeLength: 90,
+  minRopeLength: 72,
   maxRopeLength: 390,
+  ropeCommand: null,
+  ropeLimit: null,
+  ropeSpeed: 0,
   distance: 0,
   fps: 60,
   paused: false,
@@ -22,6 +25,10 @@ const initialSnapshot: GameSnapshot = {
   readyForHighJump: false,
   windLiftTimer: 0,
   noteCount: 0,
+  score: 0,
+  stallWarning: 0,
+  stallPenaltyActive: false,
+  difficulty: 0,
 };
 
 interface AppProps {

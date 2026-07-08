@@ -54,6 +54,10 @@ export class Game {
   private windLiftTimer = 0;
   private nextMusicNoteX = 520;
   private noteCount = 0;
+  private score = 0;
+  private lastDistance = 0;
+  private stallTimer = 0;
+  private stallPenaltyActive = false;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -98,6 +102,10 @@ export class Game {
     this.windLiftTimer = 0;
     this.nextMusicNoteX = 520;
     this.noteCount = 0;
+    this.score = 0;
+    this.lastDistance = 0;
+    this.stallTimer = 0;
+    this.stallPenaltyActive = false;
     this.lives = this.maxLives;
     this.hitInvulnerableTimer = 0;
     this.paused = false;
@@ -143,10 +151,11 @@ export class Game {
   }
 
   private update(deltaSeconds: number): void {
-    this.windSystem.update(deltaSeconds);
-    this.ropeSystem.updateLength(this.input, deltaSeconds, this.renderer.height);
+    const difficulty = this.difficulty;
+    this.windSystem.update(deltaSeconds, difficulty);
+    this.ropeSystem.updateLength(this.input, deltaSeconds, this.renderer.height, difficulty);
     this.windLiftTimer = Math.max(0, this.windLiftTimer - deltaSeconds);
-    this.updateWindGusts(deltaSeconds);
+    this.updateWindGusts(deltaSeconds, difficulty);
     this.handleWindGustCapture();
     const kiteAssist = this.rope.getPlayerAssist(this.player, this.kite);
     this.player.update(this.input, deltaSeconds, this.groundY, kiteAssist, this.windLiftTimer);
@@ -168,6 +177,7 @@ export class Game {
     this.hitInvulnerableTimer = Math.max(0, this.hitInvulnerableTimer - deltaSeconds);
     this.handleCollisions();
     this.handleBirdCollisions();
+    this.updateScore(deltaSeconds, difficulty);
     this.updateWorld();
     this.particleSystem.update(deltaSeconds, this.player, this.kite, this.rope, this.wind);
     this.camera.update(this.player.position, this.player.facingDirection, this.renderer.width, this.renderer.height, deltaSeconds);
@@ -201,8 +211,13 @@ export class Game {
   private handleCollisions(): void {
     const kiteBounds = this.kite.getBounds();
 
+    this.handleStormGustHazards(kiteBounds);
+
     for (let pass = 0; pass < 2; pass += 1) {
       for (const obstacle of this.obstacles) {
+        if (obstacle.type === "stormGust") {
+          continue;
+        }
         const bounds = obstacle.getBounds();
 
         if (intersects(this.player.getBounds(), bounds)) {
@@ -212,6 +227,9 @@ export class Game {
     }
 
     for (const obstacle of this.obstacles) {
+      if (obstacle.type === "stormGust") {
+        continue;
+      }
       const bounds = obstacle.getBounds();
 
       if (intersects(kiteBounds, bounds) || pointInBounds(this.kite.position.x, this.kite.position.y, bounds)) {
@@ -220,12 +238,37 @@ export class Game {
         this.kite.velocity.y = Math.min(this.kite.velocity.y + 340, 520);
         this.rope.tension = 1;
 
-        if (obstacle.type === "powerline") {
+        if (obstacle.type === "powerline" || obstacle.type === "lowPowerline") {
           this.crashed = true;
           this.paused = false;
           return;
         }
       }
+    }
+  }
+
+  private handleStormGustHazards(kiteBounds: ReturnType<Kite["getBounds"]>): void {
+    if (this.hitInvulnerableTimer > 0) {
+      return;
+    }
+
+    for (const obstacle of this.obstacles) {
+      if (obstacle.type !== "stormGust") {
+        continue;
+      }
+
+      const bounds = obstacle.getBounds();
+      if (!intersects(kiteBounds, bounds) && !pointInBounds(this.kite.position.x, this.kite.position.y, bounds)) {
+        continue;
+      }
+
+      this.hitInvulnerableTimer = 0.7;
+      this.score = Math.max(0, this.score - 35);
+      this.kite.velocity.x += 180;
+      this.kite.velocity.y = Math.min(this.kite.velocity.y + 260, 520);
+      this.player.velocity.x = Math.max(this.player.velocity.x - 110, 90);
+      this.rope.tension = 1;
+      return;
     }
   }
 
@@ -250,6 +293,7 @@ export class Game {
   private registerBirdHit(bird: Bird): void {
     this.hitInvulnerableTimer = 1.1;
     this.lives = Math.max(0, this.lives - 1);
+    this.score = Math.max(0, this.score - 90);
 
     const pushDirection = this.kite.position.x < bird.position.x ? -1 : 1;
     this.kite.velocity.x = pushDirection * Math.max(240, Math.abs(this.kite.velocity.x) * 0.6);
@@ -268,12 +312,12 @@ export class Game {
     this.ensureMusicNotes();
   }
 
-  private updateWindGusts(deltaSeconds: number): void {
+  private updateWindGusts(deltaSeconds: number, difficulty: number): void {
     this.windGustSpawnTimer -= deltaSeconds;
 
     if (this.windGustSpawnTimer <= 0 && this.windGusts.length === 0) {
       this.spawnWindGust();
-      this.windGustSpawnTimer += 5;
+      this.windGustSpawnTimer += 5 - difficulty * 1.6;
     }
 
     for (let index = this.windGusts.length - 1; index >= 0; index -= 1) {
@@ -356,7 +400,27 @@ export class Game {
       if (intersects(playerBounds, this.musicNotes[index].getBounds())) {
         this.musicNotes.splice(index, 1);
         this.noteCount += 1;
+        this.score += 35;
       }
+    }
+  }
+
+  private updateScore(deltaSeconds: number, difficulty: number): void {
+    const currentDistance = this.distance;
+    const forwardDelta = Math.max(0, currentDistance - this.lastDistance);
+    this.lastDistance = currentDistance;
+    this.score += forwardDelta * 0.09;
+
+    const tooSlow = Math.abs(this.player.velocity.x) < 70 && this.windLiftTimer <= 0;
+    if (tooSlow) {
+      this.stallTimer += deltaSeconds;
+    } else {
+      this.stallTimer = Math.max(0, this.stallTimer - deltaSeconds * 2.4);
+    }
+
+    this.stallPenaltyActive = this.stallTimer > 1.15;
+    if (this.stallPenaltyActive) {
+      this.score = Math.max(0, this.score - deltaSeconds * (18 + difficulty * 18));
     }
   }
 
@@ -393,6 +457,9 @@ export class Game {
       ropeLength: this.rope.length,
       minRopeLength: this.rope.minLength,
       maxRopeLength: this.rope.maxLength,
+      ropeCommand: this.ropeSystem.command,
+      ropeLimit: this.ropeSystem.limit,
+      ropeSpeed: this.ropeSystem.speed,
       distance: this.distance,
       fps: this.fps,
       paused: this.paused,
@@ -405,11 +472,19 @@ export class Game {
       readyForHighJump: this.player.jumpChargeLevel >= 0.999,
       windLiftTimer: this.windLiftTimer,
       noteCount: this.noteCount,
+      score: Math.round(this.score),
+      stallWarning: Math.min(1, this.stallTimer / 1.15),
+      stallPenaltyActive: this.stallPenaltyActive,
+      difficulty: this.difficulty,
     });
   }
 
   private get distance(): number {
     return Math.max(0, this.player.position.x - 120);
+  }
+
+  private get difficulty(): number {
+    return Math.max(0, Math.min(1, this.distance / this.goalDistance));
   }
 
   private readonly handleResize = () => {

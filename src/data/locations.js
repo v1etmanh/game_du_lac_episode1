@@ -50,7 +50,7 @@ export const LOCATIONS = [
     description: 'Bãi gió rộng nơi trẻ con trong làng thường rủ nhau thả diều.',
     image: '/landscape/canh_dong.png',
     npc: null,
-    unlocked: false,
+    unlocked: true,
     completed: false,
   },
   {

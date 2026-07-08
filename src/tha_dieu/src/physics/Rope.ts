@@ -7,7 +7,7 @@ const noAssist: KiteAssist = {
   horizontalAcceleration: 0,
   speedLimitBonus: 0,
   runSpeedMultiplier: 1,
-  speedLimitBase: 520,
+  speedLimitBase: 600,
   jumpBoost: 0,
   gravityRelief: 0,
   drag: 0,
@@ -15,7 +15,7 @@ const noAssist: KiteAssist = {
 
 export class Rope {
   length = 220;
-  readonly minLength = 90;
+  readonly minLength = 72;
   readonly absoluteMaxLength = 390;
   maxLength = 390;
   tension = 0;
@@ -56,7 +56,7 @@ export class Rope {
       horizontalAcceleration: kiteAhead * 1180 - kiteBehind * 760,
       speedLimitBonus: kiteAhead * 190,
       runSpeedMultiplier: 0.2 + Math.pow(lengthRatio, 1.35) * 1.12,
-      speedLimitBase: 135 + Math.pow(lengthRatio, 1.22) * 485,
+      speedLimitBase: 155 + Math.pow(lengthRatio, 1.18) * 540,
       jumpBoost: shortRopeJumpBoost - lowKite * engagement * 70,
       gravityRelief: highKite * engagement * 90,
       drag: kiteBehind * 0.07 + lowKite * engagement * 0.035 + shortRopeDrag,

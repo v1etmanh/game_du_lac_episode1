@@ -58,7 +58,7 @@ export default function App() {
     const forceUnlock = GAME_CONFIG.UNLOCK_ALL_LOCATIONS
     return LOCATIONS.map((location) => ({
       ...location,
-      unlocked: forceUnlock || unlockedLocations.has(location.id),
+      unlocked: forceUnlock || location.unlocked || unlockedLocations.has(location.id),
       completed: completedLocations.has(location.id),
     }))
   }, [completedLocations, unlockedLocations])

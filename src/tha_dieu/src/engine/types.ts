@@ -4,6 +4,9 @@ export interface GameSnapshot {
   ropeLength: number;
   minRopeLength: number;
   maxRopeLength: number;
+  ropeCommand: "shorten" | "release" | null;
+  ropeLimit: "min" | "max" | null;
+  ropeSpeed: number;
   distance: number;
   fps: number;
   paused: boolean;
@@ -18,6 +21,10 @@ export interface GameSnapshot {
   readyForHighJump: boolean;
   windLiftTimer: number;
   noteCount: number;
+  score: number;
+  stallWarning: number;
+  stallPenaltyActive: boolean;
+  difficulty: number;
 }
 
 export interface KiteAssist {
