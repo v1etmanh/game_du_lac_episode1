@@ -4,51 +4,85 @@
   "nodes": {
     "root": {
       "speaker": "npc",
-      "text": "Chao co/chu, sap co man ngon khong?",
+      "text": "Chào cô/chú, sạp có mận ngon không?",
       "options": [
-        { "label": "Da man nha con vua hai sang nay, ngot lam a!", "next": "ask_price" },
-        { "label": "Man hoi chua, nhung re a.", "next": "ask_price_sour" }
+        {
+          "label": "Dạ mận nhà con vừa hái sáng nay, ngọt lắm ạ!",
+          "next": "ask_price"
+        },
+        {
+          "label": "Mận hơi chua, nhưng rẻ ạ.",
+          "next": "ask_price_sour"
+        }
       ]
     },
     "ask_price": {
       "speaker": "npc",
-      "text": "Vay ban sao 1 ky?",
+      "text": "Vậy bán sao 1 ký?",
       "options": [
-        { "label": "Da 20 ngan 1 ky a!", "next": "ask_amount" },
-        { "label": "Da 35 ngan 1 ky a.", "next": "leaf_decline_price" }
+        {
+          "label": "Dạ 20 ngàn 1 ký ạ!",
+          "next": "ask_amount"
+        },
+        {
+          "label": "Dạ 35 ngàn 1 ký ạ.",
+          "next": "leaf_decline_price"
+        }
       ]
     },
     "ask_price_sour": {
       "speaker": "npc",
-      "text": "Chua vay chac con nit no thich, cho toi it thu nha.",
+      "text": "Chua vậy chắc con nít nó thích, cho tôi ít thử nha.",
       "options": [
-        { "label": "Da, con can lien!", "next": "leaf_buy_small" },
-        { "label": "Da het hang roi a.", "next": "leaf_decline_stock" }
+        {
+          "label": "Dạ, con cân liền!",
+          "next": "leaf_buy_small"
+        },
+        {
+          "label": "Dạ hết hàng rồi ạ.",
+          "next": "leaf_decline_stock"
+        }
       ]
     },
     "ask_amount": {
       "speaker": "npc",
-      "text": "Vay cho toi 0.5 ky nha.",
+      "text": "Vậy cho tôi 0.5 ký nha.",
       "options": [
-        { "label": "Da con can cho co/chu lien!", "next": "leaf_buy_medium" },
-        { "label": "Da bao bi het roi a.", "next": "leaf_decline_stock" }
+        {
+          "label": "Dạ con cân cho cô/chú liền!",
+          "next": "leaf_buy_medium"
+        },
+        {
+          "label": "Dạ bao bì hết rồi ạ.",
+          "next": "leaf_decline_stock"
+        }
       ]
     },
     "leaf_buy_small": {
-      "leaf": true, "outcome": "buy", "weightKg": 0.3,
-      "speaker": "npc", "text": "Cho toi 0.3 ky thoi, thu truoc da."
+      "leaf": true,
+      "outcome": "buy",
+      "weightKg": 0.3,
+      "speaker": "npc",
+      "text": "Cho tôi 0.3 ký thôi, thử trước đã."
     },
     "leaf_buy_medium": {
-      "leaf": true, "outcome": "buy", "weightKg": 0.5,
-      "speaker": "npc", "text": "0.5 ky nha, can ky vo nghe!"
+      "leaf": true,
+      "outcome": "buy",
+      "weightKg": 0.5,
+      "speaker": "npc",
+      "text": "0.5 ký nha, cân kỹ vô nghen!"
     },
     "leaf_decline_price": {
-      "leaf": true, "outcome": "no_buy",
-      "speaker": "npc", "text": "Troi, mac vay thoi toi qua sap khac."
+      "leaf": true,
+      "outcome": "no_buy",
+      "speaker": "npc",
+      "text": "Trời, mắc vậy thôi tôi qua sạp khác."
     },
     "leaf_decline_stock": {
-      "leaf": true, "outcome": "no_buy",
-      "speaker": "npc", "text": "Vay thoi, lan sau ghe lai."
+      "leaf": true,
+      "outcome": "no_buy",
+      "speaker": "npc",
+      "text": "Vậy thôi, lần sau ghé lại."
     }
   }
 }

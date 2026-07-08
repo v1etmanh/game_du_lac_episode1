@@ -31,7 +31,7 @@ export default function DialogBox({ customerName, tree, onFinish }) {
 
         {node.leaf ? (
           <button style={styles.btn} onClick={finishFromLeaf}>
-            {node.outcome === 'buy' ? 'Can hang ngay!' : 'Thoi vay...'}
+            {node.outcome === 'buy' ? 'Cân hàng ngay!' : 'Thôi vậy...'}
           </button>
         ) : (
           <div style={styles.options}>
