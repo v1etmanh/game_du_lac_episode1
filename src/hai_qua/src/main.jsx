@@ -30,14 +30,22 @@ const POWER_TYPES = [
 ];
 
 const PHASE_CONFIG = {
-  1: { trees: 3, fruitsPerTree: 1, dropInterval: 10, fallMin: 6, fallMax: 7 },
-  2: { trees: 4, fruitsPerTree: 1, dropInterval: 10, fallMin: 6, fallMax: 10 },
-  3: { trees: 4, fruitsPerTree: 2, dropInterval: 10, fallMin: 5, fallMax: 9 },
-  4: { trees: 5, fruitsPerTree: 2, dropInterval: 8, fallMin: 4, fallMax: 8 },
-  5: { trees: 5, fruitsPerTree: 3, dropInterval: 8, fallMin: 4, fallMax: 7 },
-  6: { trees: 6, fruitsPerTree: 3, dropInterval: 6, fallMin: 3, fallMax: 6 },
-  7: { trees: 6, fruitsPerTree: 4, dropInterval: 6, fallMin: 3, fallMax: 5 },
+  1: { trees: 4, fruitsPerTree: 2, dropInterval: 8.5, fallMin: 5, fallMax: 7, hazardChance: 0, hazardDrops: 0 },
+  2: { trees: 5, fruitsPerTree: 2, dropInterval: 8, fallMin: 5, fallMax: 8, hazardChance: 0.24, hazardDrops: 1 },
+  3: { trees: 6, fruitsPerTree: 2, dropInterval: 7.5, fallMin: 4, fallMax: 8, hazardChance: 0.34, hazardDrops: 1 },
+  4: { trees: 7, fruitsPerTree: 3, dropInterval: 7, fallMin: 4, fallMax: 7, hazardChance: 0.46, hazardDrops: 1 },
+  5: { trees: 8, fruitsPerTree: 3, dropInterval: 6, fallMin: 3, fallMax: 7, hazardChance: 0.58, hazardDrops: 2 },
+  6: { trees: 9, fruitsPerTree: 4, dropInterval: 5.4, fallMin: 3, fallMax: 6, hazardChance: 0.68, hazardDrops: 2 },
+  7: { trees: 10, fruitsPerTree: 4, dropInterval: 4.8, fallMin: 2.8, fallMax: 5.4, hazardChance: 0.78, hazardDrops: 3 },
 };
+
+const HAZARD_TYPES = [
+  { id: 'sau', src: '/item/sau.png', label: 'Sau', timePenalty: 3, slowDuration: 2.6 },
+  { id: 'quaThoi', src: '/item/qua_thoi.png', label: 'Qua thoi', timePenalty: 6, slowDuration: 1.4 },
+  { id: 'toKien', src: '/item/to_kien.png', label: 'To kien', timePenalty: 9, slowDuration: 3.2 },
+];
+
+const HAZARD_META = Object.fromEntries(HAZARD_TYPES.map((hazard) => [hazard.id, hazard]));
 
 const ASSETS = {
   background: '/background/ChatGPT%20Image%20Jul%201,%202026,%2009_56_02%20PM.png',
@@ -48,6 +56,7 @@ const ASSETS = {
     { id: 'oi', src: '/item/oi.png', label: 'Oi' },
     { id: 'man', src: '/item/man.png', label: 'Man' },
   ],
+  hazards: HAZARD_TYPES,
   character: {
     run: '/characters/run.png',
     catch: '/characters/catching.png',
@@ -165,6 +174,7 @@ function makeInitialState() {
     currentPhase: 1,
     dropTimer: 9.4,
     collected: 0,
+    hazardHits: 0,
     isRunning: true,
     success: false,
     gameOver: false,
@@ -172,6 +182,7 @@ function makeInitialState() {
     hangingFruits: [],
     fallingFruits: [],
     collectEffects: [],
+    hazardEffects: [],
     treePulses: TREE_LAYOUT.map(() => 0),
     emptyTreeTimers: TREE_LAYOUT.map(() => 0),
     magnetBasketCounter: 0,
@@ -186,6 +197,8 @@ function makeInitialState() {
       magnet: 0,
       timeStop: 0,
     },
+    slowTimer: 0,
+    hazardFlash: 0,
     catchPulse: 0,
     uiSecond: TOTAL_TIME,
     lanAnh: {
@@ -219,6 +232,7 @@ function makeFruitDrop(state, treeIndex, config, quick = false, sourceX = null, 
 
   state.fallingFruits.push({
     id: state.nextFruitId,
+    kind: 'fruit',
     treeIndex,
     type: tree.fruit,
     x,
@@ -228,6 +242,29 @@ function makeFruitDrop(state, treeIndex, config, quick = false, sourceX = null, 
     elapsed: 0,
     fallTime,
     size: fruitSize,
+  });
+  state.nextFruitId += 1;
+}
+
+function makeHazardDrop(state, treeIndex, config, delay = 0) {
+  const tree = TREE_LAYOUT[treeIndex];
+  const hazard = HAZARD_TYPES[Math.floor(Math.random() * HAZARD_TYPES.length)];
+  const spread = 92 * tree.scale;
+  const startY = tree.y - randomBetween(120, 190) * tree.scale;
+  const endY = tree.y + randomBetween(130, 172) * tree.scale;
+
+  state.fallingFruits.push({
+    id: state.nextFruitId,
+    kind: 'hazard',
+    treeIndex,
+    hazardType: hazard.id,
+    x: tree.x + randomBetween(-spread, spread),
+    startY,
+    y: startY,
+    endY,
+    elapsed: -delay,
+    fallTime: Math.max(0.95, randomBetween(config.fallMin, config.fallMax) * FALL_TIME_SCALE * 0.92),
+    size: 58 * tree.scale,
   });
   state.nextFruitId += 1;
 }
@@ -242,6 +279,7 @@ function makeRainFruitDrop(state, treeIndex, anchorIndex, delay = 0) {
 
   state.fallingFruits.push({
     id: state.nextFruitId,
+    kind: 'fruit',
     treeIndex,
     type: tree.fruit,
     x: startX,
@@ -298,6 +336,14 @@ function triggerDrop(state) {
       spawnHangingFruit(state, treeIndex, config);
     }
   }
+
+  if (config.hazardDrops > 0 && Math.random() < config.hazardChance) {
+    const hazardTrees = shuffle(activeTrees.length > 0 ? activeTrees : TREE_LAYOUT.map((_, index) => index))
+      .slice(0, config.hazardDrops);
+    for (const [hazardIndex, treeIndex] of hazardTrees.entries()) {
+      makeHazardDrop(state, treeIndex, config, hazardIndex * 0.25);
+    }
+  }
 }
 
 function drawSprite(ctx, image, config, frame, x, y, width, height, flip = false) {
@@ -352,14 +398,18 @@ const OrchardCanvas = forwardRef(function OrchardCanvas({ command, resetKey, onS
       loadImage(ASSETS.character.down),
       loadImage(ASSETS.character.up),
       ...ASSETS.fruits.map((fruit) => loadImage(fruit.src)),
-    ]).then(([background, tree, rauLang, run, catchImage, right, down, up, ...fruits]) => {
+      ...ASSETS.hazards.map((hazard) => loadImage(hazard.src)),
+    ]).then(([background, tree, rauLang, run, catchImage, right, down, up, ...loadedItems]) => {
       if (!active) return;
+      const fruits = loadedItems.slice(0, ASSETS.fruits.length);
+      const hazards = loadedItems.slice(ASSETS.fruits.length);
       assetsRef.current = {
         background,
         tree,
         rauLang,
         character: { run, catch: catchImage, right, down, up },
         fruits: Object.fromEntries(ASSETS.fruits.map((fruit, index) => [fruit.id, fruits[index]])),
+        hazards: Object.fromEntries(ASSETS.hazards.map((hazard, index) => [hazard.id, hazards[index]])),
       };
     });
 
@@ -471,6 +521,7 @@ function summarizeState(state) {
     harvested: state.collected,
     target: TARGET_FRUITS,
     remaining: Math.max(0, TARGET_FRUITS - state.collected),
+    hazardHits: state.hazardHits,
     phase: state.currentPhase,
     timeRemaining: Math.max(0, Math.ceil(state.timeRemaining)),
     success: state.success,
@@ -510,6 +561,8 @@ function updateGame(state, pressed, delta, fruitMeta, onHarvest, onStatsChange) 
 
   state.powerEffects.magnet = Math.max(0, state.powerEffects.magnet - delta);
   state.powerEffects.timeStop = Math.max(0, state.powerEffects.timeStop - delta);
+  state.slowTimer = Math.max(0, state.slowTimer - delta);
+  state.hazardFlash = Math.max(0, state.hazardFlash - delta);
 
   for (let index = 0; index < state.treePulses.length; index += 1) {
     state.treePulses[index] = Math.max(0, state.treePulses[index] - delta);
@@ -654,7 +707,8 @@ function updatePlayer(state, pressed, delta) {
 
   const sprinting = pressed.has('ShiftLeft') || pressed.has('ShiftRight');
   const speedBoost = state.powerEffects.timeStop > 0 ? 1.3 : 1;
-  const speed = (sprinting ? 330 : 140) * speedBoost;
+  const hazardSlow = state.slowTimer > 0 ? 0.56 : 1;
+  const speed = (sprinting ? 330 : 140) * speedBoost * hazardSlow;
   lanAnh.moving = dx !== 0 || dy !== 0;
   lanAnh.sprinting = sprinting && lanAnh.moving;
 
@@ -688,6 +742,14 @@ function updateCollectEffects(state, delta) {
       ...effect,
       life: effect.life - delta,
       y: effect.y - 28 * delta,
+    }))
+    .filter((effect) => effect.life > 0);
+
+  state.hazardEffects = state.hazardEffects
+    .map((effect) => ({
+      ...effect,
+      life: effect.life - delta,
+      y: effect.y - 18 * delta,
     }))
     .filter((effect) => effect.life > 0);
 }
@@ -835,11 +897,16 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
       }
     }
 
-    if (state.powerEffects.magnet > 0) {
+    if (state.powerEffects.magnet > 0 && fruit.kind !== 'hazard') {
       pullFruitTowardPlayer(state, fruit, delta);
     }
 
     if (isFruitTouchingPlayer(state, fruit)) {
+      if (fruit.kind === 'hazard') {
+        applyHazardHit(state, fruit, onStatsChange);
+        continue;
+      }
+
       const magnetHarvest = fruit.magnetized;
       state.collected += 1;
       state.catchPulse = 0.38;
@@ -866,6 +933,30 @@ function updateFruits(state, delta, fruitMeta, onHarvest, onStatsChange) {
   }
 
   state.fallingFruits = remaining;
+}
+
+function applyHazardHit(state, fruit, onStatsChange) {
+  const hazard = HAZARD_META[fruit.hazardType];
+  if (!hazard) return;
+
+  state.hazardHits += 1;
+  state.timeRemaining = Math.max(0, state.timeRemaining - hazard.timePenalty);
+  state.slowTimer = Math.max(state.slowTimer, hazard.slowDuration);
+  state.hazardFlash = 0.45;
+  state.hazardEffects.push({
+    x: fruit.x,
+    y: fruit.y,
+    label: `-${hazard.timePenalty}s`,
+    life: 0.9,
+    maxLife: 0.9,
+  });
+
+  if (state.timeRemaining <= 0) {
+    state.isRunning = false;
+    state.gameOver = true;
+  }
+
+  onStatsChange?.(summarizeState(state));
 }
 
 function shouldAddMagnetFruitToBasket(state) {
@@ -953,7 +1044,15 @@ function paint(ctx, assets, state, time) {
     drawCollectEffect(ctx, effect);
   }
 
+  for (const effect of state.hazardEffects) {
+    drawHazardEffect(ctx, effect);
+  }
+
   drawPowerEffects(ctx, state);
+
+  if (state.hazardFlash > 0) {
+    drawHazardFlash(ctx, state);
+  }
 
   if (state.success && !state.gameOver) {
     drawSuccessNotice(ctx, state);
@@ -1083,11 +1182,26 @@ function drawHangingFruit(ctx, assets, tree, fruit) {
 
 function drawFallingFruit(ctx, assets, fruit, time) {
   const bob = Math.sin(time * 5 + fruit.id) * 1.5;
+  const image = fruit.kind === 'hazard'
+    ? assets.hazards[fruit.hazardType]
+    : assets.fruits[fruit.type];
+  if (!image) return;
+
   ctx.save();
-  ctx.shadowColor = 'rgba(30, 24, 15, 0.32)';
-  ctx.shadowBlur = 8;
+  if (fruit.kind === 'hazard') {
+    const pulse = 0.5 + Math.sin(time * 8 + fruit.id) * 0.16;
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = '#ffef7b';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(fruit.x, fruit.y + bob, fruit.size * pulse, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  ctx.shadowColor = fruit.kind === 'hazard' ? 'rgba(90, 26, 18, 0.42)' : 'rgba(30, 24, 15, 0.32)';
+  ctx.shadowBlur = fruit.kind === 'hazard' ? 12 : 8;
   ctx.shadowOffsetY = 6;
-  ctx.drawImage(assets.fruits[fruit.type], fruit.x - fruit.size / 2, fruit.y - fruit.size / 2 + bob, fruit.size, fruit.size);
+  ctx.drawImage(image, fruit.x - fruit.size / 2, fruit.y - fruit.size / 2 + bob, fruit.size, fruit.size);
   ctx.restore();
 }
 
@@ -1120,6 +1234,37 @@ function drawCollectEffect(ctx, effect) {
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
+  ctx.restore();
+}
+
+function drawHazardEffect(ctx, effect) {
+  const progress = 1 - effect.life / effect.maxLife;
+  const alpha = Math.max(0, effect.life / effect.maxLife);
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = 'rgba(82, 20, 16, 0.82)';
+  ctx.strokeStyle = 'rgba(255, 231, 132, 0.88)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(effect.x - 28, effect.y - 42 - progress * 18, 56, 28, 8);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#ffe784';
+  ctx.font = '900 15px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(effect.label, effect.x, effect.y - 28 - progress * 18);
+  ctx.restore();
+}
+
+function drawHazardFlash(ctx, state) {
+  const alpha = Math.min(0.22, state.hazardFlash * 0.38);
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = '#ff4d2e';
+  ctx.fillRect(0, 0, WORLD.width, WORLD.height);
   ctx.restore();
 }
 
@@ -1515,6 +1660,10 @@ function App() {
             <div>
               <span className="hud-label">Pha</span>
               <strong>{stats.phase}</strong>
+            </div>
+            <div>
+              <span className="hud-label">Bay</span>
+              <strong>{stats.hazardHits}</strong>
             </div>
             <div>
               <span className="hud-label">Gio</span>

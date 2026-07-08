@@ -14,6 +14,7 @@ const CONTROLS = [
 const TIPS = [
   'Quả rơi sẽ biến mất nếu chạm đất — canh vị trí đứng dưới tán cây trước khi rung.',
   'Càng về sau, cây ra nhiều quả hơn và quả rơi nhanh hơn — ưu tiên cây gần nhất.',
+  'Từ pha 2 sẽ có sâu, quả thối và tổ kiến rơi xuống — né chúng để không bị trừ giờ.',
   'Nhảy qua luống rau để rút ngắn đường chạy giữa các gốc cây.',
 ]
 
