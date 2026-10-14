@@ -34,7 +34,7 @@ export class RenderSystem {
     context.clearRect(0, 0, width, height);
     this.drawSky(context, width, height);
     this.drawClouds(context, width, height, frame.camera.position.x * 0.4);
-    this.drawMountains(context, width, height, frame.groundY - frame.camera.position.y+50, frame.camera.position.x * 0.7);
+    this.drawMountains(context, width, height, frame.groundY - frame.camera.position.y, frame.camera.position.x * 0.7);
     this.withWorld(context, frame.camera, () => {
       this.drawGround(context, width, frame.groundY, frame.camera.position.x);
       frame.windGusts.forEach((gust) => this.drawWindGust(context, gust));
@@ -167,10 +167,14 @@ export class RenderSystem {
       const sourceY = groundImage.naturalHeight * trim;
       const sourceHeight = groundImage.naturalHeight - sourceY;
       const aspect = groundImage.naturalWidth / sourceHeight;
-      const drawHeight = 150;
+      const drawHeight = 175;
       const drawWidth = drawHeight * aspect;
       const startX = Math.floor((cameraX - drawWidth) / drawWidth) * drawWidth;
       const endX = cameraX + width + drawWidth;
+
+      // Lớp đất ngầm sâu lấp đầy toàn bộ đáy màn hình đảm bảo không bao giờ bị hở
+      context.fillStyle = "#5c2a16";
+      context.fillRect(startX, groundY + 120, endX - startX, 800);
 
       for (let x = startX; x <= endX; x += drawWidth) {
         context.drawImage(
@@ -180,7 +184,7 @@ export class RenderSystem {
           groundImage.naturalWidth,
           sourceHeight,
           x,
-          groundY - 12,
+          groundY - 14,
           drawWidth,
           drawHeight,
         );
@@ -668,9 +672,24 @@ export class RenderSystem {
   }
 
   private drawMusicNote(context: CanvasRenderingContext2D, note: MusicNote): void {
+    const noteImage = AssetLoader.get("fluteNote");
     const x = note.position.x;
     const y = note.position.y;
+    const bob = Math.sin(performance.now() * 0.005 + x * 0.03) * 4;
     const glow = 0.55 + Math.sin(performance.now() * 0.006 + x * 0.02) * 0.18;
+
+    if (noteImage) {
+      context.save();
+      context.translate(x, y + bob);
+      context.shadowColor = "rgba(255, 229, 119, 0.85)";
+      context.shadowBlur = 12 + glow * 8;
+      const size = 36;
+      const aspect = noteImage.naturalWidth / noteImage.naturalHeight;
+      const drawW = size * aspect;
+      context.drawImage(noteImage, -drawW / 2, -size / 2, drawW, size);
+      context.restore();
+      return;
+    }
 
     context.save();
     context.translate(x, y);

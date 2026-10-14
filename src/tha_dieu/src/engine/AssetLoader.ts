@@ -21,7 +21,8 @@ export type AssetKey =
   | "kiteBody"
   | "kiteTail"
   | "character"
-  | "bird";
+  | "bird"
+  | "fluteNote";
 
 const MANIFEST: Record<AssetKey, string> = {
   cloud: "/tha_dieu/cloud.png",
@@ -47,6 +48,7 @@ const MANIFEST: Record<AssetKey, string> = {
   kiteTail: "/tha_dieu/day_dieu.png",
   character: "/tha_dieu/nha_vat.png",
   bird: "/tha_dieu/chim.png",
+  fluteNote: "/tha_dieu/item_flute_note.png",
 };
 
 class AssetLoaderImpl {
