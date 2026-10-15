@@ -56,3 +56,6 @@ src/o_an_quan/dist/
 # Testing
 .mocha-skipped
 .jest
+
+# Local analytics events (dev fallback when Supabase is not configured)
+.data/

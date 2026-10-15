@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { getLocations } from '../data/locations.js'
 import LocationCard from './LocationCard.jsx'
+import { track } from '../analytics/track.js'
 import './LocationMap.css'
 
 const BG_IMAGE = '/background/Gemini_Generated_Image_493p7z493p7z493p.png'
@@ -12,6 +13,7 @@ export default function LocationMap({ onBack, onEnterLocation, unlockAll = false
 
   const handleCardClick = (location) => {
     if (!location.unlocked) {
+      track('location_locked_click', location.id)
       setShakingId(location.id)
       setTimeout(() => setShakingId(null), 350)
       return

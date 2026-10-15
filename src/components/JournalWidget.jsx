@@ -14,6 +14,7 @@ import { TravelJournalCanvas } from '../nhat_ki/src/components/TravelJournalCanv
 import { journalEntries } from '../nhat_ki/src/data/journalEntries.ts'
 import '../nhat_ki/src/App.css'
 import './JournalWidget.css'
+import { track } from '../analytics/track.js'
 
 // Widget "sổ nhật kí" đặt ở góc phải màn hình.
 // - Thu gọn: 1 nút tròn hình cuốn sổ + badge tiến độ (vd 2/6).
@@ -76,7 +77,10 @@ export default function JournalWidget() {
       <button
         type="button"
         className="journal-fab"
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          track('journal_open')
+          setIsOpen(true)
+        }}
         aria-label={`Mở nhật kí - đã khám phá ${unlockedCount} trên ${journalEntries.length} trang`}
       >
         <BookOpen size={22} aria-hidden="true" />
