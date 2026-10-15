@@ -1,3 +1,4 @@
+import './_lib/env.js'
 import { createRequire } from 'module'
 import {
   createInitialCaseFile,

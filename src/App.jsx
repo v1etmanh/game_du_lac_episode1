@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { GAME_CONFIG } from './config/gameConfig'
 import IntroSequence from './components/IntroSequence.jsx'
 import LocationMap from './components/LocationMap.jsx'
@@ -13,6 +13,7 @@ import NhaCuQuest from './games/nha_cu/NhaCuQuest.jsx'
 import PhongSuGame from './games/phong_su/PhongSuGame.jsx'
 import LuaGaGame from './games/lua_ga/LuaGaGame.jsx'
 import { LOCATIONS } from './data/locations.js'
+import { setScreen as trackScreen, track } from './analytics/track.js'
 import './App.css'
 
 const INTERVIEW_BY_LOCATION = {
@@ -53,6 +54,18 @@ export default function App() {
   const [activeLocation, setActiveLocation] = useState(null)
   const [unlockedLocations, setUnlockedLocations] = useState(() => new Set(['cong_lang']))
   const [completedLocations, setCompletedLocations] = useState(() => new Set())
+  const minigameStartRef = useRef(null)
+
+  useEffect(() => {
+    trackScreen(screen, screen === 'map' ? null : activeLocation?.id)
+    if (screen === 'minigame' && activeLocation) {
+      minigameStartRef.current = Date.now()
+      track('minigame_start', activeLocation.id)
+    }
+    if (screen === 'interview' && activeLocation) {
+      track('interview_start', activeLocation.id)
+    }
+  }, [screen, activeLocation])
 
   const locations = useMemo(() => {
     const forceUnlock = GAME_CONFIG.UNLOCK_ALL_LOCATIONS
@@ -64,6 +77,7 @@ export default function App() {
   }, [completedLocations, unlockedLocations])
 
   const completeLocation = (locationId) => {
+    track('location_complete', locationId)
     setCompletedLocations((previousCompleted) => {
       const nextCompleted = new Set(previousCompleted)
       nextCompleted.add(locationId)
@@ -82,12 +96,14 @@ export default function App() {
   }
 
   const handleEnterLocation = (location) => {
+    track('location_enter', location.id)
     setActiveLocation(location)
     setScreen('dialog')
   }
 
   const handleDialogFinish = () => {
     if (!activeLocation) return
+    track('dialog_finish', activeLocation.id, { phase: 'main' })
     if (INTERVIEW_BY_LOCATION[activeLocation.id]) {
       setScreen('interview')
       return
@@ -103,6 +119,7 @@ export default function App() {
 
   const handlePostInterviewFinish = () => {
     if (!activeLocation) return
+    track('dialog_finish', activeLocation.id, { phase: 'after_interview' })
     if (MINIGAME_LOCATIONS.has(activeLocation.id)) {
       setScreen('minigame')
       return
@@ -113,6 +130,11 @@ export default function App() {
   }
 
   const handleMinigameExit = () => {
+    if (activeLocation) {
+      const startedAt = minigameStartRef.current
+      track('minigame_exit', activeLocation.id, { duration_ms: startedAt ? Date.now() - startedAt : null })
+      minigameStartRef.current = null
+    }
     if (!activeLocation) {
       setScreen('map')
       return
@@ -128,6 +150,7 @@ export default function App() {
 
   const handlePostGameDialogFinish = () => {
     if (activeLocation) {
+      track('dialog_finish', activeLocation.id, { phase: 'after_game' })
       completeLocation(activeLocation.id)
     }
     setScreen('map')
@@ -137,7 +160,12 @@ export default function App() {
     <div className="app-root">
       <JournalWidget />
       {screen === 'intro' && (
-        <IntroSequence onFinish={() => setScreen('map')} />
+        <IntroSequence
+          onFinish={() => {
+            track('intro_finish')
+            setScreen('map')
+          }}
+        />
       )}
       {screen === 'map' && (
         <LocationMap
@@ -156,8 +184,14 @@ export default function App() {
       {screen === 'interview' && activeLocation && INTERVIEW_BY_LOCATION[activeLocation.id] && (
         <PhongSuGame
           npcId={INTERVIEW_BY_LOCATION[activeLocation.id]}
-          onExit={() => setScreen('map')}
-          onComplete={() => setScreen('postInterviewDialog')}
+          onExit={() => {
+            track('interview_exit', activeLocation.id)
+            setScreen('map')
+          }}
+          onComplete={() => {
+            track('interview_complete', activeLocation.id)
+            setScreen('postInterviewDialog')
+          }}
         />
       )}
       {screen === 'postInterviewDialog' && activeLocation && (

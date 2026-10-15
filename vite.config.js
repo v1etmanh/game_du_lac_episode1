@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv, transformWithEsbuild } from 'vite'
 import react from '@vitejs/plugin-react'
+import { existsSync } from 'fs'
 
 async function readJsonBody(req) {
   const chunks = []
@@ -42,14 +43,13 @@ function localApiPlugin() {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const { pathname } = new URL(req.url, 'http://localhost')
-        if (pathname !== '/api/interview-turn' && pathname !== '/api/health') {
+        const match = /^\/api\/([a-z0-9-]+)$/.exec(pathname)
+        if (!match || !existsSync(`./api/${match[1]}.js`)) {
           return next()
         }
 
         try {
-          const modulePath = pathname === '/api/interview-turn'
-            ? './api/interview-turn.js'
-            : './api/health.js'
+          const modulePath = `./api/${match[1]}.js`
           const { default: handler } = await import(modulePath)
           req.body = await readJsonBody(req)
           return handler(req, createNodeResponse(res))
