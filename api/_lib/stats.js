@@ -80,10 +80,11 @@ function describe(e) {
   }
 }
 
-export function buildStats(events, { from, to }) {
+export function buildStats(rawEvents, { from, to }) {
+  const events = rawEvents.filter((e) => e && e.session_id && e.session_id !== '__account__')
   const sessions = new Map()
   for (const e of events) {
-    if (!e.session_id) continue
+    if (!e.session_id || e.session_id === '__account__') continue
     let s = sessions.get(e.session_id)
     if (!s) {
       s = { id: e.session_id, player: e.player_id, events: [], info: {} }

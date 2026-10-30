@@ -114,6 +114,12 @@ export function track(event, locationId = null, props = {}) {
   if (queue.length >= MAX_BATCH) flush()
 }
 
+export function setPlayerAccount(username) {
+  if (!username) return
+  playerId = `user:${String(username).trim().toLowerCase().slice(0, 48)}`
+  safeSet(localStorage, 'dl_player_id', playerId)
+}
+
 export function setScreen(screen, locationId = null) {
   if (screen === currentScreen) return
   currentScreen = screen

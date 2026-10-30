@@ -16,23 +16,24 @@ import '../nhat_ki/src/App.css'
 import './JournalWidget.css'
 import { track } from '../analytics/track.js'
 
-// Widget "sổ nhật kí" đặt ở góc phải màn hình.
-// - Thu gọn: 1 nút tròn hình cuốn sổ + badge tiến độ (vd 2/6).
-// - Mở rộng: overlay hiển thị lại UI nhật kí gốc (từ demo nhat_ki), thu nhỏ vừa modal.
-//
-// TODO tích hợp gameplay thật: hiện tại unlockEntry() chỉ được gọi từ panel
-// "Sự kiện mở khóa" (giả lập) bên trong widget. Để tự mở khóa khi người chơi
-// gặp NPC / xong hội thoại thật, cần quyết định ánh xạ giữa id trong
-// journalEntries.ts (dan-bau, o-an-quan, cho-viet-nam, den-lang, hoi-lang,
-// mien-bac) và id địa điểm/hội thoại thật trong src/data/locations.js,
-// src/dialog/*.json (ao_lang, cho, chua, cong_lang, den_lang, gieng_lang,
-// nha_ba_ngan, nha_ba_tu, nha_hung, nha_minh, ruong, vuon_cay) - hai bộ id
-// này hiện không khớp 1-1 nên chưa tự nối được, cần làm ở bước sau.
-export default function JournalWidget() {
+export default function JournalWidget({
+  unlockedIds: controlledUnlockedIds,
+  onChangeUnlockedIds,
+}) {
   const [isOpen, setIsOpen] = useState(false)
-  const [unlockedIds, setUnlockedIds] = useState(() => new Set())
+  const [internalUnlockedIds, setInternalUnlockedIds] = useState(() => new Set())
   const [activeId, setActiveId] = useState(journalEntries[0].id)
   const [currentSpread, setCurrentSpread] = useState(0)
+
+  const unlockedIds = controlledUnlockedIds ?? internalUnlockedIds
+  const updateUnlockedIds = (updater) => {
+    const next = typeof updater === 'function' ? updater(unlockedIds) : updater
+    if (onChangeUnlockedIds) {
+      onChangeUnlockedIds(next)
+    } else {
+      setInternalUnlockedIds(next)
+    }
+  }
 
   const activeEntry = useMemo(
     () => journalEntries.find((entry) => entry.id === activeId) ?? journalEntries[0],
@@ -51,7 +52,7 @@ export default function JournalWidget() {
 
   const unlockEntry = (id) => {
     goToEntry(id)
-    setUnlockedIds((current) => {
+    updateUnlockedIds((current) => {
       const next = new Set(current)
       next.add(id)
       return next
@@ -59,13 +60,13 @@ export default function JournalWidget() {
   }
 
   const resetJournal = () => {
-    setUnlockedIds(new Set())
+    updateUnlockedIds(new Set())
     setActiveId(journalEntries[0].id)
     setCurrentSpread(0)
   }
 
   const revealAll = () => {
-    setUnlockedIds(new Set(journalEntries.map((entry) => entry.id)))
+    updateUnlockedIds(new Set(journalEntries.map((entry) => entry.id)))
   }
 
   const goPrevious = () => setCurrentSpread((page) => Math.max(0, page - 2))
@@ -129,8 +130,8 @@ export default function JournalWidget() {
                   <div className="panel-heading">
                     <Sparkles size={20} aria-hidden="true" />
                     <div>
-                      <h2>Sự kiện mở khóa</h2>
-                      <p>Bấm để giả lập việc vừa khám phá kiến thức (tạm thời, chờ nối vào gameplay thật).</p>
+                      <h2>Trang nhật kí hành trình</h2>
+                      <p>Tự động mở khóa khi bạn đi qua các địa điểm trong làng hoặc bấm để xem nhanh.</p>
                     </div>
                   </div>
 
