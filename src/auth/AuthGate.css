@@ -1,3 +1,6 @@
+/* Georgia lacks Vietnamese stacked diacritics (ề, ắ...), so use Merriweather like the rest of the game. */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap&subset=vietnamese');
+
 .auth-screen-root {
   width: 100%;
   height: 100%;
@@ -7,9 +10,11 @@
   justify-content: center;
   padding: 20px;
   background-image: url('/background/Gemini_Generated_Image_493p7z493p7z493p.png');
+  background-color: #14100a;
   background-size: cover;
   background-position: center;
   overflow-y: auto;
+  font-family: 'Merriweather', 'Noto Serif', 'Times New Roman', serif;
 }
 
 .auth-screen-backdrop {
@@ -40,7 +45,7 @@
 
 .auth-card-header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .auth-badge {
@@ -68,97 +73,12 @@
 .auth-card-header p {
   font-size: 0.88rem;
   color: #cbbba0;
-  line-height: 1.45;
+  line-height: 1.55;
   margin: 0;
 }
 
-.auth-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 5px;
-  background: rgba(15, 11, 7, 0.65);
-  border: 1px solid rgba(244, 233, 216, 0.12);
-  border-radius: 12px;
-  margin-bottom: 18px;
-}
-
-.auth-tab {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 9px 12px;
-  border-radius: 9px;
-  border: none;
-  background: transparent;
-  color: #b7a88e;
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-
-.auth-tab:hover {
-  color: #f4e9d8;
-}
-
-.auth-tab.active {
-  background: linear-gradient(135deg, #d9ae45, #b88428);
-  color: #1f170d;
-  box-shadow: 0 4px 12px rgba(217, 174, 69, 0.28);
-}
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.auth-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.83rem;
-  color: #dfd1b8;
-  font-weight: 500;
-}
-
-.auth-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.auth-input-icon {
-  position: absolute;
-  left: 13px;
-  color: #b79c68;
-  pointer-events: none;
-}
-
-.auth-input-wrap input {
-  width: 100%;
-  padding: 11px 14px 11px 40px;
-  border-radius: 10px;
-  border: 1px solid rgba(244, 233, 216, 0.2);
-  background: rgba(16, 12, 8, 0.72);
-  color: #f9f1e2;
-  font-size: 0.92rem;
-  outline: none;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.auth-input-wrap input::placeholder {
-  color: rgba(203, 187, 160, 0.48);
-}
-
-.auth-input-wrap input:focus {
-  border-color: #e0b84c;
-  box-shadow: 0 0 0 3px rgba(224, 184, 76, 0.18);
-}
-
 .auth-error {
+  margin-bottom: 14px;
   padding: 10px 12px;
   border-radius: 10px;
   background: rgba(185, 56, 44, 0.22);
@@ -168,9 +88,13 @@
   line-height: 1.4;
 }
 
-.auth-submit-btn {
-  margin-top: 4px;
-  padding: 12px 18px;
+.auth-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 18px;
   border-radius: 11px;
   border: 1px solid rgba(255, 236, 179, 0.4);
   background: linear-gradient(135deg, #e2b94e, #be892b);
@@ -178,18 +102,29 @@
   font-size: 0.96rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  text-decoration: none;
   cursor: pointer;
   transition: transform 140ms ease, filter 140ms ease;
 }
 
-.auth-submit-btn:hover:not(:disabled) {
+.auth-google-btn:hover {
   transform: translateY(-1px);
   filter: brightness(1.06);
 }
 
-.auth-submit-btn:disabled {
-  opacity: 0.65;
-  cursor: wait;
+.auth-google-btn:focus-visible {
+  outline: 2px solid #f7ecd5;
+  outline-offset: 3px;
+}
+
+.auth-google-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
 }
 
 .auth-footer-note {
@@ -209,3 +144,8 @@
   color: #7fd19b;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .auth-google-btn {
+    transition: none;
+  }
+}

@@ -15,3 +15,20 @@ create index if not exists events_session_idx on public.events (session_id);
 
 -- RLS on with no policies: only the service role key (used by /api) can read or write.
 alter table public.events enable row level security;
+
+-- Players who signed in with Google (id = Google account "sub").
+create table if not exists public.users (
+  id text primary key,
+  email text,
+  name text,
+  picture text,
+  email_verified boolean,
+  locale text,
+  created_at timestamptz not null default now(),
+  last_login_at timestamptz not null default now(),
+  login_count integer not null default 1
+);
+
+create index if not exists users_created_at_idx on public.users (created_at);
+
+alter table public.users enable row level security;

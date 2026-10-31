@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { CheckCircle2, LogOut, RotateCcw, User } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { CheckCircle2, ChevronDown, LogOut, RotateCcw, User } from 'lucide-react'
 import { getLocations } from '../data/locations.js'
 import LocationCard from './LocationCard.jsx'
 import { track } from '../analytics/track.js'
@@ -23,6 +23,24 @@ export default function LocationMap({
     () => lastLocationId || locations[0]?.id,
   )
   const [shakingId, setShakingId] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    const onPointer = (e) => {
+      if (!menuRef.current?.contains(e.target)) setMenuOpen(false)
+    }
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointer)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onPointer)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
 
   useEffect(() => {
     if (lastLocationId && locations.some((l) => l.id === lastLocationId)) {
@@ -67,14 +85,26 @@ export default function LocationMap({
         </div>
 
         {user && (
-          <div className="player-journey-bar">
-            <div className="player-journey-info">
+          <div className="player-journey-bar" ref={menuRef}>
+            <button
+              type="button"
+              className="player-journey-info"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              aria-label="Tài khoản"
+            >
               <span className="player-journey-avatar">
-                <User size={15} />
+                {user.picture ? (
+                  <img src={user.picture} alt="" referrerPolicy="no-referrer" />
+                ) : (
+                  <User size={15} />
+                )}
               </span>
               <div className="player-journey-text">
                 <div className="player-journey-name">
-                  {user.displayName || user.username}
+                  {user.name || user.email}
+                  <ChevronDown size={14} className={`player-journey-chevron${menuOpen ? ' open' : ''}`} />
                 </div>
                 <div className="player-journey-meta">
                   <span>
@@ -86,7 +116,7 @@ export default function LocationMap({
                   </span>
                 </div>
               </div>
-            </div>
+            </button>
 
             <div className="player-journey-actions">
               {completedCount > 0 && onResetProgress && (
@@ -100,18 +130,22 @@ export default function LocationMap({
                   <span>Đi lại</span>
                 </button>
               )}
-              {onLogout && (
-                <button
-                  type="button"
-                  className="player-action-btn logout"
-                  onClick={onLogout}
-                  title="Đăng xuất / Đổi tài khoản"
-                >
-                  <LogOut size={14} />
-                  <span>Đăng xuất</span>
-                </button>
-              )}
             </div>
+
+            {menuOpen && (
+              <div className="player-menu" role="menu">
+                <div className="player-menu-account">
+                  <span>Đăng nhập bằng Google</span>
+                  {user.email && <strong>{user.email}</strong>}
+                </div>
+                {onLogout && (
+                  <button type="button" role="menuitem" className="player-menu-item logout" onClick={onLogout}>
+                    <LogOut size={15} aria-hidden="true" />
+                    Đăng xuất
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

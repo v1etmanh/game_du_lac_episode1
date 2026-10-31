@@ -114,10 +114,12 @@ export function track(event, locationId = null, props = {}) {
   if (queue.length >= MAX_BATCH) flush()
 }
 
-export function setPlayerAccount(username) {
-  if (!username) return
-  playerId = `user:${String(username).trim().toLowerCase().slice(0, 48)}`
-  safeSet(localStorage, 'dl_player_id', playerId)
+// Links this session to the signed-in Google account (the server reads the id from the cookie).
+export function identify(userId) {
+  if (!enabled || !userId || safeGet(sessionStorage, 'dl_identified') === userId) return
+  safeSet(sessionStorage, 'dl_identified', userId)
+  track('user_identify')
+  flush()
 }
 
 export function setScreen(screen, locationId = null) {

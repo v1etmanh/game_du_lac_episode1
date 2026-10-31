@@ -428,6 +428,7 @@ html.admin-mode #root {
 .span-6 { grid-column: span 6; }
 .span-5 { grid-column: span 5; }
 .span-4 { grid-column: span 4; }
+.span-3 { grid-column: span 3; }
 
 .adm-kpis {
   display: grid;
@@ -801,6 +802,39 @@ html.admin-mode #root {
   color: var(--primary);
 }
 
+.adm-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.adm-user > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.adm-user small {
+  color: var(--muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface-3);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .adm-device {
   display: inline-flex;
   align-items: center;
@@ -1039,6 +1073,16 @@ html.admin-mode #root {
   .span-6,
   .span-5,
   .span-4 {
+    grid-column: span 12;
+  }
+
+  .span-3 {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 640px) {
+  .span-3 {
     grid-column: span 12;
   }
 }

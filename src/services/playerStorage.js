@@ -1,5 +1,5 @@
-const SESSION_STORAGE_KEY = 'dl_auth_session_v1'
-const LOCAL_ACCOUNTS_KEY = 'dl_local_accounts_v1'
+// Journey progress: cached in localStorage per account and synced to /api/player-progress,
+// which identifies the player from the Google login cookie.
 const PROGRESS_PREFIX = 'dl_user_progress_v1:'
 
 export const LOCATION_TO_JOURNAL_IDS = {
@@ -97,18 +97,6 @@ export function mergeProgress(a = DEFAULT_PROGRESS, b = DEFAULT_PROGRESS) {
   }
 }
 
-export function getSavedSession() {
-  return safeReadJson(SESSION_STORAGE_KEY, null)
-}
-
-export function saveSession(session) {
-  safeWriteJson(SESSION_STORAGE_KEY, session)
-}
-
-export function clearSession() {
-  safeWriteJson(SESSION_STORAGE_KEY, null)
-}
-
 export function getLocalProgress(username) {
   const key = normalizeUsername(username)
   if (!key) return { ...DEFAULT_PROGRESS }
@@ -125,101 +113,15 @@ export function setLocalProgress(username, progress) {
   return merged
 }
 
-export async function loginOrRegister({ action, username, password, displayName }) {
-  const cleanUser = normalizeUsername(username)
-  const localProgress = getLocalProgress(cleanUser)
-
-  try {
-    const response = await fetch('/api/player-auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action,
-        username: cleanUser,
-        password,
-        displayName: displayName || username,
-        progress: localProgress,
-      }),
-    })
-
-    const data = await response.json().catch(() => ({}))
-    if (!response.ok) {
-      // If server storage is unconfigured on static hosting (500), fall back to local account store
-      if (response.status >= 500) {
-        return handleOfflineAuth({ action, username: cleanUser, password, displayName, localProgress })
-      }
-      throw new Error(data.error || 'Không thể xử lý yêu cầu đăng nhập.')
-    }
-
-    const mergedProgress = setLocalProgress(cleanUser, data.progress || {})
-    const session = {
-      token: data.token,
-      user: data.user || { username: cleanUser, displayName: displayName || cleanUser },
-      storage: 'cloud',
-    }
-    saveSession(session)
-    return { session, progress: mergedProgress }
-  } catch (err) {
-    if (err.name === 'TypeError' || /fetch|network/i.test(err.message)) {
-      return handleOfflineAuth({ action, username: cleanUser, password, displayName, localProgress })
-    }
-    throw err
-  }
+// Google account id -> local cache key (matches playerKey() on the server).
+export function playerKey(googleId) {
+  return normalizeUsername(`g_${googleId}`)
 }
 
-function handleOfflineAuth({ action, username, password, displayName, localProgress }) {
-  const accounts = safeReadJson(LOCAL_ACCOUNTS_KEY, {})
-  const existing = accounts[username]
-
-  if (action === 'register') {
-    if (existing) {
-      throw new Error(
-        'Tên tài khoản này đã được đăng ký trên trình duyệt này. Vui lòng chuyển sang Đăng nhập.',
-      )
-    }
-    accounts[username] = {
-      username,
-      displayName: String(displayName || username).trim(),
-      password,
-      createdAt: new Date().toISOString(),
-    }
-    safeWriteJson(LOCAL_ACCOUNTS_KEY, accounts)
-  } else {
-    if (!existing) {
-      throw new Error(
-        'Chưa tìm thấy tài khoản này. Bạn hãy bấm sang tab "Đăng ký mới" để tạo hành trình nhé!',
-      )
-    }
-    if (existing.password !== password) {
-      throw new Error('Mật khẩu / mã PIN chưa đúng. Vui lòng kiểm tra lại.')
-    }
-  }
-
-  const acc = accounts[username]
-  const progress = setLocalProgress(username, localProgress)
-  const session = {
-    token: `local.${username}`,
-    user: { username: acc.username, displayName: acc.displayName },
-    storage: 'local',
-  }
-  saveSession(session)
-  return { session, progress }
-}
-
-export async function fetchRemoteProgress(session) {
-  const username = normalizeUsername(session?.user?.username)
-  if (!username) return { ...DEFAULT_PROGRESS }
+export async function fetchRemoteProgress(username) {
   const local = getLocalProgress(username)
-
   try {
-    const headers = {}
-    if (session?.token && !session.token.startsWith('local.')) {
-      headers.Authorization = `Bearer ${session.token}`
-    }
-    const response = await fetch(
-      `/api/player-progress?username=${encodeURIComponent(username)}`,
-      { headers },
-    )
+    const response = await fetch('/api/player-progress', { credentials: 'same-origin' })
     if (!response.ok) return local
     const data = await response.json()
     return setLocalProgress(username, data.progress || {})
@@ -228,36 +130,22 @@ export async function fetchRemoteProgress(session) {
   }
 }
 
-export async function syncProgress(session, progressUpdate) {
-  const username = normalizeUsername(session?.user?.username)
-  if (!username) return { ...DEFAULT_PROGRESS }
-
+export async function syncProgress(username, progressUpdate) {
   const merged = setLocalProgress(username, progressUpdate)
-
   try {
-    const headers = { 'Content-Type': 'application/json' }
-    if (session?.token && !session.token.startsWith('local.')) {
-      headers.Authorization = `Bearer ${session.token}`
-    }
     const response = await fetch('/api/player-progress', {
       method: 'POST',
-      headers,
-      body: JSON.stringify({
-        username,
-        progress: progressUpdate?.reset ? progressUpdate : merged,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ progress: progressUpdate?.reset ? progressUpdate : merged }),
       keepalive: true,
     })
     if (response.ok) {
       const data = await response.json().catch(() => ({}))
-      if (data?.progress) {
-        return setLocalProgress(username, data.progress)
-      }
+      if (data?.progress) return setLocalProgress(username, data.progress)
     }
   } catch {
     // Local progress is already saved; ignore network failure
   }
-
   return merged
 }
-

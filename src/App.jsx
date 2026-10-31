@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { GAME_CONFIG } from './config/gameConfig'
-import AuthScreen from './components/AuthScreen.jsx'
 import IntroSequence from './components/IntroSequence.jsx'
 import LocationMap from './components/LocationMap.jsx'
 import DialogScreen from './components/DialogScreen.jsx'
@@ -14,13 +13,12 @@ import NhaCuQuest from './games/nha_cu/NhaCuQuest.jsx'
 import PhongSuGame from './games/phong_su/PhongSuGame.jsx'
 import LuaGaGame from './games/lua_ga/LuaGaGame.jsx'
 import { LOCATIONS } from './data/locations.js'
-import { setPlayerAccount, setScreen as trackScreen, track } from './analytics/track.js'
+import { setScreen as trackScreen, track } from './analytics/track.js'
 import {
-  clearSession,
   fetchRemoteProgress,
   getLocalProgress,
-  getSavedSession,
   LOCATION_TO_JOURNAL_IDS,
+  playerKey,
   syncProgress,
 } from './services/playerStorage.js'
 import './App.css'
@@ -77,27 +75,14 @@ function deriveUnlockedFromCompleted(unlockedList = [], completedList = []) {
   return nextUnlocked
 }
 
-export default function App() {
-  const [session, setSession] = useState(() => getSavedSession())
-  const initialProgress = useMemo(() => {
-    const saved = getSavedSession()
-    return saved?.user?.username
-      ? getLocalProgress(saved.user.username)
-      : {
-          unlockedLocations: ['cong_lang'],
-          completedLocations: [],
-          journalUnlockedIds: [],
-          lastLocationId: null,
-          introCompleted: false,
-        }
-  }, [])
+// `user` is the Google account from AuthGate (always signed in here); progress is keyed by it.
+export default function App({ user, onLogout }) {
+  const progressKey = playerKey(user.id)
+  const initialProgress = useMemo(() => getLocalProgress(progressKey), [progressKey])
 
-  const [screen, setScreen] = useState(() => {
-    const saved = getSavedSession()
-    if (!saved) return 'auth'
-    if (GAME_CONFIG.SKIP_INTRO || initialProgress.introCompleted) return 'map'
-    return 'intro'
-  })
+  const [screen, setScreen] = useState(() =>
+    GAME_CONFIG.SKIP_INTRO || initialProgress.introCompleted ? 'map' : 'intro',
+  )
   const [activeLocation, setActiveLocation] = useState(null)
   const [lastLocationId, setLastLocationId] = useState(() => initialProgress.lastLocationId || null)
   const [unlockedLocations, setUnlockedLocations] = useState(() =>
@@ -127,12 +112,10 @@ export default function App() {
     }
   }, [])
 
-  // Sync from cloud on startup when a saved session exists
+  // Sync from cloud on startup
   useEffect(() => {
-    if (!session?.user?.username) return
-    setPlayerAccount(session.user.username)
     let cancelled = false
-    fetchRemoteProgress(session).then((merged) => {
+    fetchRemoteProgress(progressKey).then((merged) => {
       if (!cancelled && merged) {
         applyProgress(merged)
       }
@@ -140,17 +123,16 @@ export default function App() {
     return () => {
       cancelled = true
     }
-  }, [session, applyProgress])
+  }, [progressKey, applyProgress])
 
   const persistProgress = useCallback(
     async (partialUpdate) => {
-      if (!session?.user?.username) return
       setSyncStatus('saving')
-      const merged = await syncProgress(session, partialUpdate)
+      const merged = await syncProgress(progressKey, partialUpdate)
       setSyncStatus('saved')
       return merged
     },
-    [session],
+    [progressKey],
   )
 
   useEffect(() => {
@@ -172,21 +154,6 @@ export default function App() {
       completed: completedLocations.has(location.id),
     }))
   }, [completedLocations, unlockedLocations])
-
-  const handleAuthSuccess = ({ session: nextSession, progress }) => {
-    setSession(nextSession)
-    setPlayerAccount(nextSession.user.username)
-    applyProgress(progress)
-    const shouldSkipIntro = GAME_CONFIG.SKIP_INTRO || progress?.introCompleted
-    setScreen(shouldSkipIntro ? 'map' : 'intro')
-  }
-
-  const handleLogout = () => {
-    clearSession()
-    setSession(null)
-    setActiveLocation(null)
-    setScreen('auth')
-  }
 
   const handleResetProgress = async () => {
     if (!window.confirm('Bạn có muốn đặt lại toàn bộ hành trình để khám phá lại từ đầu không?')) {
@@ -319,13 +286,7 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {screen !== 'auth' && (
-        <JournalWidget
-          unlockedIds={journalUnlockedIds}
-          onChangeUnlockedIds={handleJournalChange}
-        />
-      )}
-      {screen === 'auth' && <AuthScreen onSuccess={handleAuthSuccess} />}
+      <JournalWidget unlockedIds={journalUnlockedIds} onChangeUnlockedIds={handleJournalChange} />
       {screen === 'intro' && (
         <IntroSequence
           onFinish={() => {
@@ -340,10 +301,10 @@ export default function App() {
           onBack={() => setScreen('intro')}
           onEnterLocation={handleEnterLocation}
           locations={locations}
-          user={session?.user}
+          user={user}
           lastLocationId={lastLocationId}
           syncStatus={syncStatus}
-          onLogout={handleLogout}
+          onLogout={onLogout}
           onResetProgress={handleResetProgress}
         />
       )}

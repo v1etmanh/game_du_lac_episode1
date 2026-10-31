@@ -1,5 +1,5 @@
 import { getQuery, isAuthorized } from './_lib/auth.js'
-import { fetchEvents, storageMode } from './_lib/store.js'
+import { fetchEvents, fetchUsers, storageMode } from './_lib/store.js'
 import { buildStats } from './_lib/stats.js'
 
 export default async function handler(req, res) {
@@ -14,8 +14,17 @@ export default async function handler(req, res) {
     : new Date(Date.parse(to) - 7 * 86400000).toISOString()
 
   try {
-    const events = await fetchEvents(from, to)
-    return res.status(200).json({ storage: storageMode(), ...buildStats(events, { from, to }) })
+    let usersError = null
+    const [events, users] = await Promise.all([
+      fetchEvents(from, to),
+      fetchUsers().catch((err) => {
+        // Missing users table should not take down the whole dashboard.
+        console.error('[admin-stats] users failed', err)
+        usersError = String(err.message || err)
+        return []
+      }),
+    ])
+    return res.status(200).json({ storage: storageMode(), usersError, ...buildStats(events, { from, to }, users) })
   } catch (err) {
     console.error('[admin-stats] failed', err)
     return res.status(500).json({ error: 'Không đọc được dữ liệu sự kiện', detail: String(err.message || err) })

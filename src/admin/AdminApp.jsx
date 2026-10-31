@@ -18,6 +18,7 @@ import OverviewPage from './OverviewPage.jsx'
 import BehaviorPage from './BehaviorPage.jsx'
 import SessionsPage from './SessionsPage.jsx'
 import FeedbackPage from './FeedbackPage.jsx'
+import UsersPage from './UsersPage.jsx'
 import { PageSkeleton, formatTime } from './ui.jsx'
 import './admin.css'
 
@@ -28,6 +29,7 @@ const FONT_HREF = 'https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@
 const PAGES = [
   { id: 'overview', label: 'Tổng quan', icon: LayoutDashboard, title: 'Tổng quan', desc: 'Toàn cảnh người chơi và phản hồi khảo sát' },
   { id: 'behavior', label: 'Hành vi', icon: Activity, title: 'Hành vi người chơi', desc: 'Tiến độ, điểm rơi, minigame, thiết bị' },
+  { id: 'users', label: 'Người dùng', icon: Users, title: 'Người dùng', desc: 'Tài khoản đăng nhập Google và mức độ hoạt động' },
   { id: 'sessions', label: 'Phiên chơi', icon: ListTree, title: 'Phiên chơi', desc: 'Xem lại từng phiên và từng thao tác' },
   { id: 'feedback', label: 'Feedback', icon: MessageSquareText, title: 'Feedback khảo sát', desc: 'Tổng hợp từ Google Form “Feedback về trải nghiệm game Du Lạc”' },
 ]
@@ -270,6 +272,7 @@ export default function AdminApp() {
   const storage = stats?.storage
   const counts = {
     sessions: stats?.kpis.sessions,
+    users: stats?.users?.total,
     feedback: feedback?.total,
   }
 
@@ -278,6 +281,7 @@ export default function AdminApp() {
   else if (page === 'feedback') content = feedback ? <FeedbackPage data={feedback} /> : <PageSkeleton />
   else if (!stats) content = <PageSkeleton />
   else if (page === 'behavior') content = <BehaviorPage stats={stats} />
+  else if (page === 'users') content = <UsersPage stats={stats} />
   else content = <SessionsPage stats={stats} />
 
   return (
@@ -305,6 +309,7 @@ export default function AdminApp() {
               <p.icon size={17} aria-hidden="true" />
               {p.label}
               {p.id === 'sessions' && counts.sessions !== undefined && <span className="count">{counts.sessions}</span>}
+              {p.id === 'users' && counts.users !== undefined && <span className="count">{counts.users}</span>}
               {p.id === 'feedback' && counts.feedback !== undefined && <span className="count">{counts.feedback}</span>}
             </button>
           ))}
