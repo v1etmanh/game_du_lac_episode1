@@ -64,7 +64,7 @@ function median(values) {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
 }
 
-function describe(e) {
+function describe(e, usersById) {
   const p = e.props || {}
   switch (e.event) {
     case 'screen_view':
@@ -75,22 +75,26 @@ function describe(e) {
       return p.duration_ms ? `${Math.round(p.duration_ms / 1000)}s` : ''
     case 'session_start':
       return [p.device, p.os, p.browser, p.referrer].filter(Boolean).join(' · ')
+    case 'user_identify':
+      return usersById?.get(p.user_id)?.email || ''
     default:
       return ''
   }
 }
 
-export function buildStats(events, { from, to }) {
+export function buildStats(events, { from, to }, users = []) {
+  const usersById = new Map(users.map((u) => [u.id, u]))
   const sessions = new Map()
   for (const e of events) {
     if (!e.session_id) continue
     let s = sessions.get(e.session_id)
     if (!s) {
-      s = { id: e.session_id, player: e.player_id, events: [], info: {} }
+      s = { id: e.session_id, player: e.player_id, events: [], info: {}, userId: null }
       sessions.set(e.session_id, s)
     }
     s.events.push(e)
     if (e.event === 'session_start') s.info = e.props || {}
+    if (e.event === 'user_identify' && e.props?.user_id) s.userId = e.props.user_id
   }
 
   const sessionList = [...sessions.values()].map((s) => {
@@ -212,6 +216,7 @@ export function buildStats(events, { from, to }) {
       finished: s.finished,
       lastScreen: SCREEN_NAMES[s.lastScreen] || '-',
       lastLocation: s.lastLocation ? locationName(s.lastLocation) : '',
+      user: s.userId ? publicUser(usersById.get(s.userId) || { id: s.userId }) : null,
       timeline: s.events
         .filter((e) => e.event !== 'heartbeat')
         .slice(-200)
@@ -219,7 +224,7 @@ export function buildStats(events, { from, to }) {
           t: e.created_at,
           event: e.event,
           location: e.location_id ? locationName(e.location_id) : '',
-          detail: describe(e),
+          detail: describe(e, usersById),
         })),
     }))
 
@@ -255,5 +260,74 @@ export function buildStats(events, { from, to }) {
     interviews,
     topClicks: countBy(clicks, (e) => e.props?.label).slice(0, 20),
     recentSessions,
+    users: buildUserStats(users, sessionList, { from, to, dayKeys: dailySeries.map((d) => d.date) }),
+  }
+}
+
+function publicUser(u) {
+  return { id: u.id, name: u.name || '', email: u.email || '', picture: u.picture || '' }
+}
+
+const inRange = (iso, from, to) => Boolean(iso) && iso >= from && iso <= to
+
+function buildUserStats(users, sessionList, { from, to, dayKeys }) {
+  const byUser = new Map()
+  for (const s of sessionList) {
+    if (!s.userId) continue
+    if (!byUser.has(s.userId)) byUser.set(s.userId, [])
+    byUser.get(s.userId).push(s)
+  }
+
+  const known = new Map(users.map((u) => [u.id, u]))
+  // Sessions may reference a user that is missing from the table (e.g. storage failed at login).
+  for (const id of byUser.keys()) if (!known.has(id)) known.set(id, { id })
+
+  const list = [...known.values()].map((u) => {
+    const sessions = byUser.get(u.id) || []
+    const lastSession = sessions.reduce((max, s) => (s.end > max ? s.end : max), '')
+    return {
+      ...publicUser(u),
+      createdAt: u.created_at || null,
+      lastLoginAt: u.last_login_at || null,
+      lastSeenAt: [lastSession, u.last_login_at || ''].sort().pop() || null,
+      loginCount: u.login_count || 0,
+      sessions: sessions.length,
+      playSec: Math.round(sessions.reduce((a, s) => a + s.durationSec, 0)),
+      maxCompleted: sessions.reduce((max, s) => Math.max(max, s.completed.size), 0),
+      finished: sessions.some((s) => s.finished),
+      isNew: inRange(u.created_at, from, to),
+      active: sessions.length > 0 || inRange(u.last_login_at, from, to),
+    }
+  })
+
+  const signups = new Map(dayKeys.map((d) => [d, 0]))
+  for (const u of list) {
+    if (!u.isNew) continue
+    const day = vnDate(u.createdAt)
+    signups.set(day, (signups.get(day) || 0) + 1)
+  }
+
+  const active = list.filter((u) => u.active)
+  const loggedSessions = sessionList.filter((s) => s.userId).length
+
+  return {
+    total: list.length,
+    newUsers: list.filter((u) => u.isNew).length,
+    activeUsers: active.length,
+    returningUsers: active.filter((u) => !u.isNew).length,
+    finishedUsers: active.filter((u) => u.finished).length,
+    loggedSessions,
+    loggedSessionShare: sessionList.length ? loggedSessions / sessionList.length : 0,
+    avgSessionsPerUser: active.length ? Number((loggedSessions / active.length).toFixed(1)) : 0,
+    avgPlaySecPerUser: active.length ? Math.round(active.reduce((a, u) => a + u.playSec, 0) / active.length) : 0,
+    signupsDaily: [...signups.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value })),
+    emailDomains: countBy(list, (u) => (u.email.includes('@') ? u.email.split('@')[1].toLowerCase() : null)).slice(0, 8),
+    loginBuckets: [
+      { name: '1 lần', value: list.filter((u) => u.loginCount <= 1).length },
+      { name: '2–3 lần', value: list.filter((u) => u.loginCount >= 2 && u.loginCount <= 3).length },
+      { name: '4–9 lần', value: list.filter((u) => u.loginCount >= 4 && u.loginCount <= 9).length },
+      { name: '10+ lần', value: list.filter((u) => u.loginCount >= 10).length },
+    ],
+    list: list.sort((a, b) => (b.lastSeenAt || '').localeCompare(a.lastSeenAt || '')).slice(0, 500),
   }
 }

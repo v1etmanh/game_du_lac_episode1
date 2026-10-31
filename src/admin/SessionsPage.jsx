@@ -1,6 +1,7 @@
 import { Fragment, useMemo, useState } from 'react'
 import { ChevronDown, ChevronRight, Monitor, Search, Smartphone, Tablet, Users } from 'lucide-react'
 import { Card, Empty, formatDateTime, formatDuration } from './ui.jsx'
+import { UserAvatar } from './UsersPage.jsx'
 
 const EVENT_NAMES = {
   session_start: 'Mở game',
@@ -19,6 +20,7 @@ const EVENT_NAMES = {
   minigame_exit: 'Thoát minigame',
   journal_open: 'Mở nhật kí',
   ui_click: 'Bấm',
+  user_identify: 'Đăng nhập Google',
 }
 
 const KEY_EVENTS = new Set(['location_enter', 'minigame_start', 'interview_start', 'session_start'])
@@ -66,7 +68,7 @@ export default function SessionsPage({ stats }) {
       if (filter === 'mobile' && s.device === 'desktop') return false
       if (filter === 'returning' && !s.returning) return false
       if (!q) return true
-      return [s.player, s.os, s.browser, s.referrer, s.lastScreen, s.lastLocation]
+      return [s.player, s.user?.name, s.user?.email, s.os, s.browser, s.referrer, s.lastScreen, s.lastLocation]
         .join(' ')
         .toLowerCase()
         .includes(q)
@@ -85,7 +87,7 @@ export default function SessionsPage({ stats }) {
             <Search size={15} aria-hidden="true" />
             <input
               className="adm-input"
-              placeholder="Tìm theo ID, thiết bị, màn..."
+              placeholder="Tìm theo email, ID, thiết bị..."
               aria-label="Tìm phiên chơi"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -138,7 +140,14 @@ export default function SessionsPage({ stats }) {
                       <td className="chev">{isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}</td>
                       <td>{formatDateTime(s.start)}</td>
                       <td>
-                        <span className="adm-mono">{s.player.slice(0, 8)}</span>{' '}
+                        {s.user ? (
+                          <span className="adm-user" title={s.user.email}>
+                            <UserAvatar user={s.user} size={22} />
+                            <span>{s.user.name || s.user.email}</span>
+                          </span>
+                        ) : (
+                          <span className="adm-mono">{s.player.slice(0, 8)}</span>
+                        )}{' '}
                         {s.returning ? <span className="adm-pill blue">Quay lại</span> : <span className="adm-pill">Mới</span>}
                       </td>
                       <td>

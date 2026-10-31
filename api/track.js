@@ -1,5 +1,6 @@
 import { insertEvents } from './_lib/store.js'
 import { parseBody } from './_lib/auth.js'
+import { currentUser } from './_lib/userAuth.js'
 
 const ALLOWED_EVENTS = new Set([
   'session_start',
@@ -19,6 +20,7 @@ const ALLOWED_EVENTS = new Set([
   'minigame_exit',
   'journal_open',
   'ui_click',
+  'user_identify',
 ])
 
 const MAX_EVENTS = 50
@@ -61,16 +63,19 @@ export default async function handler(req, res) {
   const { events } = parseBody(req)
   if (!Array.isArray(events)) return res.status(400).json({ error: 'events must be an array' })
 
+  // user_identify links the session to a Google account; the id comes from the signed cookie only.
+  const user = currentUser(req)
   const rows = events
     .slice(0, MAX_EVENTS)
     .filter((e) => e && ALLOWED_EVENTS.has(e.event) && e.session_id && e.player_id)
+    .filter((e) => e.event !== 'user_identify' || user)
     .map((e) => ({
       created_at: eventTime(e.ts),
       session_id: cleanString(e.session_id, 64),
       player_id: cleanString(e.player_id, 64),
       event: e.event,
       location_id: cleanString(e.location_id, 40),
-      props: cleanProps(e.props),
+      props: e.event === 'user_identify' ? { user_id: user.id } : cleanProps(e.props),
     }))
 
   try {

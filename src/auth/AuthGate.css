@@ -1,0 +1,226 @@
+/* Georgia lacks Vietnamese stacked diacritics (ề, ắ...), so use Merriweather like the rest of the game. */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap&subset=vietnamese');
+
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background:
+    linear-gradient(rgba(16, 24, 18, 0.55), rgba(16, 24, 18, 0.8)),
+    url('/landscape/cong_lang.png') center / cover no-repeat,
+    #1b2a1e;
+  color: #f4e9d8;
+  font-family: 'Merriweather', 'Noto Serif', 'Times New Roman', serif;
+}
+
+.auth-card {
+  width: min(420px, 100%);
+  padding: 36px 32px 32px;
+  border: 1px solid rgba(224, 184, 76, 0.45);
+  border-radius: 14px;
+  background: rgba(27, 42, 30, 0.88);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+
+.auth-kicker {
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #e0b84c;
+}
+
+.auth-card h1 {
+  margin: 8px 0 12px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.auth-card p {
+  margin-bottom: 24px;
+  line-height: 1.55;
+  color: rgba(244, 233, 216, 0.85);
+}
+
+.auth-error {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(180, 60, 50, 0.25);
+  border: 1px solid rgba(220, 110, 90, 0.5);
+  font-size: 0.9rem;
+}
+
+.auth-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f1f1f;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-google:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.auth-google:focus-visible {
+  outline: 2px solid #e0b84c;
+  outline-offset: 3px;
+}
+
+.auth-user {
+  position: fixed;
+  top: 20px;
+  right: 86px; /* left of the 54px journal button */
+  z-index: 41;
+  font-family: 'Merriweather', 'Noto Serif', 'Times New Roman', serif;
+}
+
+.auth-user-fab {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  padding: 3px;
+  border: 1px solid rgba(255, 247, 231, 0.35);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #4e3343, #25362d);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.auth-user-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
+}
+
+.auth-user-fab:focus-visible,
+.auth-user-logout:focus-visible {
+  outline: 2px solid #e0b84c;
+  outline-offset: 3px;
+}
+
+.auth-avatar {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #e0b84c;
+  color: #25362d;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.auth-avatar-lg {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.auth-user-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(280px, calc(100vw - 28px));
+  padding: 14px;
+  border: 1px solid rgba(224, 184, 76, 0.45);
+  border-radius: 12px;
+  background: rgba(30, 40, 33, 0.96);
+  color: #f4e9d8;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  animation: auth-menu-in 140ms ease-out;
+}
+
+@keyframes auth-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.auth-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(244, 233, 216, 0.15);
+  min-width: 0;
+}
+
+.auth-user-info > div {
+  min-width: 0;
+}
+
+.auth-user-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-user-email {
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: rgba(244, 233, 216, 0.7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-user-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #f4e9d8;
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.auth-user-logout:hover {
+  background: rgba(224, 184, 76, 0.18);
+  color: #e0b84c;
+}
+
+@media (max-width: 900px) {
+  .auth-user {
+    top: 14px;
+    right: 72px; /* journal button is 48px at this size */
+  }
+
+  .auth-user-fab {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-user-menu {
+    animation: none;
+  }
+}
