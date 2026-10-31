@@ -82,11 +82,13 @@ function describe(e, usersById) {
   }
 }
 
-export function buildStats(events, { from, to }, users = []) {
+export function buildStats(rawEvents, { from, to }, users = []) {
+  // '__account__' rows hold saved journey progress (playerStore.js), not gameplay sessions.
+  const events = rawEvents.filter((e) => e && e.session_id && e.session_id !== '__account__')
   const usersById = new Map(users.map((u) => [u.id, u]))
   const sessions = new Map()
   for (const e of events) {
-    if (!e.session_id) continue
+    if (!e.session_id || e.session_id === '__account__') continue
     let s = sessions.get(e.session_id)
     if (!s) {
       s = { id: e.session_id, player: e.player_id, events: [], info: {}, userId: null }

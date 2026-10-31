@@ -87,6 +87,14 @@ export default defineConfig(({ mode }) => {
       },
       react(),
     ],
+    optimizeDeps: {
+      entries: ['index.html'],
+      esbuildOptions: {
+        loader: {
+          '.js': 'jsx',
+        },
+      },
+    },
     server: {
       port: 5173,
     },

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { CheckCircle2, ChevronDown, LogOut, RotateCcw, User } from 'lucide-react'
 import { getLocations } from '../data/locations.js'
 import LocationCard from './LocationCard.jsx'
 import { track } from '../analytics/track.js'
@@ -6,10 +7,48 @@ import './LocationMap.css'
 
 const BG_IMAGE = '/background/Gemini_Generated_Image_493p7z493p7z493p.png'
 
-export default function LocationMap({ onBack, onEnterLocation, unlockAll = false, locations: providedLocations }) {
+export default function LocationMap({
+  onBack,
+  onEnterLocation,
+  unlockAll = false,
+  locations: providedLocations,
+  user,
+  lastLocationId,
+  syncStatus = 'saved',
+  onLogout,
+  onResetProgress,
+}) {
   const locations = providedLocations || getLocations(unlockAll)
-  const [selectedId, setSelectedId] = useState(locations[0]?.id)
+  const [selectedId, setSelectedId] = useState(
+    () => lastLocationId || locations[0]?.id,
+  )
   const [shakingId, setShakingId] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    const onPointer = (e) => {
+      if (!menuRef.current?.contains(e.target)) setMenuOpen(false)
+    }
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointer)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onPointer)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
+
+  useEffect(() => {
+    if (lastLocationId && locations.some((l) => l.id === lastLocationId)) {
+      setSelectedId(lastLocationId)
+    }
+  }, [lastLocationId, locations])
+
+  const completedCount = locations.filter((loc) => loc.completed).length
 
   const handleCardClick = (location) => {
     if (!location.unlocked) {
@@ -35,13 +74,80 @@ export default function LocationMap({ onBack, onEnterLocation, unlockAll = false
       style={{ backgroundImage: `url(${BG_IMAGE})` }}
     >
       <div className="location-map-header">
-        <button className="back-btn" onClick={onBack} aria-label="Quay lại">
-          ←
-        </button>
-        <div>
-          <h1>✦ CHỌN ĐỊA ĐIỂM ✦</h1>
-          <p>Mỗi địa điểm là một trò chơi dân gian và một mảnh ký ức cần được kiểm chứng.</p>
+        <div className="location-map-title-group">
+          <button className="back-btn" onClick={onBack} aria-label="Xem lại Intro">
+            ←
+          </button>
+          <div>
+            <h1>✦ CHỌN ĐỊA ĐIỂM ✦</h1>
+            <p>Mỗi địa điểm là một trò chơi dân gian và một mảnh ký ức cần được kiểm chứng.</p>
+          </div>
         </div>
+
+        {user && (
+          <div className="player-journey-bar" ref={menuRef}>
+            <button
+              type="button"
+              className="player-journey-info"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              aria-label="Tài khoản"
+            >
+              <span className="player-journey-avatar">
+                {user.picture ? (
+                  <img src={user.picture} alt="" referrerPolicy="no-referrer" />
+                ) : (
+                  <User size={15} />
+                )}
+              </span>
+              <div className="player-journey-text">
+                <div className="player-journey-name">
+                  {user.name || user.email}
+                  <ChevronDown size={14} className={`player-journey-chevron${menuOpen ? ' open' : ''}`} />
+                </div>
+                <div className="player-journey-meta">
+                  <span>
+                    Hành trình: <strong>{completedCount}/{locations.length}</strong> chặng
+                  </span>
+                  <span className="player-sync-pill">
+                    <CheckCircle2 size={12} />
+                    {syncStatus === 'saving' ? 'Đang lưu...' : 'Đã lưu hành trình'}
+                  </span>
+                </div>
+              </div>
+            </button>
+
+            <div className="player-journey-actions">
+              {completedCount > 0 && onResetProgress && (
+                <button
+                  type="button"
+                  className="player-action-btn"
+                  onClick={onResetProgress}
+                  title="Chơi lại từ đầu"
+                >
+                  <RotateCcw size={14} />
+                  <span>Đi lại</span>
+                </button>
+              )}
+            </div>
+
+            {menuOpen && (
+              <div className="player-menu" role="menu">
+                <div className="player-menu-account">
+                  <span>Đăng nhập bằng Google</span>
+                  {user.email && <strong>{user.email}</strong>}
+                </div>
+                {onLogout && (
+                  <button type="button" role="menuitem" className="player-menu-item logout" onClick={onLogout}>
+                    <LogOut size={15} aria-hidden="true" />
+                    Đăng xuất
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="location-map-cards">

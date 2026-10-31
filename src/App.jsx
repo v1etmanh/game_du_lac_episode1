@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { GAME_CONFIG } from './config/gameConfig'
 import IntroSequence from './components/IntroSequence.jsx'
 import LocationMap from './components/LocationMap.jsx'
@@ -14,6 +14,13 @@ import PhongSuGame from './games/phong_su/PhongSuGame.jsx'
 import LuaGaGame from './games/lua_ga/LuaGaGame.jsx'
 import { LOCATIONS } from './data/locations.js'
 import { setScreen as trackScreen, track } from './analytics/track.js'
+import {
+  fetchRemoteProgress,
+  getLocalProgress,
+  LOCATION_TO_JOURNAL_IDS,
+  playerKey,
+  syncProgress,
+} from './services/playerStorage.js'
 import './App.css'
 
 const INTERVIEW_BY_LOCATION = {
@@ -22,11 +29,19 @@ const INTERVIEW_BY_LOCATION = {
   nha_ba_tu: 'ba_tu',
 }
 
-const MINIGAME_LOCATIONS = new Set(['vuon_cay', 'cho', 'ruong', 'nha_ba_tu', 'nha_cu', 'den_lang','nha_ba_ngan'])
+const MINIGAME_LOCATIONS = new Set([
+  'vuon_cay',
+  'cho',
+  'ruong',
+  'nha_ba_tu',
+  'nha_cu',
+  'den_lang',
+  'nha_ba_ngan',
+])
 const DIALOG_ONLY_LOCATIONS = new Set(['cong_lang', 'nha_minh'])
 const POST_GAME_DIALOG_LOCATIONS = new Set(['nha_cu', 'den_lang', 'nha_ba_ngan'])
 
-function getUnlocksAfter(locationId, completed) {
+function getUnlocksAfter(locationId) {
   switch (locationId) {
     case 'cong_lang':
       return ['vuon_cay']
@@ -49,12 +64,76 @@ function getUnlocksAfter(locationId, completed) {
   }
 }
 
-export default function App() {
-  const [screen, setScreen] = useState(GAME_CONFIG.SKIP_INTRO ? 'map' : 'intro')
+function deriveUnlockedFromCompleted(unlockedList = [], completedList = []) {
+  const nextUnlocked = new Set(['cong_lang', ...unlockedList])
+  for (const locId of completedList) {
+    nextUnlocked.add(locId)
+    for (const u of getUnlocksAfter(locId)) {
+      nextUnlocked.add(u)
+    }
+  }
+  return nextUnlocked
+}
+
+// `user` is the Google account from AuthGate (always signed in here); progress is keyed by it.
+export default function App({ user, onLogout }) {
+  const progressKey = playerKey(user.id)
+  const initialProgress = useMemo(() => getLocalProgress(progressKey), [progressKey])
+
+  const [screen, setScreen] = useState(() =>
+    GAME_CONFIG.SKIP_INTRO || initialProgress.introCompleted ? 'map' : 'intro',
+  )
   const [activeLocation, setActiveLocation] = useState(null)
-  const [unlockedLocations, setUnlockedLocations] = useState(() => new Set(['cong_lang']))
-  const [completedLocations, setCompletedLocations] = useState(() => new Set())
+  const [lastLocationId, setLastLocationId] = useState(() => initialProgress.lastLocationId || null)
+  const [unlockedLocations, setUnlockedLocations] = useState(() =>
+    deriveUnlockedFromCompleted(
+      initialProgress.unlockedLocations,
+      initialProgress.completedLocations,
+    ),
+  )
+  const [completedLocations, setCompletedLocations] = useState(
+    () => new Set(initialProgress.completedLocations || []),
+  )
+  const [journalUnlockedIds, setJournalUnlockedIds] = useState(
+    () => new Set(initialProgress.journalUnlockedIds || []),
+  )
+  const [syncStatus, setSyncStatus] = useState('saved')
   const minigameStartRef = useRef(null)
+
+  const applyProgress = useCallback((progress) => {
+    if (!progress) return
+    const completed = progress.completedLocations || []
+    const unlocked = progress.unlockedLocations || ['cong_lang']
+    setCompletedLocations(new Set(completed))
+    setUnlockedLocations(deriveUnlockedFromCompleted(unlocked, completed))
+    setJournalUnlockedIds(new Set(progress.journalUnlockedIds || []))
+    if (progress.lastLocationId !== undefined) {
+      setLastLocationId(progress.lastLocationId)
+    }
+  }, [])
+
+  // Sync from cloud on startup
+  useEffect(() => {
+    let cancelled = false
+    fetchRemoteProgress(progressKey).then((merged) => {
+      if (!cancelled && merged) {
+        applyProgress(merged)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [progressKey, applyProgress])
+
+  const persistProgress = useCallback(
+    async (partialUpdate) => {
+      setSyncStatus('saving')
+      const merged = await syncProgress(progressKey, partialUpdate)
+      setSyncStatus('saved')
+      return merged
+    },
+    [progressKey],
+  )
 
   useEffect(() => {
     trackScreen(screen, screen === 'map' ? null : activeLocation?.id)
@@ -76,29 +155,76 @@ export default function App() {
     }))
   }, [completedLocations, unlockedLocations])
 
+  const handleResetProgress = async () => {
+    if (!window.confirm('Bạn có muốn đặt lại toàn bộ hành trình để khám phá lại từ đầu không?')) {
+      return
+    }
+    const fresh = {
+      reset: true,
+      unlockedLocations: ['cong_lang'],
+      completedLocations: [],
+      journalUnlockedIds: [],
+      lastLocationId: 'cong_lang',
+      introCompleted: true,
+    }
+    applyProgress(fresh)
+    await persistProgress(fresh)
+  }
+
   const completeLocation = (locationId) => {
     track('location_complete', locationId)
-    setCompletedLocations((previousCompleted) => {
-      const nextCompleted = new Set(previousCompleted)
-      nextCompleted.add(locationId)
-      const nextUnlocks = getUnlocksAfter(locationId, nextCompleted)
 
-      if (nextUnlocks.length > 0) {
-        setUnlockedLocations((previousUnlocked) => {
-          const nextUnlocked = new Set(previousUnlocked)
-          nextUnlocks.forEach((id) => nextUnlocked.add(id))
-          return nextUnlocked
-        })
-      }
+    const nextCompleted = new Set(completedLocations)
+    nextCompleted.add(locationId)
 
-      return nextCompleted
+    const nextUnlocked = deriveUnlockedFromCompleted([...unlockedLocations], [...nextCompleted])
+    const nextUnlocks = getUnlocksAfter(locationId)
+    nextUnlocks.forEach((id) => nextUnlocked.add(id))
+
+    const nextJournal = new Set(journalUnlockedIds)
+    const mappedJournalIds = LOCATION_TO_JOURNAL_IDS[locationId] || []
+    mappedJournalIds.forEach((jId) => nextJournal.add(jId))
+
+    const nextFocusLocation = nextUnlocks[0] || locationId
+
+    setCompletedLocations(nextCompleted)
+    setUnlockedLocations(nextUnlocked)
+    setJournalUnlockedIds(nextJournal)
+    setLastLocationId(nextFocusLocation)
+
+    persistProgress({
+      unlockedLocations: [...nextUnlocked],
+      completedLocations: [...nextCompleted],
+      journalUnlockedIds: [...nextJournal],
+      lastLocationId: nextFocusLocation,
+      introCompleted: true,
+    })
+  }
+
+  const handleJournalChange = (nextSet) => {
+    const normalized = nextSet instanceof Set ? nextSet : new Set(nextSet || [])
+    setJournalUnlockedIds(normalized)
+    persistProgress({
+      reset: normalized.size === 0 && journalUnlockedIds.size > 0,
+      unlockedLocations: [...unlockedLocations],
+      completedLocations: [...completedLocations],
+      journalUnlockedIds: [...normalized],
+      lastLocationId,
+      introCompleted: true,
     })
   }
 
   const handleEnterLocation = (location) => {
     track('location_enter', location.id)
     setActiveLocation(location)
+    setLastLocationId(location.id)
     setScreen('dialog')
+    persistProgress({
+      unlockedLocations: [...unlockedLocations],
+      completedLocations: [...completedLocations],
+      journalUnlockedIds: [...journalUnlockedIds],
+      lastLocationId: location.id,
+    })
   }
 
   const handleDialogFinish = () => {
@@ -132,7 +258,9 @@ export default function App() {
   const handleMinigameExit = () => {
     if (activeLocation) {
       const startedAt = minigameStartRef.current
-      track('minigame_exit', activeLocation.id, { duration_ms: startedAt ? Date.now() - startedAt : null })
+      track('minigame_exit', activeLocation.id, {
+        duration_ms: startedAt ? Date.now() - startedAt : null,
+      })
       minigameStartRef.current = null
     }
     if (!activeLocation) {
@@ -158,11 +286,12 @@ export default function App() {
 
   return (
     <div className="app-root">
-      <JournalWidget />
+      <JournalWidget unlockedIds={journalUnlockedIds} onChangeUnlockedIds={handleJournalChange} />
       {screen === 'intro' && (
         <IntroSequence
           onFinish={() => {
             track('intro_finish')
+            persistProgress({ introCompleted: true })
             setScreen('map')
           }}
         />
@@ -172,6 +301,11 @@ export default function App() {
           onBack={() => setScreen('intro')}
           onEnterLocation={handleEnterLocation}
           locations={locations}
+          user={user}
+          lastLocationId={lastLocationId}
+          syncStatus={syncStatus}
+          onLogout={onLogout}
+          onResetProgress={handleResetProgress}
         />
       )}
       {screen === 'dialog' && activeLocation && (
@@ -228,7 +362,7 @@ export default function App() {
       {screen === 'minigame' && activeLocation?.id === 'nha_cu' && (
         <NhaCuQuest onExit={handleMinigameExit} />
       )}
-        {screen === 'minigame' && activeLocation?.id === 'nha_ba_ngan' && (
+      {screen === 'minigame' && activeLocation?.id === 'nha_ba_ngan' && (
         <LuaGaGame onExit={handleMinigameExit} />
       )}
     </div>

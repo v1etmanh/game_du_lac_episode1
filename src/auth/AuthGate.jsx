@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { LogOut } from 'lucide-react'
+import { cloneElement, useEffect, useState } from 'react'
+import { BookOpen, CheckCircle2 } from 'lucide-react'
 import { identify } from '../analytics/track.js'
 import './AuthGate.css'
 
@@ -33,86 +33,41 @@ function GoogleIcon() {
 
 function LoginScreen({ error, enabled }) {
   return (
-    <div className="auth-screen">
+    <div className="auth-screen-root">
+      <div className="auth-screen-backdrop" />
+
       <div className="auth-card">
-        <h1>Du Lạc</h1>
-        <p>Đăng nhập để bắt đầu hành trình qua từng ngõ làng và lưu lại dấu chân của bạn.</p>
+        <div className="auth-card-header">
+          <div className="auth-badge">
+            <BookOpen size={16} />
+            <span>DU LẠC DIARY · EPISODE 1</span>
+          </div>
+          <h1>Sổ Lưu Hành Trình</h1>
+          <p>Đăng nhập để lưu lại các chặng đường làng đã đi qua và những trang sổ nhật ký đã mở khóa.</p>
+        </div>
+
         {error && (
           <div className="auth-error" role="alert">
             {error}
           </div>
         )}
+
         {enabled ? (
-          <a className="auth-google" href="/api/auth?action=login" data-track="Đăng nhập Google">
-            <GoogleIcon />
+          <a className="auth-google-btn" href="/api/auth?action=login" data-track="Đăng nhập Google">
+            <span className="auth-google-icon">
+              <GoogleIcon />
+            </span>
             Đăng nhập với Google
           </a>
         ) : (
           <div className="auth-error">Máy chủ chưa cấu hình GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET.</div>
         )}
-      </div>
-    </div>
-  )
-}
 
-function Avatar({ user, className }) {
-  if (user.picture) return <img className={className} src={user.picture} alt="" referrerPolicy="no-referrer" />
-  return (
-    <span className={className} aria-hidden="true">
-      {(user.name || user.email || '?').charAt(0).toUpperCase()}
-    </span>
-  )
-}
-
-// Avatar button next to the journal button (top-right); opens a small account menu.
-function UserMenu({ user, onLogout }) {
-  const [open, setOpen] = useState(false)
-  const rootRef = useRef(null)
-
-  useEffect(() => {
-    if (!open) return undefined
-    const onPointer = (e) => {
-      if (!rootRef.current?.contains(e.target)) setOpen(false)
-    }
-    const onKey = (e) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('pointerdown', onPointer)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('pointerdown', onPointer)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [open])
-
-  return (
-    <div className="auth-user" ref={rootRef}>
-      <button
-        type="button"
-        className="auth-user-fab"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        aria-label="Tài khoản"
-        title={user.name}
-      >
-        <Avatar user={user} className="auth-avatar" />
-      </button>
-      {open && (
-        <div className="auth-user-menu" role="menu">
-          <div className="auth-user-info">
-            <Avatar user={user} className="auth-avatar auth-avatar-lg" />
-            <div>
-              <div className="auth-user-name">{user.name}</div>
-              {user.email && <div className="auth-user-email">{user.email}</div>}
-            </div>
-          </div>
-          <button type="button" role="menuitem" className="auth-user-logout" onClick={onLogout}>
-            <LogOut size={16} aria-hidden="true" />
-            Đăng xuất
-          </button>
+        <div className="auth-footer-note">
+          <CheckCircle2 size={15} />
+          <span>Hành trình được lưu theo tài khoản Google. Thoát ra vào lại hay đổi thiết bị đều không mất.</span>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -149,12 +104,8 @@ export default function AuthGate({ children }) {
     window.location.reload()
   }
 
-  if (state.loading) return <div className="auth-screen" />
+  if (state.loading) return <div className="auth-screen-root" />
   if (!state.user) return <LoginScreen error={error} enabled={state.enabled} />
-  return (
-    <>
-      <UserMenu user={state.user} onLogout={logout} />
-      {children}
-    </>
-  )
+  // The game shows the account (name, avatar, logout) in its own map header.
+  return cloneElement(children, { user: state.user, onLogout: logout })
 }
