@@ -1,4 +1,4 @@
-import { Clock, MessageSquareText, Star, Trophy, UserCheck, Users, Gamepad2 } from 'lucide-react'
+import { Clock, MessageSquareText, Star, Trophy, Users, Gamepad2 } from 'lucide-react'
 import { Funnel, RatingChart, SessionsTrend, TREND_LEGEND } from './charts.jsx'
 import { BarList, COLORS, Card, Empty, Kpi, Legend, Skeleton, formatDuration, formatNumber, formatPct } from './ui.jsx'
 
@@ -17,13 +17,6 @@ export default function OverviewPage({ stats, feedback, onNavigate }) {
               foot={`${k.newPlayers} mới · ${k.returningPlayers} quay lại`}
             />
             <Kpi
-              icon={UserCheck}
-              tone="rose"
-              label="Tài khoản Google"
-              value={formatNumber(stats.users.total)}
-              foot={`${stats.users.newUsers} mới · ${stats.users.activeUsers} hoạt động`}
-            />
-            <Kpi
               icon={Clock}
               tone="green"
               label="Thời gian / phiên"
@@ -39,7 +32,7 @@ export default function OverviewPage({ stats, feedback, onNavigate }) {
             />
           </>
         ) : (
-          [0, 1, 2, 3, 4].map((i) => <Skeleton key={i} height={112} className="" />)
+          [0, 1, 2, 3].map((i) => <Skeleton key={i} height={112} className="" />)
         )}
         {feedback ? (
           <>
